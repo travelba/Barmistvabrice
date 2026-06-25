@@ -94,7 +94,9 @@ function frDate(iso: string) {
   });
 }
 
-function Leg({ leg, label }: { leg: typeof FLIGHT.outbound; label: string }) {
+type FlightLeg = typeof FLIGHT.outbound | typeof FLIGHT.inbound;
+
+function Leg({ leg, label }: { leg: FlightLeg; label: string }) {
   return (
     <View>
       <Text style={s.legLabel}>{label}</Text>

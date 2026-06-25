@@ -8,8 +8,12 @@ alter table bookings
   add column if not exists ceremony_attending   boolean not null default true,
   add column if not exists ceremony_guest_count int     not null default 0;
 
--- Vue agregee mise a jour (inclut les champs ceremonie)
-create or replace view booking_details as
+-- Vue agregee mise a jour (inclut les champs ceremonie).
+-- drop cascade : `create or replace view` ne sait pas inserer des colonnes au
+-- milieu d'une vue existante. On supprime la vue (et confirm_booking qui en
+-- depend) puis on recree les deux.
+drop view if exists booking_details cascade;
+create view booking_details as
 select
   b.id, b.group_name, b.email, b.phone, b.hotel_id, b.hotel_name, b.status,
   b.rooms_total_cents, b.flight_total_cents, b.total_cents, b.passenger_count,
@@ -26,6 +30,18 @@ select
       'dateOfBirth', to_char(p.date_of_birth, 'YYYY-MM-DD')))
     from passengers p where p.booking_id = b.id), '[]'::jsonb) as passengers
 from bookings b;
+
+-- confirm_booking depend de booking_details (supprime par le drop cascade) : on la recree.
+create or replace function confirm_booking(p_booking_id uuid)
+returns setof booking_details
+language plpgsql as $$
+begin
+  update bookings
+     set status = 'paid', paid_at = now(), hold_expires_at = null
+   where id = p_booking_id and status <> 'paid';
+  return query select * from booking_details where id = p_booking_id;
+end;
+$$;
 
 -- ---------------------------------------------------------------------------
 -- RSVP a la mise des Tephilines (lien "ceremonie" seul)

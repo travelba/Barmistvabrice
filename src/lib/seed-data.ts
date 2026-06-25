@@ -18,6 +18,7 @@ export const HOTELS_SEED: Hotel[] = [
       "/hotels/aerialandbeachsantamarina.jpg"
     ],
     "capacityMax": 42,
+    "sortOrder": 1,
     "roomTypes": [
       {
         "id": "santa-marina-resort-room",
@@ -356,6 +357,7 @@ export const HOTELS_SEED: Hotel[] = [
       "/hotels/once.webp"
     ],
     "capacityMax": 12,
+    "sortOrder": 2,
     "roomTypes": [
       {
         "id": "once-mykonos-panoramic-double-sea-view-room",
