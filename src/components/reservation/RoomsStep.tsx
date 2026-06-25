@@ -3,16 +3,20 @@
 import { Minus, Plus, Users } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { formatEuro } from "@/lib/pricing";
+import { localizedRoomDescription } from "@/lib/i18n-content";
 import { useWizard } from "./WizardContext";
 
 export function RoomsStep() {
-  const { t } = useI18n();
-  const { selectedHotel, rooms, setRoomQty, selectedCapacity, nights, passengers } = useWizard();
+  const { t, locale } = useI18n();
+  const { selectedHotel, rooms, setRoomQty, roomsCount, selectedCapacity, nights, passengers } =
+    useWizard();
 
   if (!selectedHotel) return null;
 
   const participantCount = passengers.length;
   const capacityCovered = selectedCapacity >= participantCount;
+  const maxRooms = participantCount;
+  const maxRoomsReached = roomsCount >= maxRooms;
 
   return (
     <div className="animate-float-up">
@@ -22,11 +26,14 @@ export function RoomsStep() {
       <p className="mt-1 text-sm text-muted">
         {t("rooms.toHouse").replace("{n}", String(participantCount))}
       </p>
+      <p className="mt-1 text-sm text-muted">
+        {t("rooms.maxNote").replace("{n}", String(maxRooms))}
+      </p>
 
       <div className="mt-8 space-y-4">
         {selectedHotel.roomTypes.map((rt) => {
           const qty = rooms[rt.id] ?? 0;
-          const canAdd = qty < rt.available;
+          const canAdd = qty < rt.available && !maxRoomsReached;
           return (
             <div
               key={rt.id}
@@ -48,7 +55,9 @@ export function RoomsStep() {
                     {rt.available} {t("rooms.available")}
                   </span>
                 </p>
-                <p className="mt-1 text-xs text-muted line-clamp-1">{rt.description}</p>
+                <p className="mt-1 text-xs text-muted line-clamp-1">
+                  {localizedRoomDescription(rt, locale)}
+                </p>
                 <p className="mt-2 font-serif text-lg text-gold">
                   {formatEuro(rt.priceCents)}{" "}
                   <span className="text-sm text-muted">{t("rooms.perStay")}</span>
@@ -89,6 +98,11 @@ export function RoomsStep() {
       {selectedCapacity > 0 && (
         <p className={`mt-2 text-sm ${capacityCovered ? "text-emerald-600" : "text-red-500"}`}>
           {capacityCovered ? t("rooms.capacityOk") : t("rooms.capacityShort")}
+        </p>
+      )}
+      {maxRoomsReached && (
+        <p className="mt-2 text-sm text-gold">
+          {t("rooms.maxReached").replace("{n}", String(maxRooms))}
         </p>
       )}
     </div>

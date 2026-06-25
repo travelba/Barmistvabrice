@@ -4,6 +4,8 @@
  * Les secrets (Stripe, Supabase, Google, Resend) restent dans les variables d'environnement.
  */
 
+import type { Locale } from "./types";
+
 export const EVENT = {
   childName: "Shon Bechet",
   title: "Bar Mitsvah de Shon Bechet",
@@ -66,69 +68,139 @@ export const FLIGHT = {
 
 /**
  * Faire-part de la mise des Tephilines (affiche sur /ceremonie).
+ * Contenu editorial bilingue : selectionne via la langue active.
  */
-export const INVITATION = {
-  hosts: [
-    "M. et Mme Maurice & Maryvonne Bechet",
-    "Limor & Brice",
-    "Emy & Shay",
-  ],
-  announce:
-    "ont la joie de vous faire part de la Bar Mitsvah de leur petit-fils, fils et frère",
-  specialThoughtLabel: "Une pensée particulière pour",
-  specialThought: "Asher & Myriam Elgrably",
-  ceremonyTimeLabel: "à 9h précises",
-  brunch: "Un brunch suivra l'office",
-} as const;
+type InvitationContent = {
+  hosts: string[];
+  announce: string;
+  specialThoughtLabel: string;
+  specialThought: string;
+  ceremonyTimeLabel: string;
+  brunch: string;
+};
+
+export const INVITATION: Record<Locale, InvitationContent> = {
+  fr: {
+    hosts: [
+      "M. et Mme Maurice & Maryvonne Bechet",
+      "Limor & Brice",
+      "Emy & Shay",
+    ],
+    announce:
+      "ont la joie de vous faire part de la Bar Mitsvah de leur petit-fils, fils et frère",
+    specialThoughtLabel: "Une pensée particulière pour",
+    specialThought: "Asher & Myriam Elgrably",
+    ceremonyTimeLabel: "à 9h précises",
+    brunch: "Un brunch suivra l'office",
+  },
+  he: {
+    hosts: [
+      "מר וגב' מוריס ומריוון בשה",
+      "לימור ובריס",
+      "אמי ושי",
+    ],
+    announce:
+      "שמחים לבשר לכם על בר המצווה של נכדם, בנם ואחיהם",
+    specialThoughtLabel: "מחשבה מיוחדת ל",
+    specialThought: "אשר ומרים אלגרבלי",
+    ceremonyTimeLabel: "בשעה 9:00 בדיוק",
+    brunch: "בראנץ' יתקיים לאחר התפילה",
+  },
+};
 
 /**
- * Programme du sejour (affiche sur /voyage).
+ * Programme du sejour (affiche sur /voyage). Bilingue.
  */
-export const PROGRAM: Array<{
+type ProgramDay = {
   day: string;
   date: string;
   items: Array<{ time?: string; text: string }>;
-}> = [
-  {
-    day: "Vendredi",
-    date: "9/10",
-    items: [
-      { time: "07h20", text: "Rendez-vous à l’aéroport Roissy Charles de Gaulle" },
-      { time: "09h15", text: "Décollage à destination de Mykonos" },
-      { time: "13h30", text: "Arrivée à Mykonos — transfert organisé vers l’hôtel Santa Marina" },
-      { text: "Après-midi détente" },
-      {
-        time: "18h30",
-        text: "Entrée de Shabbat, allumage des bougies et prière dans la Salle Blanche de l’hôtel Santa Marina",
-      },
-      { time: "20h00", text: "Dîner de Shabbat au restaurant ELAIS de l’hôtel Santa Marina" },
-    ],
-  },
-  {
-    day: "Samedi",
-    date: "10/10",
-    items: [
-      { time: "08h00", text: "Ouverture du petit déjeuner" },
-      { time: "09h00", text: "Office de Shabbat dans la Salle Blanche : lecture de la Torah" },
-      { time: "13h00", text: "Déjeuner de Shabbat au restaurant ELAIS de l’hôtel Santa Marina" },
-      { time: "15h30", text: "Liberté…" },
-      { time: "19h20", text: "Havdala dans la villa du Bar Mitsvah" },
-      { time: "20h30", text: "Apéritif autour de la piscine de l’hôtel" },
-      { time: "21h30", text: "Soirée au BOUDDHA BAR BEACH" },
-    ],
-  },
-  {
-    day: "Dimanche",
-    date: "11/10",
-    items: [
-      { time: "08h00", text: "Ouverture du petit déjeuner" },
-      { time: "12h00", text: "Beach Party à la plage de l’hôtel Santa Marina" },
-      { time: "17h30", text: "Transfert organisé vers l’aéroport de Mykonos" },
-      { time: "19h30", text: "Décollage à destination de Roissy Charles de Gaulle" },
-      { time: "22h30", text: "Arrivée Roissy Charles de Gaulle" },
-    ],
-  },
-];
+};
+
+export const PROGRAM: Record<Locale, ProgramDay[]> = {
+  fr: [
+    {
+      day: "Vendredi",
+      date: "9/10",
+      items: [
+        { time: "07h20", text: "Rendez-vous à l’aéroport Roissy Charles de Gaulle" },
+        { time: "09h15", text: "Décollage à destination de Mykonos" },
+        { time: "13h30", text: "Arrivée à Mykonos — transfert organisé vers l’hôtel Santa Marina" },
+        { text: "Après-midi détente" },
+        {
+          time: "18h30",
+          text: "Entrée de Shabbat, allumage des bougies et prière dans la Salle Blanche de l’hôtel Santa Marina",
+        },
+        { time: "20h00", text: "Dîner de Shabbat au restaurant ELAIS de l’hôtel Santa Marina" },
+      ],
+    },
+    {
+      day: "Samedi",
+      date: "10/10",
+      items: [
+        { time: "08h00", text: "Ouverture du petit déjeuner" },
+        { time: "09h00", text: "Office de Shabbat dans la Salle Blanche : lecture de la Torah" },
+        { time: "13h00", text: "Déjeuner de Shabbat au restaurant ELAIS de l’hôtel Santa Marina" },
+        { time: "15h30", text: "Liberté…" },
+        { time: "19h20", text: "Havdala dans la villa du Bar Mitsvah" },
+        { time: "20h30", text: "Apéritif autour de la piscine de l’hôtel" },
+        { time: "21h30", text: "Soirée au BOUDDHA BAR BEACH" },
+      ],
+    },
+    {
+      day: "Dimanche",
+      date: "11/10",
+      items: [
+        { time: "08h00", text: "Ouverture du petit déjeuner" },
+        { time: "12h00", text: "Beach Party à la plage de l’hôtel Santa Marina" },
+        { time: "17h30", text: "Transfert organisé vers l’aéroport de Mykonos" },
+        { time: "19h30", text: "Décollage à destination de Roissy Charles de Gaulle" },
+        { time: "22h30", text: "Arrivée Roissy Charles de Gaulle" },
+      ],
+    },
+  ],
+  he: [
+    {
+      day: "יום שישי",
+      date: "9/10",
+      items: [
+        { time: "07:20", text: "מפגש בשדה התעופה רואסי שארל דה גול" },
+        { time: "09:15", text: "המראה לכיוון מיקונוס" },
+        { time: "13:30", text: "נחיתה במיקונוס — הסעה מאורגנת למלון סנטה מרינה" },
+        { text: "אחר הצהריים — מנוחה" },
+        {
+          time: "18:30",
+          text: "כניסת שבת, הדלקת נרות ותפילה באולם הלבן של מלון סנטה מרינה",
+        },
+        { time: "20:00", text: "ארוחת ערב שבת במסעדת ELAIS של מלון סנטה מרינה" },
+      ],
+    },
+    {
+      day: "שבת",
+      date: "10/10",
+      items: [
+        { time: "08:00", text: "פתיחת ארוחת הבוקר" },
+        { time: "09:00", text: "תפילת שבת באולם הלבן: קריאת התורה" },
+        { time: "13:00", text: "ארוחת צהריים של שבת במסעדת ELAIS של מלון סנטה מרינה" },
+        { time: "15:30", text: "זמן חופשי…" },
+        { time: "19:20", text: "הבדלה בווילה של הבר מצווה" },
+        { time: "20:30", text: "קוקטייל סביב בריכת המלון" },
+        { time: "21:30", text: "מסיבה ב-BOUDDHA BAR BEACH" },
+      ],
+    },
+    {
+      day: "יום ראשון",
+      date: "11/10",
+      items: [
+        { time: "08:00", text: "פתיחת ארוחת הבוקר" },
+        { time: "12:00", text: "מסיבת חוף בחוף של מלון סנטה מרינה" },
+        { time: "17:30", text: "הסעה מאורגנת לשדה התעופה של מיקונוס" },
+        { time: "19:30", text: "המראה לכיוון רואסי שארל דה גול" },
+        { time: "22:30", text: "נחיתה ברואסי שארל דה גול" },
+      ],
+    },
+  ],
+};
 
 export const CURRENCY = "eur" as const;
 

@@ -31,9 +31,9 @@ function store(): DemoStore {
 }
 
 function isHoldActive(b: Booking): boolean {
-  if (b.status !== "pending") return false;
-  const exp = store().holdExpiry.get(b.id);
-  return exp != null && exp > Date.now();
+  // Une reservation pending bloque la place tant qu'elle n'est pas annulee,
+  // independamment de l'echeance du hold (paiement non finalise = place gardee).
+  return b.status === "pending";
 }
 
 function computeAvailabilityDemo(): HotelAvailability[] {
@@ -344,6 +344,44 @@ export async function getBookingByStripeSession(sessionId: string): Promise<Book
     .maybeSingle();
   if (error) throw error;
   return data ? mapBookingRow(data as Record<string, unknown>) : null;
+}
+
+/**
+ * Annule une reservation depuis le back-office et libere la place.
+ * Une reservation deja payee n'est pas modifiee.
+ */
+export async function cancelBooking(bookingId: string): Promise<Booking | null> {
+  if (!isSupabaseConfigured) {
+    const b = store().bookings.find((x) => x.id === bookingId);
+    if (!b) return null;
+    if (b.status !== "paid") {
+      b.status = "cancelled";
+      store().holdExpiry.delete(bookingId);
+    }
+    return b;
+  }
+  const sb = getSupabaseAdmin()!;
+  const { data, error } = await sb.rpc("cancel_booking", { p_booking_id: bookingId });
+  if (error) throw new Error(error.message);
+  if (!data) return getBookingById(bookingId);
+  const row = Array.isArray(data) ? data[0] : data;
+  return row ? mapBookingRow(row as Record<string, unknown>) : getBookingById(bookingId);
+}
+
+/**
+ * Prolonge le hold d'une reservation pending (relance du lien de paiement).
+ */
+export async function extendBookingHold(bookingId: string, minutes: number): Promise<void> {
+  if (!isSupabaseConfigured) {
+    store().holdExpiry.set(bookingId, Date.now() + minutes * 60_000);
+    return;
+  }
+  const sb = getSupabaseAdmin()!;
+  await sb
+    .from("bookings")
+    .update({ hold_expires_at: new Date(Date.now() + minutes * 60_000).toISOString() })
+    .eq("id", bookingId)
+    .eq("status", "pending");
 }
 
 export async function listBookings(): Promise<Booking[]> {

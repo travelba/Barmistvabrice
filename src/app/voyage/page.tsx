@@ -23,6 +23,7 @@ function formatDate(iso: string, locale: string) {
 
 export default function Voyage() {
   const { t, locale } = useI18n();
+  const program = PROGRAM[locale];
 
   return (
     <main className="flex-1">
@@ -85,7 +86,7 @@ export default function Voyage() {
             <Plane className="h-4 w-4 text-gold-light" />
             <span className="font-serif text-lg text-gold-light">{FLIGHT.outbound.toCode}</span>
             <span className="text-cream/60">·</span>
-            <span className="uppercase tracking-widest">{FLIGHT.aircraft} · vol privé</span>
+            <span className="uppercase tracking-widest">{FLIGHT.aircraft} · {t("flight.private")}</span>
           </motion.div>
 
           <motion.div
@@ -116,7 +117,7 @@ export default function Voyage() {
               <CalendarDays className="mb-3 h-7 w-7 text-gold-light" />
               <h3 className="font-serif text-2xl">{t("event.tephilines.title")}</h3>
               <p className="mt-2 capitalize text-sky">{formatDate(EVENT.tephilinesDate, locale)}</p>
-              <p className="mt-1 text-cream/70">{EVENT.tephilinesPlace}</p>
+              <p className="mt-1 text-cream/70">{t("ceremony.place")}</p>
               <p className="text-sm text-cream/60">{EVENT.tephilinesAddress}</p>
             </div>
             <div className="flex flex-col items-center">
@@ -124,7 +125,7 @@ export default function Voyage() {
               <h3 className="font-serif text-2xl">{t("event.trip.title")}</h3>
               <p className="mt-2 capitalize text-sky">{formatDate(EVENT.tripStartDate, locale)}</p>
               <p className="mt-1 flex items-center gap-1 text-cream/70">
-                <MapPin className="h-4 w-4" /> {EVENT.destination}, Grèce
+                <MapPin className="h-4 w-4" /> {t("place.destination")}, {t("place.greece")}
               </p>
             </div>
           </div>
@@ -135,17 +136,18 @@ export default function Voyage() {
       <section className="bg-gradient-to-b from-navy to-navy-deep py-24 text-cream">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="kicker text-gold-light">{FLIGHT.airline}</p>
-          <h2 className="mt-3 font-serif text-4xl sm:text-5xl">Votre embarquement immédiat</h2>
+          <h2 className="mt-3 font-serif text-4xl sm:text-5xl">{t("voyage.boarding.title")}</h2>
           <div className="mx-auto my-5 gold-rule" />
           <p className="mx-auto max-w-xl text-cream/75">
-            Un {FLIGHT.aircraft} affrété rien que pour nous, au départ de {FLIGHT.outbound.fromCity}.
-            Votre billet nominatif vous attend au bout de la réservation.
+            {t("voyage.boarding.desc")
+              .replace("{aircraft}", FLIGHT.aircraft)
+              .replace("{city}", FLIGHT.outbound.fromCity)}
           </p>
           <div className="mt-10">
             <BoardingPass passengerName="" />
           </div>
           <Link href="/reservation" className="btn-gold mt-10 inline-block rounded-full px-9 py-4">
-            Récupérer mon billet
+            {t("voyage.boarding.cta")}
           </Link>
         </div>
       </section>
@@ -153,7 +155,7 @@ export default function Voyage() {
       {/* TRIP / RESERVATION TEASER */}
       <section className="bg-cream py-24">
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <p className="kicker text-gold">{EVENT.destination}</p>
+          <p className="kicker text-gold">{t("place.destination")}</p>
           <h2 className="mt-3 font-serif text-4xl text-navy sm:text-5xl">{t("event.trip.title")}</h2>
           <div className="mx-auto my-5 gold-rule" />
           <p className="mx-auto max-w-2xl text-muted">{t("event.trip.desc")}</p>
@@ -186,7 +188,7 @@ export default function Voyage() {
           </div>
 
           <div className="mt-10 space-y-12">
-            {PROGRAM.map((day) => (
+            {program.map((day) => (
               <div key={day.date}>
                 <h3 className="flex items-baseline gap-3 font-serif text-2xl text-gold-light">
                   {day.day}

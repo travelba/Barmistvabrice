@@ -4,7 +4,7 @@ import { appUrl, CURRENCY, EVENT, isStripeConfigured } from "@/lib/config";
 import { getHotels, createPendingBooking, attachStripeSession } from "@/lib/data";
 import { computePrice } from "@/lib/pricing";
 import { getStripe } from "@/lib/stripe";
-import { fulfillBooking } from "@/lib/fulfillment";
+import { fulfillBooking, recordBookingInSheet } from "@/lib/fulfillment";
 import type { BookingDraft } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +45,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
   const draft: BookingDraft = parsed.data;
+
+  // Regle metier : pas plus de chambres que de participants.
+  const totalRooms = draft.rooms.reduce((acc, r) => acc + r.quantity, 0);
+  if (totalRooms > draft.passengers.length) {
+    return NextResponse.json(
+      { error: "Le nombre de chambres ne peut pas dépasser le nombre de participants." },
+      { status: 400 },
+    );
+  }
 
   try {
     // Prix recalcule cote serveur a partir des donnees autoritaires.
@@ -106,6 +115,9 @@ export async function POST(req: Request) {
     });
 
     await attachStripeSession(bookingId, session.id);
+    // Trace immediate dans le Google Sheet : la place est bloquee, paiement
+    // "en attente". La ligne passera a "Payé" via le webhook si le client paie.
+    await recordBookingInSheet(bookingId);
     return NextResponse.json({ url: session.url });
   } catch (e) {
     console.error("[api/checkout]", e);

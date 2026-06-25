@@ -3,10 +3,11 @@
 import { MapPin, Star, Check } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { formatEuro } from "@/lib/pricing";
+import { localizedHotelDescription, localizedHotelLocation } from "@/lib/i18n-content";
 import { useWizard } from "./WizardContext";
 
 export function HotelStep() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { hotels, hotelId, setHotelId } = useWizard();
 
   return (
@@ -53,9 +54,11 @@ export function HotelStep() {
                 </div>
                 <h3 className="mt-2 font-serif text-2xl text-navy">{h.name}</h3>
                 <p className="mt-1 flex items-center gap-1 text-sm text-muted">
-                  <MapPin className="h-3.5 w-3.5" /> {h.location}
+                  <MapPin className="h-3.5 w-3.5" /> {localizedHotelLocation(h, locale)}
                 </p>
-                <p className="mt-3 line-clamp-2 text-sm text-muted">{h.description}</p>
+                <p className="mt-3 line-clamp-2 text-sm text-muted">
+                  {localizedHotelDescription(h, locale)}
+                </p>
                 <p className="mt-4 text-sm text-navy">
                   {t("common.from")}{" "}
                   <span className="font-serif text-xl text-gold">{formatEuro(minPrice)}</span>{" "}

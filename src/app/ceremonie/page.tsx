@@ -23,6 +23,7 @@ function formatDate(iso: string, locale: string) {
 
 export default function Ceremonie() {
   const { t, locale, toggleLocale } = useI18n();
+  const invitation = INVITATION[locale];
 
   return (
     <main className="flex-1">
@@ -111,39 +112,39 @@ export default function Ceremonie() {
           <div className="mx-auto max-w-md text-aegean">
             <HebrewArch text="וקשרתם לאות על ידך והיו לטטפת בין עיניך" />
           </div>
-          <p className="kicker mt-2 text-gold">Téphilines — Oukchartam</p>
+          <p className="kicker mt-2 text-gold">{t("ceremony.invite.oukchartam")}</p>
 
           <div className="mx-auto my-8 gold-rule" />
 
           {/* Hotes */}
           <div className="space-y-1 font-serif text-xl text-navy sm:text-2xl">
-            {INVITATION.hosts.map((h) => (
+            {invitation.hosts.map((h) => (
               <p key={h}>{h}</p>
             ))}
           </div>
 
-          <p className="mx-auto mt-6 max-w-lg text-muted">{INVITATION.announce}</p>
+          <p className="mx-auto mt-6 max-w-lg text-muted">{invitation.announce}</p>
           <h2 className="mt-4 font-serif text-5xl text-navy sm:text-6xl">{EVENT.childName}</h2>
 
           <p className="mt-8 text-sm uppercase tracking-widest text-gold">
-            {INVITATION.specialThoughtLabel}
+            {invitation.specialThoughtLabel}
           </p>
-          <p className="mt-1 font-serif text-lg text-navy">{INVITATION.specialThought}</p>
+          <p className="mt-1 font-serif text-lg text-navy">{invitation.specialThought}</p>
 
           <div className="mx-auto my-10 gold-rule" />
 
           {/* Details ceremonie */}
-          <p className="text-muted">La mise des Téphilines aura lieu le</p>
+          <p className="text-muted">{t("ceremony.invite.lead")}</p>
           <p className="mt-2 font-serif text-3xl capitalize text-navy">
             {formatDate(EVENT.tephilinesDate, locale)}
           </p>
-          <p className="mt-6 text-muted">en la</p>
-          <p className="font-serif text-2xl text-navy">{EVENT.tephilinesPlace}</p>
+          <p className="mt-6 text-muted">{t("ceremony.invite.placePrefix")}</p>
+          <p className="font-serif text-2xl text-navy">{t("ceremony.place")}</p>
           <p className="mt-2 flex items-center justify-center gap-1.5 text-muted">
             <MapPin className="h-4 w-4 text-gold" /> {EVENT.tephilinesAddress}
           </p>
-          <p className="mt-4 font-serif text-xl text-gold">{INVITATION.ceremonyTimeLabel}</p>
-          <p className="mt-6 italic text-muted">{INVITATION.brunch}</p>
+          <p className="mt-4 font-serif text-xl text-gold">{invitation.ceremonyTimeLabel}</p>
+          <p className="mt-6 italic text-muted">{invitation.brunch}</p>
 
           <div className="mt-10">
             <AddToCalendar />

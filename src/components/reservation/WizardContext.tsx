@@ -128,14 +128,25 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     [hotels, hotelId],
   );
 
-  const setRoomQty = useCallback((roomTypeId: string, qty: number) => {
-    setRooms((prev) => {
-      const next = { ...prev };
-      if (qty <= 0) delete next[roomTypeId];
-      else next[roomTypeId] = qty;
-      return next;
-    });
-  }, []);
+  const setRoomQty = useCallback(
+    (roomTypeId: string, qty: number) => {
+      setRooms((prev) => {
+        const next = { ...prev };
+        // On ne peut pas reserver plus de chambres que de participants.
+        const maxRooms = passengers.length;
+        const others = Object.entries(prev).reduce(
+          (acc, [id, q]) => (id === roomTypeId ? acc : acc + q),
+          0,
+        );
+        const allowed = Math.max(0, maxRooms - others);
+        const clamped = Math.min(Math.max(0, qty), allowed);
+        if (clamped <= 0) delete next[roomTypeId];
+        else next[roomTypeId] = clamped;
+        return next;
+      });
+    },
+    [passengers.length],
+  );
 
   const roomsCount = useMemo(
     () => Object.values(rooms).reduce((a, b) => a + b, 0),

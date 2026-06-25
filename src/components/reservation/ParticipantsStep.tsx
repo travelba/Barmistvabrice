@@ -165,7 +165,7 @@ export function ParticipantsStep() {
         <p className="mt-2 text-sm text-muted">
           {t("voyage.ceremony.note")
             .replace("{date}", ceremonyDate)
-            .replace("{place}", EVENT.tephilinesPlace)}
+            .replace("{place}", t("ceremony.place"))}
         </p>
         <p className="mt-4 field-label">{t("voyage.ceremony.question")}</p>
         <div className="mt-2 grid gap-3 sm:grid-cols-2">

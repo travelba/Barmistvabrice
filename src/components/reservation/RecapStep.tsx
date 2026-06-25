@@ -39,7 +39,8 @@ export function RecapStep() {
                 <span className="text-navy">
                   {r.quantity}× {r.roomName}
                   <span className="block text-xs text-muted">
-                    {formatEuro(r.unitCents)} × {price.nights} {price.nights > 1 ? "nuits" : "nuit"}
+                    {formatEuro(r.unitCents)} × {price.nights}{" "}
+                    {price.nights > 1 ? t("common.nights") : t("common.night")}
                     {r.quantity > 1 ? ` × ${r.quantity}` : ""}
                   </span>
                 </span>
@@ -77,7 +78,7 @@ export function RecapStep() {
           </h3>
           <p className="mt-2 text-sm text-muted">
             {ceremonyAttending
-              ? `${t("voyage.ceremony.yes")} — ${ceremonyDate}, ${EVENT.tephilinesPlace}`
+              ? `${t("voyage.ceremony.yes")} — ${ceremonyDate}, ${t("ceremony.place")}`
               : t("voyage.ceremony.no")}
           </p>
         </div>

@@ -4,6 +4,7 @@ import { getHotels, listBookings, listCeremonyRsvps } from "@/lib/data";
 import { formatEuro } from "@/lib/pricing";
 import { isSupabaseConfigured } from "@/lib/config";
 import { AdminLogout } from "@/components/admin/AdminLogout";
+import { BookingActions } from "@/components/admin/BookingActions";
 
 export const dynamic = "force-dynamic";
 
@@ -120,12 +121,13 @@ export default async function AdminPage() {
                   <th className="px-4 py-3 text-center font-medium">Pax</th>
                   <th className="px-4 py-3 text-right font-medium">Total</th>
                   <th className="px-4 py-3 text-center font-medium">Statut</th>
+                  <th className="px-4 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {bookings.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-muted">
+                    <td colSpan={8} className="px-4 py-8 text-center text-muted">
                       Aucune inscription pour le moment.
                     </td>
                   </tr>
@@ -158,6 +160,9 @@ export default async function AdminPage() {
                         >
                           {STATUS_LABEL[b.status] ?? b.status}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <BookingActions bookingId={b.id} status={b.status} />
                       </td>
                     </tr>
                   ))

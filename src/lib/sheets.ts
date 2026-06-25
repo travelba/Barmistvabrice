@@ -15,18 +15,32 @@ function sheetsClient() {
   return { sheets: google.sheets({ version: "v4", auth }), sheetId };
 }
 
+/** Libelle francais du statut de paiement affiche dans le Sheet. */
+const SHEET_STATUS_LABEL: Record<Booking["status"], string> = {
+  pending: "En attente (non payé)",
+  paid: "Payé",
+  cancelled: "Annulée (place libérée)",
+  expired: "Échec / expiré",
+};
+
 /**
- * Ajoute une ligne au Google Sheet de listing a chaque paiement reussi.
+ * Cree (ou met a jour) la ligne d'une reservation dans le Google Sheet.
+ *
+ * Une seule ligne par reservation, identifiee par son id (colonne B) :
+ *  - a la creation, le paiement apparait "En attente (non payé)" ;
+ *  - apres paiement, la meme ligne passe a "Payé" ;
+ *  - apres annulation back-office, elle passe a "Annulée (place libérée)".
+ *
  * Configuration requise :
  *  - GOOGLE_SERVICE_ACCOUNT_EMAIL
  *  - GOOGLE_PRIVATE_KEY (avec \n echappes)
  *  - GOOGLE_SHEET_ID (id du classeur partage avec le compte de service)
  * Si non configure, la fonction ne fait rien (no-op) et journalise.
  */
-export async function appendBookingToSheet(booking: Booking): Promise<void> {
+export async function upsertBookingToSheet(booking: Booking): Promise<void> {
   const client = sheetsClient();
   if (!client) {
-    console.warn("[sheets] Google Sheets non configuré — ligne non ajoutée pour", booking.id);
+    console.warn("[sheets] Google Sheets non configuré — ligne non écrite pour", booking.id);
     return;
   }
   const { sheets, sheetId } = client;
@@ -41,7 +55,7 @@ export async function appendBookingToSheet(booking: Booking): Promise<void> {
   const row = [
     new Date(booking.paidAt ?? booking.createdAt).toLocaleString("fr-FR"),
     booking.id,
-    booking.status,
+    SHEET_STATUS_LABEL[booking.status] ?? booking.status,
     booking.groupName,
     booking.email,
     booking.phone,
@@ -56,13 +70,40 @@ export async function appendBookingToSheet(booking: Booking): Promise<void> {
     String(booking.ceremonyGuestCount),
   ];
 
-  await sheets.spreadsheets.values.append({
-    spreadsheetId: sheetId,
-    range: "Inscriptions!A1",
-    valueInputOption: "USER_ENTERED",
-    insertDataOption: "INSERT_ROWS",
-    requestBody: { values: [row] },
-  });
+  // Recherche d'une ligne existante par id (colonne B).
+  let existingRow: number | null = null;
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: "Inscriptions!B:B",
+    });
+    const values = res.data.values ?? [];
+    for (let i = 0; i < values.length; i++) {
+      if (values[i]?.[0] === booking.id) {
+        existingRow = i + 1; // numero de ligne 1-based
+        break;
+      }
+    }
+  } catch (e) {
+    console.warn("[sheets] lecture des ids impossible, ajout en fin de feuille", e);
+  }
+
+  if (existingRow) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: `Inscriptions!A${existingRow}:O${existingRow}`,
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values: [row] },
+    });
+  } else {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: sheetId,
+      range: "Inscriptions!A1",
+      valueInputOption: "USER_ENTERED",
+      insertDataOption: "INSERT_ROWS",
+      requestBody: { values: [row] },
+    });
+  }
 }
 
 /**
