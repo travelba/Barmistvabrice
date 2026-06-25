@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, Loader2, Minus, Plus } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
+import { suggestEmailCorrection } from "@/lib/email-typo";
 
 const MAX_GUESTS = 6;
 
@@ -17,6 +18,7 @@ export function RsvpForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
 
   const emailValid = /.+@.+\..+/.test(email);
+  const emailSuggestion = suggestEmailCorrection(email);
   const canSubmit =
     lastName.trim().length > 1 &&
     firstName.trim().length > 0 &&
@@ -104,6 +106,15 @@ export function RsvpForm() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
             />
+            {emailSuggestion && (
+              <button
+                type="button"
+                onClick={() => setEmail(emailSuggestion)}
+                className="mt-1.5 text-sm text-gold hover:underline"
+              >
+                {t("contact.emailTypo").replace("{email}", emailSuggestion)}
+              </button>
+            )}
           </div>
           <div>
             <label className="field-label" htmlFor="rsvp-phone">

@@ -4,6 +4,7 @@ import { Plane, ScrollText, Trash2, UserPlus, Users } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { formatEuro } from "@/lib/pricing";
 import { EVENT } from "@/lib/config";
+import { suggestEmailCorrection } from "@/lib/email-typo";
 import { useWizard } from "./WizardContext";
 
 export function ParticipantsStep() {
@@ -24,6 +25,8 @@ export function ParticipantsStep() {
     locale === "he" ? "he-IL" : "fr-FR",
     { weekday: "long", day: "numeric", month: "long" },
   );
+
+  const emailSuggestion = suggestEmailCorrection(contact.email);
 
   return (
     <div className="animate-float-up">
@@ -61,6 +64,15 @@ export function ParticipantsStep() {
                 placeholder="vous@exemple.com"
                 autoComplete="email"
               />
+              {emailSuggestion && (
+                <button
+                  type="button"
+                  onClick={() => setContact({ email: emailSuggestion })}
+                  className="mt-1.5 text-sm text-gold hover:underline"
+                >
+                  {t("contact.emailTypo").replace("{email}", emailSuggestion)}
+                </button>
+              )}
             </div>
             <div>
               <label className="field-label" htmlFor="phone">

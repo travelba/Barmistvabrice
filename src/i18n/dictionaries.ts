@@ -162,6 +162,8 @@ export const dictionaries: Record<Locale, Dict> = {
     "confirm.downloadTicketOf": "Billet de {name}",
     "confirm.thisPassenger": "ce passager",
 
+    "contact.emailTypo": "Vouliez-vous dire {email} ?",
+
     "ceremony.addToCalendar": "Ajouter au calendrier",
 
     "pass.boardingPass": "Boarding pass",
@@ -346,6 +348,8 @@ export const dictionaries: Record<Locale, Dict> = {
     "confirm.downloadHotelVoucher": "להוריד את אישור המלון",
     "confirm.downloadTicketOf": "כרטיס של {name}",
     "confirm.thisPassenger": "נוסע זה",
+
+    "contact.emailTypo": "האם התכוונת ל-{email}?",
 
     "ceremony.addToCalendar": "הוספה ליומן",
 
