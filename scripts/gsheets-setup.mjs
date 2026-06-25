@@ -21,7 +21,7 @@ const headers = {
   Inscriptions: [
     "Date", "ID", "Statut", "Groupe", "Email", "Téléphone", "Hôtel",
     "Chambres", "Nb passagers", "Passagers", "Total chambres", "Total vol",
-    "Total", "Cérémonie", "Nb invités cérémonie",
+    "Total", "Cérémonie", "Nb participants cérémonie",
   ],
   Tephilines: [
     "Date", "ID", "Nom", "Email", "Téléphone", "Présence", "Nb invités", "Source",

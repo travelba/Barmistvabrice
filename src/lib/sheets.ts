@@ -52,6 +52,12 @@ export async function upsertBookingToSheet(booking: Booking): Promise<void> {
     .map((p) => `${p.firstName} ${p.lastName} (${p.dateOfBirth})`)
     .join(" | ");
 
+  // Nombre de personnes presentes a la ceremonie : si le groupe a coche "Oui",
+  // tous les participants (+ invites supplementaires eventuels) ; sinon 0.
+  const ceremonyAttendees = booking.ceremonyAttending
+    ? booking.passengerCount + booking.ceremonyGuestCount
+    : 0;
+
   const row = [
     new Date(booking.paidAt ?? booking.createdAt).toLocaleString("fr-FR"),
     booking.id,
@@ -67,7 +73,7 @@ export async function upsertBookingToSheet(booking: Booking): Promise<void> {
     formatEuro(booking.flightTotalCents),
     formatEuro(booking.totalCents),
     booking.ceremonyAttending ? "Oui" : "Non",
-    String(booking.ceremonyGuestCount),
+    String(ceremonyAttendees),
   ];
 
   // Recherche d'une ligne existante par id (colonne B).

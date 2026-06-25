@@ -31,7 +31,7 @@ export async function GET() {
     "Total vols",
     "Total",
     "Cérémonie",
-    "Invités cérémonie",
+    "Nb participants cérémonie",
   ];
 
   const rows = bookings.map((b) =>
@@ -50,7 +50,7 @@ export async function GET() {
       formatEuro(b.flightTotalCents),
       formatEuro(b.totalCents),
       b.ceremonyAttending ? "Oui" : "Non",
-      String(b.ceremonyGuestCount),
+      String(b.ceremonyAttending ? b.passengerCount + b.ceremonyGuestCount : 0),
     ]
       .map(csvCell)
       .join(";"),
