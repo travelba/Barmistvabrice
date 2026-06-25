@@ -1,0 +1,11 @@
+import { chromium } from "playwright";
+const BASE = "http://localhost:3100";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 900, height: 1000 }, deviceScaleFactor: 2 });
+await page.goto(`${BASE}/ceremonie`, { waitUntil: "load" });
+await page.waitForTimeout(1200);
+await page.locator("#rsvp").scrollIntoViewIfNeeded();
+await page.waitForTimeout(700);
+await page.screenshot({ path: "screenshots/rsvp.png" });
+await browser.close();
+console.log("done");

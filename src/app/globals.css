@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+/* ----------------------------------------------------------------------- */
+/*  Aegean Editorial — Quiet Luxury                                         */
+/*  Ivoire + encre + accent bleu Égée, warm sand sur fonds sombres.         */
+/* ----------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces claires */
+  --cream: #f4f1ea;        /* ivoire / os : fond principal */
+  --sand: #ece6d8;         /* sable clair : sections alternées */
+  --paper: #fbfaf6;        /* cartes */
+
+  /* Encre */
+  --ink: #17181a;          /* texte principal, boutons */
+  --muted: #6b7077;        /* texte secondaire */
+
+  /* Fonds sombres (bleu Égée profond) */
+  --navy: #0e3a4f;         /* sections sombres */
+  --navy-deep: #0a2c3d;    /* footer / header scrollé */
+
+  /* Accents */
+  --aegean: #15607e;       /* accent froid sur fond clair (liens, prix, filets) */
+  --sky: #bcd4de;          /* bleu pâle */
+  --gold: #15607e;         /* alias accent clair (compat classes existantes) */
+  --gold-light: #d8cbab;   /* warm sand : accent sur fonds sombres */
+  --line: #e1dccf;         /* hairline chaude */
+}
+
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-aegean: var(--aegean);
+  --color-sky: var(--sky);
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-paper: var(--paper);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+
+  --font-serif: var(--font-fraunces), "Times New Roman", Georgia, serif;
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+
+/* Tailwind v4 retire le curseur "pointer" par défaut : on le rétablit
+   sur tout ce qui est cliquable. */
+button,
+[role="button"],
+a[href],
+label[for],
+summary,
+select,
+[onclick] {
+  cursor: pointer;
+}
+button:disabled,
+[role="button"][aria-disabled="true"],
+button[disabled] {
+  cursor: not-allowed;
+}
+
+/* Filet décoratif (hairline) */
+.gold-rule {
+  height: 1px;
+  width: 56px;
+  background: var(--gold-light);
+}
+
+/* Petite étiquette éditoriale */
+.kicker {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+}
+
+/* Boutons : encre pleine, sans dégradé (esprit éditorial) */
+.btn-gold {
+  background: var(--ink);
+  color: var(--cream);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  box-shadow: 0 12px 30px -16px rgba(14, 58, 79, 0.7);
+}
+.btn-gold:hover:not(:disabled) {
+  background: var(--aegean);
+  transform: translateY(-1px);
+}
+.btn-gold:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-outline {
+  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  color: var(--ink);
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.btn-outline:hover {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+
+/* Cartes */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 70px -40px rgba(14, 58, 79, 0.4);
+}
+
+.glass {
+  background: color-mix(in srgb, #ffffff 7%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--gold-light) 22%, transparent);
+}
+
+/* Animations */
+@keyframes floatUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-float-up {
+  animation: floatUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-overlay {
+  background:
+    linear-gradient(180deg, rgba(10, 44, 61, 0.45) 0%, rgba(10, 44, 61, 0.25) 38%, rgba(10, 44, 61, 0.82) 100%);
+}
+
+/* Grain léger pour la photo (texture éditoriale) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Champs de formulaire */
+.field {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 0.65rem;
+  padding: 0.72rem 0.9rem;
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+.field:focus {
+  border-color: var(--aegean);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aegean) 18%, transparent);
+}
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* Code "wallet" (faux QR / data-matrix) pour les billets */
+.wallet-code {
+  background-image:
+    repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(0deg, currentColor 0 2px, transparent 2px 4px);
+  background-size: 4px 4px;
+}
+
+/* Support RTL */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}

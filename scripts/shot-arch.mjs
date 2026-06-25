@@ -1,0 +1,13 @@
+import { chromium } from "playwright";
+const BASE = "http://localhost:3100";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1100, height: 900 }, deviceScaleFactor: 2 });
+await page.goto(`${BASE}/ceremonie`, { waitUntil: "load" });
+await page.waitForTimeout(1600);
+const el = page.getByText("Téphilines — Oukchartam");
+await el.scrollIntoViewIfNeeded();
+await page.evaluate(() => window.scrollBy(0, -120));
+await page.waitForTimeout(900);
+await page.screenshot({ path: "screenshots/arch-context.png" });
+await browser.close();
+console.log("done");
