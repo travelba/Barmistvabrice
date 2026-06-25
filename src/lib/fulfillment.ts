@@ -6,25 +6,30 @@ import type { Locale } from "./types";
 /**
  * Finalise une reservation apres paiement reussi :
  *  1. confirme la reservation (decompte definitif de l'inventaire)
- *  2. ajoute une ligne au Google Sheet
- *  3. envoie les emails (invite + agence)
- * Idempotent : confirmBooking ne repasse pas a 'paid' si deja paye, mais
- * les notifications peuvent etre redeclenchees — on protege via le flag returned.
+ *  2. met a jour la ligne du Google Sheet
+ *  3. envoie les emails (invite + agence) — UNE SEULE FOIS
+ * Idempotent : le webhook Stripe et la page de confirmation peuvent tous deux
+ * appeler cette fonction. Les emails ne sont envoyes que si la reservation
+ * vient reellement de passer a 'paid' (firstConfirmation).
  */
 export async function fulfillBooking(
   bookingId: string,
   locale: Locale = "fr",
 ): Promise<void> {
-  const booking = await confirmBooking(bookingId);
+  const { booking, firstConfirmation } = await confirmBooking(bookingId);
   if (!booking) {
     console.warn("[fulfillment] booking introuvable", bookingId);
     return;
   }
 
-  await Promise.allSettled([
-    upsertBookingToSheet(booking),
-    sendConfirmationEmails(booking, locale),
-  ]).then((results) => {
+  // Le Sheet est idempotent (upsert par id) : on le met a jour a chaque fois.
+  const tasks: Array<Promise<unknown>> = [upsertBookingToSheet(booking)];
+  // Les emails ne partent qu'a la premiere confirmation pour eviter les doublons.
+  if (firstConfirmation) {
+    tasks.push(sendConfirmationEmails(booking, locale));
+  }
+
+  await Promise.allSettled(tasks).then((results) => {
     results.forEach((r) => {
       if (r.status === "rejected") console.error("[fulfillment]", r.reason);
     });

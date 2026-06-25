@@ -1,6 +1,9 @@
+"use client";
+
 import { MapPin, Star, BedDouble, CalendarCheck, CalendarX, Moon, Users } from "lucide-react";
 import { EVENT, TRIP_NIGHTS } from "@/lib/config";
 import { formatEuro } from "@/lib/pricing";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface VoucherRoom {
   roomName: string;
@@ -20,13 +23,16 @@ interface HotelVoucherProps {
   bookingRef: string;
 }
 
-function frDate(iso: string) {
-  return new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+function localeDate(iso: string, locale: "fr" | "he") {
+  return new Date(iso + "T12:00:00").toLocaleDateString(
+    locale === "he" ? "he-IL" : "fr-FR",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    },
+  );
 }
 
 function Stat({
@@ -64,6 +70,7 @@ export function HotelVoucher({
   guestCount,
   bookingRef,
 }: HotelVoucherProps) {
+  const { t, locale } = useI18n();
   const localPhoto = photo && photo.startsWith("/") ? photo : null;
   const ref = (bookingRef || "—").slice(0, 8).toUpperCase();
 
@@ -82,7 +89,7 @@ export function HotelVoucher({
         <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/45 to-transparent" />
         <div className="relative z-10 p-6 text-cream">
           <p className="text-[10px] uppercase tracking-[0.2em] text-gold-light">
-            Confirmation — Hébergement
+            {t("voucher.header")}
           </p>
           <h3 className="mt-1.5 font-serif text-3xl leading-tight">{hotelName}</h3>
           <div className="mt-2 flex items-center gap-3 text-cream/85">
@@ -105,16 +112,16 @@ export function HotelVoucher({
       {/* Corps */}
       <div className="p-6 sm:p-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
-          <Stat icon={CalendarCheck} label="Arrivée" value={frDate(EVENT.tripStartDate)} />
-          <Stat icon={CalendarX} label="Départ" value={frDate(EVENT.tripEndDate)} />
-          <Stat icon={Moon} label="Nuits" value={`${TRIP_NIGHTS} nuits`} />
-          <Stat icon={Users} label="Voyageurs" value={`${guestCount} pers.`} />
+          <Stat icon={CalendarCheck} label={t("voucher.arrival")} value={localeDate(EVENT.tripStartDate, locale)} />
+          <Stat icon={CalendarX} label={t("voucher.departure")} value={localeDate(EVENT.tripEndDate, locale)} />
+          <Stat icon={Moon} label={t("voucher.nights")} value={t("voucher.nightsUnit").replace("{n}", String(TRIP_NIGHTS))} />
+          <Stat icon={Users} label={t("voucher.travelers")} value={t("voucher.personsUnit").replace("{n}", String(guestCount))} />
         </div>
 
         <div className="my-6 h-px bg-line" />
 
         <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-aegean">
-          <BedDouble className="h-4 w-4" /> Hébergement réservé
+          <BedDouble className="h-4 w-4" /> {t("voucher.booked")}
         </p>
         <ul className="mt-3 space-y-2.5">
           {rooms.map((r, i) => (
@@ -124,7 +131,7 @@ export function HotelVoucher({
                   {r.quantity}× {r.roomName}
                 </span>
                 <span className="text-xs text-muted">
-                  {formatEuro(r.priceCents)} × {TRIP_NIGHTS} nuits
+                  {formatEuro(r.priceCents)} × {t("voucher.nightsUnit").replace("{n}", String(TRIP_NIGHTS))}
                 </span>
               </span>
               <span className="text-ink">{formatEuro(r.priceCents * r.quantity * TRIP_NIGHTS)}</span>
@@ -134,12 +141,12 @@ export function HotelVoucher({
 
         <div className="mt-5 flex items-end justify-between border-t border-line pt-5">
           <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] text-muted">Réservation au nom de</p>
+            <p className="text-[9px] uppercase tracking-[0.18em] text-muted">{t("voucher.bookedFor")}</p>
             <p className="text-ink">{guestName}</p>
-            <p className="mt-1 font-mono text-[10px] tracking-widest text-muted">RÉF {ref}</p>
+            <p className="mt-1 font-mono text-[10px] tracking-widest text-muted">{t("confirm.ref")} {ref}</p>
           </div>
           <div className="text-right">
-            <p className="text-[9px] uppercase tracking-[0.18em] text-muted">Total hébergement</p>
+            <p className="text-[9px] uppercase tracking-[0.18em] text-muted">{t("voucher.totalHotel")}</p>
             <p className="font-serif text-3xl text-ink">{formatEuro(roomsTotalCents)}</p>
           </div>
         </div>

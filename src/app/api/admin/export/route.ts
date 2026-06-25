@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAdminAuthed } from "@/lib/admin-auth";
 import { listBookings } from "@/lib/data";
 import { formatEuro } from "@/lib/pricing";
+import { SHEET_STATUS_LABEL } from "@/lib/sheets";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export async function GET() {
     [
       new Date(b.createdAt).toLocaleString("fr-FR"),
       b.id,
-      b.status,
+      SHEET_STATUS_LABEL[b.status] ?? b.status,
       b.groupName,
       b.email,
       b.phone,

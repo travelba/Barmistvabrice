@@ -195,7 +195,6 @@ export const HOTELS_SEED: Hotel[] = [
         "description": "6 Personnes — 2463 € / nuit (séjour de 2 nuits).",
         "photos": [
           "https://media.privateupgrades.com/_data/default-room_image/17/87743/3-bedroom-pearl-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87744/3-bedroom-pearl-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
           "https://media.privateupgrades.com/_data/default-room_image/17/87744/3-bedroom-pearl-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
         ],
         "stockTotal": 1,

@@ -210,10 +210,14 @@ export const CURRENCY = "eur" as const;
  */
 export const HOLD_DURATION_MINUTES = 20;
 
-/** Mode demo actif quand Supabase/Stripe ne sont pas configures (preview local). */
+/**
+ * Mode demo actif quand Supabase/Stripe ne sont pas configures (preview local).
+ * On exige la cle service_role car TOUT l'acces serveur passe par getSupabaseAdmin().
+ * (Verifier l'anon key seule ferait croire que Supabase est dispo et planterait.)
+ */
 export const isSupabaseConfigured = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 export const isStripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY);

@@ -158,6 +158,31 @@ export const dictionaries: Record<Locale, Dict> = {
     "confirm.boardingTitle": "Vos billets d'embarquement",
     "confirm.boardingSub": "Un billet personnalisé par passager. Téléchargez-les et présentez-les à l'embarquement.",
     "confirm.passengersShort": "passager(s)",
+    "confirm.downloadHotelVoucher": "Télécharger la confirmation hôtel",
+    "confirm.downloadTicketOf": "Billet de {name}",
+    "confirm.thisPassenger": "ce passager",
+
+    "ceremony.addToCalendar": "Ajouter au calendrier",
+
+    "pass.boardingPass": "Boarding pass",
+    "pass.dob": "Né(e) le",
+    "pass.boardingTime": "Embarquement",
+    "pass.cabin": "Cabine",
+    "pass.private": "Privée",
+    "pass.yourName": "Votre nom ici",
+
+    "voucher.header": "Confirmation — Hébergement",
+    "voucher.arrival": "Arrivée",
+    "voucher.departure": "Départ",
+    "voucher.nights": "Nuits",
+    "voucher.travelers": "Voyageurs",
+    "voucher.booked": "Hébergement réservé",
+    "voucher.bookedFor": "Réservation au nom de",
+    "voucher.totalHotel": "Total hébergement",
+    "voucher.nightsUnit": "{n} nuits",
+    "voucher.personsUnit": "{n} pers.",
+
+    "voyage.teaser.flightDesc": "Jet privé affrété, embarquement privatisé, aller-retour Paris — Mykonos.",
 
     "cancel.title": "Paiement annulé",
     "cancel.subtitle": "Votre réservation n'a pas été finalisée. Vos places sont encore disponibles quelques minutes.",
@@ -318,6 +343,31 @@ export const dictionaries: Record<Locale, Dict> = {
     "confirm.boardingTitle": "כרטיסי העלייה למטוס שלכם",
     "confirm.boardingSub": "כרטיס אישי לכל נוסע. הורידו אותם והציגו בעלייה למטוס.",
     "confirm.passengersShort": "נוסעים",
+    "confirm.downloadHotelVoucher": "להוריד את אישור המלון",
+    "confirm.downloadTicketOf": "כרטיס של {name}",
+    "confirm.thisPassenger": "נוסע זה",
+
+    "ceremony.addToCalendar": "הוספה ליומן",
+
+    "pass.boardingPass": "כרטיס עלייה למטוס",
+    "pass.dob": "תאריך לידה",
+    "pass.boardingTime": "עלייה למטוס",
+    "pass.cabin": "תא",
+    "pass.private": "פרטי",
+    "pass.yourName": "שמכם כאן",
+
+    "voucher.header": "אישור — לינה",
+    "voucher.arrival": "הגעה",
+    "voucher.departure": "עזיבה",
+    "voucher.nights": "לילות",
+    "voucher.travelers": "נוסעים",
+    "voucher.booked": "לינה שהוזמנה",
+    "voucher.bookedFor": "ההזמנה על שם",
+    "voucher.totalHotel": "סך הכל לינה",
+    "voucher.nightsUnit": "{n} לילות",
+    "voucher.personsUnit": "{n} אנשים",
+
+    "voyage.teaser.flightDesc": "מטוס פרטי, עלייה למטוס פרטית, הלוך-ושוב פריז — מיקונוס.",
 
     "cancel.title": "התשלום בוטל",
     "cancel.subtitle": "ההזמנה לא הושלמה. המקומות שלכם עדיין זמינים למספר דקות.",

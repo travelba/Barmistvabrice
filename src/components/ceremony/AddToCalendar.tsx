@@ -2,6 +2,7 @@
 
 import { CalendarPlus } from "lucide-react";
 import { EVENT } from "@/lib/config";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * Genere et telecharge un fichier .ics universel (Apple, Google, Outlook…).
@@ -32,6 +33,7 @@ function buildIcs(): string {
 }
 
 export function AddToCalendar() {
+  const { t } = useI18n();
   function download() {
     const blob = new Blob([buildIcs()], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -50,7 +52,7 @@ export function AddToCalendar() {
       onClick={download}
       className="btn-outline inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm"
     >
-      <CalendarPlus className="h-4 w-4" /> Ajouter au calendrier
+      <CalendarPlus className="h-4 w-4" /> {t("ceremony.addToCalendar")}
     </button>
   );
 }

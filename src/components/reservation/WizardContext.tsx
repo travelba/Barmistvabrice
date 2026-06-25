@@ -220,13 +220,14 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       case 1:
         return Boolean(hotelId);
       case 2:
-        return roomsCount > 0;
+        // Au moins une chambre ET capacite suffisante pour loger tous les participants.
+        return roomsCount > 0 && selectedCapacity >= passengers.length;
       case 3:
         return true;
       default:
         return false;
     }
-  }, [step, contact, emailValid, hotelId, roomsCount, passengers]);
+  }, [step, contact, emailValid, hotelId, roomsCount, selectedCapacity, passengers]);
 
   const goNext = useCallback(() => setStep((s) => Math.min(STEP_COUNT - 1, s + 1)), []);
   const goBack = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);

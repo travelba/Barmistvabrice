@@ -168,8 +168,8 @@ export default function Voyage() {
             </div>
             <div className="card rounded-2xl p-8 text-left">
               <Plane className="h-8 w-8 text-gold" />
-              <h3 className="mt-4 font-serif text-2xl text-navy">{t("event.trip.title")}</h3>
-              <p className="mt-2 text-sm text-muted">{t("hotel.subtitle")}</p>
+              <h3 className="mt-4 font-serif text-2xl text-navy">{t("flight.title")}</h3>
+              <p className="mt-2 text-sm text-muted">{t("voyage.teaser.flightDesc")}</p>
             </div>
           </div>
 

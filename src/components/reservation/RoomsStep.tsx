@@ -69,7 +69,7 @@ export function RoomsStep() {
                   onClick={() => setRoomQty(rt.id, qty - 1)}
                   disabled={qty <= 0}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-navy/20 text-navy transition enabled:hover:bg-navy enabled:hover:text-cream disabled:opacity-30"
-                  aria-label="Retirer"
+                  aria-label={t("flight.remove")}
                 >
                   <Minus className="h-4 w-4" />
                 </button>
@@ -79,7 +79,7 @@ export function RoomsStep() {
                   onClick={() => setRoomQty(rt.id, qty + 1)}
                   disabled={!canAdd}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-gold bg-gold/10 text-navy transition enabled:hover:bg-gold disabled:opacity-30"
-                  aria-label="Ajouter"
+                  aria-label={t("rooms.add")}
                 >
                   <Plus className="h-4 w-4" />
                 </button>

@@ -303,23 +303,38 @@ export async function attachStripeSession(bookingId: string, sessionId: string):
   await sb.from("bookings").update({ stripe_session_id: sessionId }).eq("id", bookingId);
 }
 
-export async function confirmBooking(bookingId: string): Promise<Booking | null> {
+/**
+ * Confirme une reservation apres paiement.
+ * Renvoie `firstConfirmation: true` uniquement lorsque la reservation vient
+ * de passer a 'paid' lors de cet appel — ce qui permet aux appelants (webhook
+ * Stripe + page de confirmation) d'envoyer les emails une seule fois.
+ */
+export async function confirmBooking(
+  bookingId: string,
+): Promise<{ booking: Booking | null; firstConfirmation: boolean }> {
   if (!isSupabaseConfigured) {
     const b = store().bookings.find((x) => x.id === bookingId);
-    if (!b) return null;
+    if (!b) return { booking: null, firstConfirmation: false };
     if (b.status !== "paid") {
       b.status = "paid";
       b.paidAt = new Date().toISOString();
       store().holdExpiry.delete(bookingId);
+      return { booking: b, firstConfirmation: true };
     }
-    return b;
+    return { booking: b, firstConfirmation: false };
   }
   const sb = getSupabaseAdmin()!;
+  // On lit le statut courant AVANT de confirmer pour detecter la transition.
+  const existing = await getBookingById(bookingId);
+  const alreadyPaid = existing?.status === "paid";
   const { data, error } = await sb.rpc("confirm_booking", { p_booking_id: bookingId });
   if (error) throw new Error(error.message);
-  if (!data) return null;
+  if (!data) {
+    return { booking: existing, firstConfirmation: false };
+  }
   const row = Array.isArray(data) ? data[0] : data;
-  return row ? mapBookingRow(row as Record<string, unknown>) : getBookingById(bookingId);
+  const booking = row ? mapBookingRow(row as Record<string, unknown>) : await getBookingById(bookingId);
+  return { booking, firstConfirmation: !alreadyPaid };
 }
 
 export async function getBookingById(id: string): Promise<Booking | null> {

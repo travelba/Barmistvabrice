@@ -1,5 +1,8 @@
+"use client";
+
 import { Plane } from "lucide-react";
 import { EVENT, FLIGHT } from "@/lib/config";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface BoardingPassProps {
   passengerName: string;
@@ -66,7 +69,8 @@ export function BoardingPass({
   seq,
   codeSrc,
 }: BoardingPassProps) {
-  const name = passengerName.trim() || "Votre nom ici";
+  const { t } = useI18n();
+  const name = passengerName.trim() || t("pass.yourName");
   const ref = (bookingRef ?? "—").slice(0, 8).toUpperCase();
 
   return (
@@ -81,21 +85,21 @@ export function BoardingPass({
             </p>
           </div>
           <span className="rounded-full border border-ink/15 px-3 py-1 text-[9px] uppercase tracking-[0.2em] text-ink/70">
-            Boarding pass
+            {t("pass.boardingPass")}
           </span>
         </div>
 
         <div className="mt-7 space-y-6">
-          <Leg label="Aller" leg={FLIGHT.outbound} />
+          <Leg label={t("flight.outbound")} leg={FLIGHT.outbound} />
           <div className="h-px w-full bg-line" />
-          <Leg label="Retour" leg={FLIGHT.inbound} />
+          <Leg label={t("flight.return")} leg={FLIGHT.inbound} />
         </div>
 
         <div className="mt-7 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
-          <Field label="Passager" value={name} />
-          <Field label="Né(e) le" value={dateOfBirth || "—"} />
-          <Field label="Embarquement" value={FLIGHT.outbound.boarding} />
-          <Field label="Cabine" value="Privée" />
+          <Field label={t("flight.passenger")} value={name} />
+          <Field label={t("pass.dob")} value={dateOfBirth || "—"} />
+          <Field label={t("pass.boardingTime")} value={FLIGHT.outbound.boarding} />
+          <Field label={t("pass.cabin")} value={t("pass.private")} />
         </div>
       </div>
 
@@ -120,7 +124,7 @@ export function BoardingPass({
               <div className="wallet-code h-full w-full text-navy" />
             </div>
           )}
-          <p className="mt-2 text-[9px] uppercase tracking-[0.15em] text-cream/60">Passager</p>
+          <p className="mt-2 text-[9px] uppercase tracking-[0.15em] text-cream/60">{t("flight.passenger")}</p>
           <p className="truncate text-sm">{name}</p>
           <p className="mt-1 font-mono text-[9px] tracking-widest text-cream/50">
             {ref}{typeof seq === "number" ? ` · ${seq}` : ""}

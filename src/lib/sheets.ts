@@ -15,8 +15,8 @@ function sheetsClient() {
   return { sheets: google.sheets({ version: "v4", auth }), sheetId };
 }
 
-/** Libelle francais du statut de paiement affiche dans le Sheet. */
-const SHEET_STATUS_LABEL: Record<Booking["status"], string> = {
+/** Libelle francais du statut de paiement affiche dans le Sheet / export CSV. */
+export const SHEET_STATUS_LABEL: Record<Booking["status"], string> = {
   pending: "En attente (non payé)",
   paid: "Payé",
   cancelled: "Annulée (place libérée)",

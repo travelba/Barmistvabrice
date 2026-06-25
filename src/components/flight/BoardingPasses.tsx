@@ -5,6 +5,7 @@ import { toPng } from "html-to-image";
 import QRCode from "qrcode";
 import { Download } from "lucide-react";
 import { BoardingPass } from "./BoardingPass";
+import { useI18n } from "@/i18n/I18nProvider";
 import type { Passenger } from "@/lib/types";
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function BoardingPasses({ passengers, bookingRef }: Props) {
+  const { t } = useI18n();
   const refs = useRef<Array<HTMLDivElement | null>>([]);
   const [codes, setCodes] = useState<string[]>([]);
 
@@ -68,7 +70,11 @@ export function BoardingPasses({ passengers, bookingRef }: Props) {
                 onClick={() => downloadOne(i, name)}
                 className="inline-flex items-center gap-2 rounded-full border border-cream/30 px-5 py-2.5 text-sm text-cream/85 transition hover:bg-cream hover:text-navy"
               >
-                <Download className="h-4 w-4" /> Billet de {name || "ce passager"}
+                <Download className="h-4 w-4" />{" "}
+                {t("confirm.downloadTicketOf").replace(
+                  "{name}",
+                  name || t("confirm.thisPassenger"),
+                )}
               </button>
             </div>
           </div>

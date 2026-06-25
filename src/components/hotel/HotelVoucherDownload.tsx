@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { toPng } from "html-to-image";
 import { Download } from "lucide-react";
 import { HotelVoucher } from "./HotelVoucher";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface Props {
   hotelName: string;
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function HotelVoucherDownload(props: Props) {
+  const { t } = useI18n();
   const ref = useRef<HTMLDivElement | null>(null);
 
   async function download() {
@@ -44,7 +46,7 @@ export function HotelVoucherDownload(props: Props) {
           onClick={download}
           className="inline-flex items-center gap-2 rounded-full border border-cream/30 px-5 py-2.5 text-sm text-cream/85 transition hover:bg-cream hover:text-navy"
         >
-          <Download className="h-4 w-4" /> Télécharger la confirmation hôtel
+          <Download className="h-4 w-4" /> {t("confirm.downloadHotelVoucher")}
         </button>
       </div>
     </div>

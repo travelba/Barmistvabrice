@@ -23,8 +23,9 @@ async function resolveBooking(params: {
       try {
         const session = await stripe.checkout.sessions.retrieve(params.session_id);
         const bookingId = (session.metadata?.bookingId as string) ?? booking?.id;
+        const locale = session.metadata?.locale === "he" ? "he" : "fr";
         if (session.payment_status === "paid" && bookingId) {
-          await fulfillBooking(bookingId); // idempotent
+          await fulfillBooking(bookingId, locale); // idempotent
           booking = await getBookingById(bookingId);
         }
       } catch (e) {
