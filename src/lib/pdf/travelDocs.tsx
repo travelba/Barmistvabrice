@@ -198,6 +198,10 @@ function TravelDocs({
   codes: string[];
 }) {
   const ref = booking.id.slice(0, 8).toUpperCase();
+  const flightUnitCents =
+    booking.passengerCount > 0
+      ? Math.round(booking.flightTotalCents / booking.passengerCount)
+      : FLIGHT.pricePerPassengerCents;
   return (
     <Document
       title={`Carnet de voyage — ${booking.groupName}`}
@@ -278,6 +282,37 @@ function TravelDocs({
               qr={codes[i]}
             />
           ))}
+
+          <Text style={s.sectionLabel}>RÉCAPITULATIF DU COÛT</Text>
+          <View style={s.card} wrap={false}>
+            <View style={s.vBody}>
+              <View style={s.row}>
+                <View>
+                  <Text style={s.rowText}>Hébergement</Text>
+                  <Text style={s.rowSub}>
+                    {booking.hotelName} · {TRIP_NIGHTS} nuits
+                  </Text>
+                </View>
+                <Text style={s.rowText}>{formatEuro(booking.roomsTotalCents)}</Text>
+              </View>
+              <View style={s.row}>
+                <View>
+                  <Text style={s.rowText}>Vol privé</Text>
+                  <Text style={s.rowSub}>
+                    {booking.passengerCount} passager(s) × {formatEuro(flightUnitCents)}
+                  </Text>
+                </View>
+                <Text style={s.rowText}>{formatEuro(booking.flightTotalCents)}</Text>
+              </View>
+              <View style={s.totalRow}>
+                <View>
+                  <Text style={s.totalLabel}>TOTAL DU SÉJOUR</Text>
+                  <Text style={s.rowSub}>Billets d&apos;avion inclus</Text>
+                </View>
+                <Text style={s.totalValue}>{formatEuro(booking.totalCents)}</Text>
+              </View>
+            </View>
+          </View>
 
           <Text style={s.footer}>{EVENT.agencyName}</Text>
         </View>
