@@ -20,7 +20,18 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("fr");
 
   useEffect(() => {
-    const stored = (typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY)) as Locale | null;
+    if (typeof window === "undefined") return;
+    // Priorite au parametre d'URL ?lang= : il porte la langue reellement
+    // utilisee pendant le parcours (ex. retour de paiement vers /confirmation),
+    // independamment de l'etat global stocke. Sinon, on retombe sur le choix
+    // memorise dans le localStorage.
+    const param = new URLSearchParams(window.location.search).get("lang");
+    if (param === "fr" || param === "he") {
+      setLocaleState(param);
+      localStorage.setItem(STORAGE_KEY, param);
+      return;
+    }
+    const stored = localStorage.getItem(STORAGE_KEY) as Locale | null;
     if (stored === "fr" || stored === "he") setLocaleState(stored);
   }, []);
 

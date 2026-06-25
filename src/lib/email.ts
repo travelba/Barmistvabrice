@@ -2,15 +2,53 @@ import { Resend } from "resend";
 import { EVENT, TRIP_NIGHTS } from "./config";
 import { formatEuro } from "./pricing";
 import { travelDocsBuffer } from "./pdf/travelDocs";
-import type { Booking, CeremonyRsvp } from "./types";
+import type { Booking, CeremonyRsvp, Locale } from "./types";
 
-function ceremonyDateLabel(): string {
-  return new Date(EVENT.tephilinesDate).toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+/** Chaines de l'email de confirmation, par langue. */
+const EMAIL_STRINGS: Record<Locale, Record<string, string>> = {
+  fr: {
+    kicker: "BAR MITSVAH",
+    confirmed: "Votre réservation est confirmée",
+    greeting: "Bonjour",
+    intro: "Nous avons le plaisir de confirmer votre voyage pour la Bar Mitsvah de",
+    ref: "Référence :",
+    hotel: "Hôtel",
+    nights: "nuits",
+    flight: "Vol privé",
+    passengers: "passager(s)",
+    ceremonyTitle: "Mise des Téphilines",
+    ceremonyYes: "Présence confirmée le {date} — {place}, {address}.",
+    ceremonyNo: "Vous avez indiqué ne pas assister à la mise des Téphilines.",
+    rooms: "Chambres",
+    flights: "Billets d'avion",
+    total: "Total réglé",
+    subject: "Confirmation — Bar Mitsvah de",
+  },
+  he: {
+    kicker: "בר מצווה",
+    confirmed: "ההזמנה שלך אושרה",
+    greeting: "שלום",
+    intro: "אנו שמחים לאשר את נסיעתך לבר המצווה של",
+    ref: "מספר אסמכתא:",
+    hotel: "מלון",
+    nights: "לילות",
+    flight: "טיסה פרטית",
+    passengers: "נוסעים",
+    ceremonyTitle: "הנחת תפילין",
+    ceremonyYes: "ההגעה אושרה לתאריך {date} — {place}, {address}.",
+    ceremonyNo: "ציינת שלא תשתתף בהנחת התפילין.",
+    rooms: "חדרים",
+    flights: "כרטיסי טיסה",
+    total: "סך הכול ששולם",
+    subject: "אישור — בר מצווה של",
+  },
+};
+
+function ceremonyDateLabel(locale: Locale): string {
+  return new Date(EVENT.tephilinesDate).toLocaleDateString(
+    locale === "he" ? "he-IL" : "fr-FR",
+    { weekday: "long", day: "numeric", month: "long", year: "numeric" },
+  );
 }
 
 function getResend(): Resend | null {
@@ -23,13 +61,16 @@ function fromAddress(): string {
   return process.env.EMAIL_FROM ?? "Travel BA <onboarding@resend.dev>";
 }
 
-function bookingHtml(b: Booking): string {
+function bookingHtml(b: Booking, locale: Locale): string {
+  const s = EMAIL_STRINGS[locale];
+  const dir = locale === "he" ? "rtl" : "ltr";
+  const amountAlign = locale === "he" ? "left" : "right";
   const rows = b.rooms
     .map(
       (r) =>
         `<tr><td style="padding:6px 0">${r.quantity}× ${r.roomName}<br/><span style="color:#888;font-size:12px">${formatEuro(
           r.priceCents,
-        )} × ${TRIP_NIGHTS} nuits</span></td><td style="text-align:right;vertical-align:top">${formatEuro(
+        )} × ${TRIP_NIGHTS} ${s.nights}</span></td><td style="text-align:${amountAlign};vertical-align:top">${formatEuro(
           r.priceCents * r.quantity * TRIP_NIGHTS,
         )}</td></tr>`,
     )
@@ -37,39 +78,44 @@ function bookingHtml(b: Booking): string {
   const pax = b.passengers
     .map((p) => `<li>${p.firstName} ${p.lastName} — ${p.dateOfBirth}</li>`)
     .join("");
+  const ceremonyLine = b.ceremonyAttending
+    ? s.ceremonyYes
+        .replace("{date}", ceremonyDateLabel(locale))
+        .replace("{place}", EVENT.tephilinesPlace)
+        .replace("{address}", EVENT.tephilinesAddress)
+    : s.ceremonyNo;
   return `
-  <div style="font-family:Georgia,serif;max-width:600px;margin:auto;color:#1a2238">
+  <div dir="${dir}" style="font-family:Georgia,serif;max-width:600px;margin:auto;color:#1a2238;text-align:${dir === "rtl" ? "right" : "left"}">
     <div style="background:#0f2a43;color:#f6e7c1;padding:32px;text-align:center">
-      <p style="letter-spacing:4px;margin:0;font-size:12px">BAR MITSVAH</p>
+      <p style="letter-spacing:4px;margin:0;font-size:12px">${s.kicker}</p>
       <h1 style="margin:8px 0 0;font-size:28px">${EVENT.childName}</h1>
       <p style="margin:4px 0 0;color:#cdd8e8">${EVENT.destination}</p>
     </div>
     <div style="padding:28px">
-      <h2 style="color:#0f2a43">Votre réservation est confirmée</h2>
-      <p>Bonjour ${b.groupName},</p>
-      <p>Nous avons le plaisir de confirmer votre voyage pour la Bar Mitsvah de ${EVENT.childName}.</p>
-      <p><strong>Référence :</strong> ${b.id}</p>
-      <h3 style="color:#0f2a43">Hôtel — ${b.hotelName}</h3>
+      <h2 style="color:#0f2a43">${s.confirmed}</h2>
+      <p>${s.greeting} ${b.groupName},</p>
+      <p>${s.intro} ${EVENT.childName}.</p>
+      <p><strong>${s.ref}</strong> ${b.id}</p>
+      <h3 style="color:#0f2a43">${s.hotel} — ${b.hotelName}</h3>
       <table style="width:100%;border-collapse:collapse">${rows}</table>
-      <h3 style="color:#0f2a43">Vol privé — ${b.passengerCount} passager(s)</h3>
+      <h3 style="color:#0f2a43">${s.flight} — ${b.passengerCount} ${s.passengers}</h3>
       <ul>${pax}</ul>
-      <h3 style="color:#0f2a43">Mise des Téphilines</h3>
-      <p>${
-        b.ceremonyAttending
-          ? `Présence confirmée le ${ceremonyDateLabel()} — ${EVENT.tephilinesPlace}, ${EVENT.tephilinesAddress}.`
-          : "Vous avez indiqué ne pas assister à la mise des Téphilines."
-      }</p>
+      <h3 style="color:#0f2a43">${s.ceremonyTitle}</h3>
+      <p>${ceremonyLine}</p>
       <table style="width:100%;border-collapse:collapse;margin-top:16px;border-top:1px solid #ddd">
-        <tr><td style="padding:6px 0">Chambres</td><td style="text-align:right">${formatEuro(b.roomsTotalCents)}</td></tr>
-        <tr><td style="padding:6px 0">Billets d'avion</td><td style="text-align:right">${formatEuro(b.flightTotalCents)}</td></tr>
-        <tr><td style="padding:10px 0;font-weight:bold;border-top:2px solid #0f2a43">Total réglé</td><td style="text-align:right;font-weight:bold;border-top:2px solid #0f2a43">${formatEuro(b.totalCents)}</td></tr>
+        <tr><td style="padding:6px 0">${s.rooms}</td><td style="text-align:${amountAlign}">${formatEuro(b.roomsTotalCents)}</td></tr>
+        <tr><td style="padding:6px 0">${s.flights}</td><td style="text-align:${amountAlign}">${formatEuro(b.flightTotalCents)}</td></tr>
+        <tr><td style="padding:10px 0;font-weight:bold;border-top:2px solid #0f2a43">${s.total}</td><td style="text-align:${amountAlign};font-weight:bold;border-top:2px solid #0f2a43">${formatEuro(b.totalCents)}</td></tr>
       </table>
       <p style="margin-top:24px;color:#666">${EVENT.agencyName}</p>
     </div>
   </div>`;
 }
 
-export async function sendConfirmationEmails(b: Booking): Promise<void> {
+export async function sendConfirmationEmails(
+  b: Booking,
+  locale: Locale = "fr",
+): Promise<void> {
   const resend = getResend();
   if (!resend) {
     console.warn("[email] Resend non configuré — emails non envoyés pour", b.id);
@@ -85,12 +131,12 @@ export async function sendConfirmationEmails(b: Booking): Promise<void> {
     console.error("[email] génération PDF échouée pour", b.id, e);
   }
 
-  // Email de confirmation a l'invite.
+  // Email de confirmation a l'invite, dans la langue utilisee lors de la reservation.
   await resend.emails.send({
     from: fromAddress(),
     to: b.email,
-    subject: `Confirmation — Bar Mitsvah de ${EVENT.childName}`,
-    html: bookingHtml(b),
+    subject: `${EMAIL_STRINGS[locale].subject} ${EVENT.childName}`,
+    html: bookingHtml(b, locale),
     attachments,
   });
 
@@ -104,32 +150,65 @@ export async function sendConfirmationEmails(b: Booking): Promise<void> {
   });
 }
 
-function rsvpHtml(r: CeremonyRsvp): string {
+const RSVP_STRINGS: Record<Locale, Record<string, string>> = {
+  fr: {
+    kicker: "BAR MITSVAH",
+    sub: "Mise des Téphilines",
+    titleYes: "Merci, votre présence est confirmée",
+    titleNo: "Merci pour votre réponse",
+    greeting: "Bonjour",
+    bodyYes: "Nous avons le plaisir de vous compter parmi nous pour la mise des Téphilines de",
+    date: "Date :",
+    place: "Lieu :",
+    address: "Adresse :",
+    people: "Nombre de personnes :",
+    bodyNo: "Nous avons bien noté que vous ne pourrez pas être présent(e). Merci de nous avoir prévenus.",
+    subject: "Mise des Téphilines —",
+  },
+  he: {
+    kicker: "בר מצווה",
+    sub: "הנחת תפילין",
+    titleYes: "תודה, הגעתך אושרה",
+    titleNo: "תודה על תשובתך",
+    greeting: "שלום",
+    bodyYes: "אנו שמחים למנות אותך עמנו בהנחת התפילין של",
+    date: "תאריך:",
+    place: "מקום:",
+    address: "כתובת:",
+    people: "מספר אנשים:",
+    bodyNo: "רשמנו שלא תוכל להגיע. תודה שהודעת לנו.",
+    subject: "הנחת תפילין —",
+  },
+};
+
+function rsvpHtml(r: CeremonyRsvp, locale: Locale): string {
+  const s = RSVP_STRINGS[locale];
+  const dir = locale === "he" ? "rtl" : "ltr";
   return `
-  <div style="font-family:Georgia,serif;max-width:600px;margin:auto;color:#1a2238">
+  <div dir="${dir}" style="font-family:Georgia,serif;max-width:600px;margin:auto;color:#1a2238;text-align:${dir === "rtl" ? "right" : "left"}">
     <div style="background:#0f2a43;color:#f6e7c1;padding:32px;text-align:center">
-      <p style="letter-spacing:4px;margin:0;font-size:12px">BAR MITSVAH</p>
+      <p style="letter-spacing:4px;margin:0;font-size:12px">${s.kicker}</p>
       <h1 style="margin:8px 0 0;font-size:28px">${EVENT.childName}</h1>
-      <p style="margin:4px 0 0;color:#cdd8e8">Mise des Téphilines</p>
+      <p style="margin:4px 0 0;color:#cdd8e8">${s.sub}</p>
     </div>
     <div style="padding:28px">
-      <h2 style="color:#0f2a43">${r.attending ? "Merci, votre présence est confirmée" : "Merci pour votre réponse"}</h2>
-      <p>Bonjour ${r.name},</p>
+      <h2 style="color:#0f2a43">${r.attending ? s.titleYes : s.titleNo}</h2>
+      <p>${s.greeting} ${r.name},</p>
       ${
         r.attending
-          ? `<p>Nous avons le plaisir de vous compter parmi nous pour la mise des Téphilines de ${EVENT.childName}.</p>
-             <p><strong>Date :</strong> ${ceremonyDateLabel()}<br/>
-             <strong>Lieu :</strong> ${EVENT.tephilinesPlace}<br/>
-             <strong>Adresse :</strong> ${EVENT.tephilinesAddress}<br/>
-             <strong>Nombre de personnes :</strong> ${r.guestCount}</p>`
-          : `<p>Nous avons bien noté que vous ne pourrez pas être présent(e). Merci de nous avoir prévenus.</p>`
+          ? `<p>${s.bodyYes} ${EVENT.childName}.</p>
+             <p><strong>${s.date}</strong> ${ceremonyDateLabel(locale)}<br/>
+             <strong>${s.place}</strong> ${EVENT.tephilinesPlace}<br/>
+             <strong>${s.address}</strong> ${EVENT.tephilinesAddress}<br/>
+             <strong>${s.people}</strong> ${r.guestCount}</p>`
+          : `<p>${s.bodyNo}</p>`
       }
       <p style="margin-top:24px;color:#666">${EVENT.agencyName}</p>
     </div>
   </div>`;
 }
 
-export async function sendRsvpEmails(r: CeremonyRsvp): Promise<void> {
+export async function sendRsvpEmails(r: CeremonyRsvp, locale: Locale = "fr"): Promise<void> {
   const resend = getResend();
   if (!resend) {
     console.warn("[email] Resend non configuré — RSVP non notifié pour", r.id);
@@ -139,8 +218,8 @@ export async function sendRsvpEmails(r: CeremonyRsvp): Promise<void> {
   await resend.emails.send({
     from: fromAddress(),
     to: r.email,
-    subject: `Mise des Téphilines — ${EVENT.childName}`,
-    html: rsvpHtml(r),
+    subject: `${RSVP_STRINGS[locale].subject} ${EVENT.childName}`,
+    html: rsvpHtml(r, locale),
   });
 
   const agencyTo = process.env.AGENCY_NOTIFY_EMAIL ?? EVENT.agencyEmail;

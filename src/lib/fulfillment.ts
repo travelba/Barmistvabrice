@@ -1,6 +1,7 @@
 import { confirmBooking, getBookingById } from "./data";
 import { upsertBookingToSheet } from "./sheets";
 import { sendConfirmationEmails } from "./email";
+import type { Locale } from "./types";
 
 /**
  * Finalise une reservation apres paiement reussi :
@@ -10,7 +11,10 @@ import { sendConfirmationEmails } from "./email";
  * Idempotent : confirmBooking ne repasse pas a 'paid' si deja paye, mais
  * les notifications peuvent etre redeclenchees — on protege via le flag returned.
  */
-export async function fulfillBooking(bookingId: string): Promise<void> {
+export async function fulfillBooking(
+  bookingId: string,
+  locale: Locale = "fr",
+): Promise<void> {
   const booking = await confirmBooking(bookingId);
   if (!booking) {
     console.warn("[fulfillment] booking introuvable", bookingId);
@@ -19,7 +23,7 @@ export async function fulfillBooking(bookingId: string): Promise<void> {
 
   await Promise.allSettled([
     upsertBookingToSheet(booking),
-    sendConfirmationEmails(booking),
+    sendConfirmationEmails(booking, locale),
   ]).then((results) => {
     results.forEach((r) => {
       if (r.status === "rejected") console.error("[fulfillment]", r.reason);

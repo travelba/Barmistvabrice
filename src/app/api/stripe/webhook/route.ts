@@ -36,7 +36,9 @@ export async function POST(req: Request) {
         (session.id ? (await getBookingByStripeSession(session.id))?.id : undefined);
 
       if (session.payment_status === "paid" && bookingId) {
-        await fulfillBooking(bookingId);
+        const metaLocale = session.metadata?.locale;
+        const locale = metaLocale === "he" ? "he" : "fr";
+        await fulfillBooking(bookingId, locale);
       }
     }
   } catch (e) {

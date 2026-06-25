@@ -30,6 +30,7 @@ const schema = z.object({
     .min(1),
   ceremonyAttending: z.boolean().optional(),
   ceremonyGuestCount: z.number().int().min(0).max(50).optional(),
+  locale: z.enum(["fr", "he"]).optional(),
 });
 
 export async function POST(req: Request) {
@@ -45,6 +46,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
   const draft: BookingDraft = parsed.data;
+  const locale = parsed.data.locale ?? "fr";
+  // Stripe Checkout ne propose pas l'hebreu : on laisse Stripe detecter ("auto").
+  const stripeLocale = locale === "he" ? "auto" : "fr";
 
   // Regle metier : pas plus de chambres que de participants.
   const totalRooms = draft.rooms.reduce((acc, r) => acc + r.quantity, 0);
@@ -68,7 +72,7 @@ export async function POST(req: Request) {
 
     // Mode demo (Stripe non configure) : on confirme directement.
     if (!isStripeConfigured) {
-      await fulfillBooking(bookingId);
+      await fulfillBooking(bookingId, locale);
       return NextResponse.json({ demo: true, bookingId });
     }
 
@@ -108,10 +112,10 @@ export async function POST(req: Request) {
       line_items: lineItems,
       customer_email: draft.contact.email,
       client_reference_id: bookingId,
-      metadata: { bookingId },
-      success_url: `${appUrl()}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl()}/reservation?canceled=1`,
-      locale: "fr",
+      metadata: { bookingId, locale },
+      success_url: `${appUrl()}/confirmation?session_id={CHECKOUT_SESSION_ID}&lang=${locale}`,
+      cancel_url: `${appUrl()}/reservation?canceled=1&lang=${locale}`,
+      locale: stripeLocale,
     });
 
     await attachStripeSession(bookingId, session.id);

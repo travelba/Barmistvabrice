@@ -7,7 +7,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 const MAX_GUESTS = 6;
 
 export function RsvpForm() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -38,6 +38,7 @@ export function RsvpForm() {
           phone,
           attending,
           guestCount: attending ? guestCount : 1,
+          locale,
         }),
       });
       if (!res.ok) throw new Error("rsvp");

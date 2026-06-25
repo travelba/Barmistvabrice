@@ -14,6 +14,7 @@ import type {
   Passenger,
   PriceBreakdown,
 } from "@/lib/types";
+import { useI18n } from "@/i18n/I18nProvider";
 
 export interface FlightInfo {
   pricePerPassengerCents: number;
@@ -72,6 +73,7 @@ const Ctx = createContext<WizardValue | null>(null);
 const STEP_COUNT = 4;
 
 export function WizardProvider({ children }: { children: React.ReactNode }) {
+  const { locale } = useI18n();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hotels, setHotels] = useState<HotelAvailability[]>([]);
@@ -245,6 +247,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
           passengers,
           ceremonyAttending,
           ceremonyGuestCount,
+          locale,
         }),
       });
       const data = await res.json();
@@ -252,7 +255,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       if (data.url) {
         window.location.href = data.url;
       } else if (data.demo && data.bookingId) {
-        window.location.href = `/confirmation?demo=1&booking_id=${data.bookingId}`;
+        window.location.href = `/confirmation?demo=1&booking_id=${data.bookingId}&lang=${locale}`;
       } else {
         throw new Error("Réponse inattendue");
       }
@@ -260,7 +263,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       setSubmitError(e instanceof Error ? e.message : "Erreur lors du paiement");
       setSubmitting(false);
     }
-  }, [contact, hotelId, rooms, passengers, ceremonyAttending, ceremonyGuestCount]);
+  }, [contact, hotelId, rooms, passengers, ceremonyAttending, ceremonyGuestCount, locale]);
 
   const value: WizardValue = {
     loading,

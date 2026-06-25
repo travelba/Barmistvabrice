@@ -12,6 +12,7 @@ const schema = z.object({
   phone: z.string().min(6),
   attending: z.boolean(),
   guestCount: z.number().int().min(1).max(50),
+  locale: z.enum(["fr", "he"]).optional(),
 });
 
 export async function POST(req: Request) {
@@ -28,15 +29,16 @@ export async function POST(req: Request) {
   }
 
   try {
+    const { locale = "fr", ...rsvpData } = parsed.data;
     const rsvp = await createCeremonyRsvp({
-      ...parsed.data,
+      ...rsvpData,
       // Si la personne ne vient pas, on enregistre 0 accompagnant.
-      guestCount: parsed.data.attending ? parsed.data.guestCount : 0,
+      guestCount: rsvpData.attending ? rsvpData.guestCount : 0,
       source: "ceremony",
     });
 
     // Notifications best-effort (n'echouent pas la requete).
-    await Promise.allSettled([appendRsvpToSheet(rsvp), sendRsvpEmails(rsvp)]).then((results) =>
+    await Promise.allSettled([appendRsvpToSheet(rsvp), sendRsvpEmails(rsvp, locale)]).then((results) =>
       results.forEach((r) => {
         if (r.status === "rejected") console.error("[rsvp]", r.reason);
       }),
