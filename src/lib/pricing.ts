@@ -42,5 +42,12 @@ export function computePrice(draft: BookingDraft, hotels: HotelAvailability[]): 
 }
 
 export function formatEuro(cents: number, locale = "fr-FR"): string {
-  return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(cents / 100);
+  // Intl.NumberFormat('fr-FR') utilise une ESPACE FINE INSÉCABLE (U+202F) comme
+  // séparateur de milliers. De nombreuses polices (Fraunces, Helvetica/Times du
+  // PDF…) n'ont pas ce glyphe : il s'affiche alors comme un caractère de
+  // remplacement (« 1 146 » devient « 1/146 »). On normalise donc U+202F et
+  // l'espace fine U+2009 en espace insécable standard U+00A0, partout supportée.
+  return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" })
+    .format(cents / 100)
+    .replace(/[\u202F\u2009]/g, "\u00A0");
 }
