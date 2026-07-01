@@ -1,15 +1,16 @@
 import { confirmBooking, getBookingById } from "./data";
 import { upsertBookingToSheet } from "./sheets";
-import { sendConfirmationEmails } from "./email";
+import { sendConfirmationAgencyEmail } from "./email";
+import { sendConfirmationWhatsapp } from "./whatsapp";
 import type { Locale } from "./types";
 
 /**
  * Finalise une reservation apres paiement reussi :
  *  1. confirme la reservation (decompte definitif de l'inventaire)
  *  2. met a jour la ligne du Google Sheet
- *  3. envoie les emails (invite + agence) — UNE SEULE FOIS
+ *  3. notifie — UNE SEULE FOIS — l'invite par WhatsApp et l'agence par e-mail
  * Idempotent : le webhook Stripe et la page de confirmation peuvent tous deux
- * appeler cette fonction. Les emails ne sont envoyes que si la reservation
+ * appeler cette fonction. Les notifications ne partent que si la reservation
  * vient reellement de passer a 'paid' (firstConfirmation).
  */
 export async function fulfillBooking(
@@ -24,9 +25,11 @@ export async function fulfillBooking(
 
   // Le Sheet est idempotent (upsert par id) : on le met a jour a chaque fois.
   const tasks: Array<Promise<unknown>> = [upsertBookingToSheet(booking)];
-  // Les emails ne partent qu'a la premiere confirmation pour eviter les doublons.
+  // Les notifications ne partent qu'a la premiere confirmation (anti-doublon) :
+  // WhatsApp a l'invite, e-mail a l'agence.
   if (firstConfirmation) {
-    tasks.push(sendConfirmationEmails(booking, locale));
+    tasks.push(sendConfirmationWhatsapp(booking, locale));
+    tasks.push(sendConfirmationAgencyEmail(booking, locale));
   }
 
   await Promise.allSettled(tasks).then((results) => {

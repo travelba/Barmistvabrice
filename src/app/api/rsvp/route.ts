@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createCeremonyRsvp } from "@/lib/data";
 import { appendRsvpToSheet } from "@/lib/sheets";
-import { sendRsvpEmails } from "@/lib/email";
+import { sendRsvpAgencyEmail } from "@/lib/email";
+import { sendRsvpWhatsapp } from "@/lib/whatsapp";
 
 export const dynamic = "force-dynamic";
 
@@ -68,12 +69,18 @@ export async function POST(req: Request) {
       source: "ceremony",
     });
 
-    // Notifications best-effort (n'echouent pas la requete).
-    await Promise.allSettled([appendRsvpToSheet(rsvp), sendRsvpEmails(rsvp, locale)]).then(
-      (results) =>
-        results.forEach((r) => {
-          if (r.status === "rejected") console.error("[rsvp]", r.reason);
-        }),
+    // Notifications best-effort (n'echouent pas la requete) :
+    //  - confirmation a l'invite par WhatsApp
+    //  - notification a l'agence par e-mail
+    //  - trace dans le Google Sheet
+    await Promise.allSettled([
+      appendRsvpToSheet(rsvp),
+      sendRsvpAgencyEmail(rsvp, locale),
+      sendRsvpWhatsapp(rsvp, locale),
+    ]).then((results) =>
+      results.forEach((r) => {
+        if (r.status === "rejected") console.error("[rsvp]", r.reason);
+      }),
     );
 
     return NextResponse.json({ ok: true, id: rsvp.id });

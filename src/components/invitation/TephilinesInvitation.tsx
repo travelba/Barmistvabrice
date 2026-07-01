@@ -68,6 +68,9 @@ const CONTENT = {
       summaryTitle: "Récapitulatif",
       answeredNo: "Vous avez répondu non.",
       countSummary: (n: number) => `${n} ${n > 1 ? "personnes" : "personne"}`,
+      phoneLabel: "Téléphone (WhatsApp)",
+      phonePlaceholder: "+33 6 12 34 56 78",
+      phoneHint: "Vous recevrez votre confirmation par WhatsApp.",
       next: "Suivant",
       submit: "Envoyer",
       prev: "Retour",
@@ -76,6 +79,7 @@ const CONTENT = {
       errorSend: "Erreur d'envoi. Réessaie dans un instant.",
       errorChoice: "Choisis oui ou non pour continuer.",
       errorPerson: "Complète le nom et le prénom de cette personne.",
+      errorPhone: "Indique un numéro de téléphone valide (format international).",
     },
   },
   he: {
@@ -125,6 +129,9 @@ const CONTENT = {
       summaryTitle: "סיכום",
       answeredNo: "השבתם לא.",
       countSummary: (n: number) => `${n} ${n > 1 ? "אנשים" : "איש"}`,
+      phoneLabel: "טלפון (וואטסאפ)",
+      phonePlaceholder: "+972 5X XXX XXXX",
+      phoneHint: "האישור יישלח אליכם בוואטסאפ.",
       next: "הבא",
       submit: "שליחה",
       prev: "חזרה",
@@ -133,6 +140,7 @@ const CONTENT = {
       errorSend: "שגיאת שליחה. נסו שוב בעוד רגע.",
       errorChoice: "בחרו כן או לא כדי להמשיך.",
       errorPerson: "השלימו שם פרטי ושם משפחה.",
+      errorPhone: "נא להזין מספר טלפון תקין (פורמט בינלאומי).",
     },
   },
 };
@@ -454,6 +462,7 @@ function ResponseForm({
   const [partySize, setPartySize] = useState(1);
   const [currentPerson, setCurrentPerson] = useState(0);
   const [persons, setPersons] = useState<Person[]>([{ nom: "", prenom: "" }]);
+  const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<{ msg: string; type: string } | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -537,6 +546,12 @@ function ResponseForm({
       return;
     }
 
+    if (phone.replace(/\D/g, "").length < 8) {
+      setStep(STEP_SUMMARY);
+      setStatus({ msg: r.errorPhone, type: "error" });
+      return;
+    }
+
     setIsSending(true);
     setStatus({ msg: r.sending, type: "loading" });
     try {
@@ -550,6 +565,7 @@ function ResponseForm({
             nom: p.nom.trim(),
             prenom: p.prenom.trim(),
           })),
+          phone: phone.trim(),
           locale,
         }),
       });
@@ -702,6 +718,21 @@ function ResponseForm({
                     </li>
                   ))}
                 </ol>
+                <div className="response-field response-phone-field">
+                  <label htmlFor="rsvp-phone">{r.phoneLabel}</label>
+                  <input
+                    id="rsvp-phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    required
+                    placeholder={r.phonePlaceholder}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    disabled={isComplete}
+                  />
+                  <p className="response-phone-hint">{r.phoneHint}</p>
+                </div>
               </>
             )}
           </div>

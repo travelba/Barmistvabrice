@@ -1122,6 +1122,25 @@ body {
   font-weight: 700;
 }
 
+.response-phone-field {
+  width: min(460px, 100%);
+  margin: 22px auto 0 auto;
+  text-align: left;
+}
+
+.response-phone-hint {
+  margin: 8px 0 0 0;
+  color: #8a8a8a;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.hebrew-page .response-phone-field,
+.hebrew-page .response-phone-hint {
+  text-align: right;
+}
+
 .response-status {
   margin: 24px auto 0 auto;
   padding: 14px 18px;
