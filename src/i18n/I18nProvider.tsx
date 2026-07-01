@@ -41,6 +41,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     if (typeof document !== "undefined") {
       document.documentElement.lang = locale;
       document.documentElement.dir = dir;
+      document.documentElement.classList.toggle("hebrew-page", locale === "he");
     }
   }, [locale, dir]);
 

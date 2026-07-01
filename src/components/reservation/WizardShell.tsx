@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { EVENT } from "@/lib/config";
@@ -14,6 +15,8 @@ import { OrderSummary } from "./OrderSummary";
 
 export function WizardShell() {
   const { t, toggleLocale, locale } = useI18n();
+  const pathname = usePathname();
+  const homeHref = pathname?.startsWith("/classic") ? "/classic/voyage" : "/";
   const {
     loading,
     error,
@@ -30,7 +33,7 @@ export function WizardShell() {
     <main className="min-h-screen bg-cream">
       <header className="border-b border-navy/10 bg-white/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <Link href="/" className="flex flex-col leading-none">
+          <Link href={homeHref} className="flex flex-col leading-none">
             <span className="kicker text-gold">Bar Mitsvah</span>
             <span className="font-serif text-lg text-navy">{EVENT.childName}</span>
           </Link>

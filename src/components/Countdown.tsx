@@ -16,7 +16,13 @@ function diff(target: number) {
 
 const ZERO = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
-export function Countdown({ target }: { target: string }) {
+export function Countdown({
+  target,
+  variant = "new",
+}: {
+  target: string;
+  variant?: "new" | "classic";
+}) {
   const { t } = useI18n();
   const targetMs = new Date(target).getTime();
   // On rend zero au SSR + 1er rendu client pour eviter tout mismatch d'hydratation,
@@ -36,16 +42,29 @@ export function Countdown({ target }: { target: string }) {
     [time.seconds, t("countdown.seconds")],
   ];
 
-  return (
-    <div className="flex items-center justify-center gap-3 sm:gap-6">
-      {cells.map(([value, label], i) => (
-        <div key={i} className="flex flex-col items-center">
-          <div className="glass flex h-16 w-16 items-center justify-center rounded-xl sm:h-24 sm:w-24">
-            <span className="font-serif text-3xl text-cream sm:text-5xl tabular-nums">
-              {String(value).padStart(2, "0")}
-            </span>
+  if (variant === "classic") {
+    return (
+      <div className="flex items-center justify-center gap-3 sm:gap-6">
+        {cells.map(([value, label], i) => (
+          <div key={i} className="flex flex-col items-center">
+            <div className="glass flex h-16 w-16 items-center justify-center rounded-xl sm:h-24 sm:w-24">
+              <span className="font-serif text-3xl text-cream sm:text-5xl tabular-nums">
+                {String(value).padStart(2, "0")}
+              </span>
+            </div>
+            <span className="kicker mt-2 text-[0.6rem] text-gold-light">{label}</span>
           </div>
-          <span className="kicker mt-2 text-[0.6rem] text-gold-light">{label}</span>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="std-countdown">
+      {cells.map(([value, label], i) => (
+        <div key={i} className="std-countdown-item">
+          <span className="std-countdown-number">{String(value).padStart(2, "0")}</span>
+          <span className="std-countdown-label">{label}</span>
         </div>
       ))}
     </div>

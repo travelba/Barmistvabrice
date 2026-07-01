@@ -1,30 +1,42 @@
 @import "tailwindcss";
 
 /* ----------------------------------------------------------------------- */
-/*  Aegean Editorial — Quiet Luxury                                         */
-/*  Ivoire + encre + accent bleu Égée, warm sand sur fonds sombres.         */
+/*  Bar Mitsvah Shon Bechet — charte « faire-part de luxe »                 */
+/*  Fond papier/lin, accent argent (cérémonie) ou taupe-or (voyage),        */
+/*  typographies Cormorant Garamond / Luxurious Script / Great Vibes /      */
+/*  David Libre (hébreu). Reprise fidèle du design bm-shon-bechet.          */
 /* ----------------------------------------------------------------------- */
 
 :root {
-  /* Surfaces claires */
-  --cream: #f4f1ea;        /* ivoire / os : fond principal */
-  --sand: #ece6d8;         /* sable clair : sections alternées */
-  --paper: #fbfaf6;        /* cartes */
+  /* Accent thématique (argent par défaut, surchargé par .theme-taupe) */
+  --accent: #8a8a8a;
+  --accent-hover: #a89968;
+  --accent-deep: #968b52;
 
-  /* Encre */
-  --ink: #17181a;          /* texte principal, boutons */
-  --muted: #6b7077;        /* texte secondaire */
+  /* Texte */
+  --text: #5a5a5a;
+  --text-soft: #6f6f6f;
 
-  /* Fonds sombres (bleu Égée profond) */
-  --navy: #0e3a4f;         /* sections sombres */
-  --navy-deep: #0a2c3d;    /* footer / header scrollé */
+  /* Papier */
+  --paper-base: #f4efe4;
 
-  /* Accents */
-  --aegean: #15607e;       /* accent froid sur fond clair (liens, prix, filets) */
-  --sky: #bcd4de;          /* bleu pâle */
-  --gold: #15607e;         /* alias accent clair (compat classes existantes) */
-  --gold-light: #d8cbab;   /* warm sand : accent sur fonds sombres */
-  --line: #e1dccf;         /* hairline chaude */
+  /* --- Remap des anciens tokens (compat tunnel / confirmation / admin) --- */
+  --cream: #f4efe4;
+  --sand: #ece6d8;
+  --paper: #ffffff;
+  --ink: #5a5a5a;
+  --muted: #6f6f6f;
+  --navy: #8a8a8a;
+  --navy-deep: #6f6f6f;
+  --aegean: #8a8a8a;
+  --sky: #ffffff;
+  --gold: #a89968;
+  --gold-light: #e7d9b6;
+  --line: #d8d1c0;
+
+  /* Familles de police « actives » (surchargées sous .v-classic) */
+  --ff-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --ff-sans: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
 }
 
 @theme inline {
@@ -41,32 +53,179 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
 
-  --font-serif: var(--font-fraunces), "Times New Roman", Georgia, serif;
-  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--ff-serif);
+  --font-sans: var(--ff-sans);
+  --font-script: var(--font-script), "Luxurious Script", cursive;
+  --font-vibes: var(--font-vibes), "Great Vibes", cursive;
+  --font-hebrew: var(--font-hebrew), "David Libre", serif;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
-  background: var(--cream);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-feature-settings: "ss01", "cv01";
+  background: var(--paper-base) url("/img/paper_background.png") repeat;
+  background-size: 620px;
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, .font-serif {
   font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Polices utilitaires */
+.font-script { font-family: var(--font-script); font-weight: 400; }
+.font-vibes { font-family: var(--font-vibes); font-weight: 400; }
+.font-hebrew { font-family: var(--font-hebrew); }
+
+/* Thème taupe-or pour la page voyage */
+.theme-taupe {
+  --accent: #b5a08b;
+  --accent-hover: #a89968;
+  --accent-deep: #6b4e2f;
+  --navy: #b5a08b;
+  --gold: #a89968;
+}
+
+/* ====================================================================== */
+/*  Version « classic » — ancien design Aegean Editorial (routes /classic) */
+/*  Entièrement cloisonné sous .v-classic pour cohabiter avec le nouveau   */
+/*  faire-part sans conflit de tokens / polices / classes.                 */
+/* ====================================================================== */
+.v-classic {
+  --cream: #f4f1ea;
+  --sand: #ece6d8;
+  --paper: #fbfaf6;
+  --paper-base: #f4f1ea;
+  --ink: #17181a;
+  --muted: #6b7077;
+  --text: #17181a;
+  --text-soft: #6b7077;
+  --navy: #0e3a4f;
+  --navy-deep: #0a2c3d;
+  --aegean: #15607e;
+  --sky: #bcd4de;
+  --accent: #15607e;
+  --accent-hover: #0e3a4f;
+  --accent-deep: #0a2c3d;
+  --gold: #15607e;
+  --gold-light: #d8cbab;
+  --line: #e1dccf;
+  --ff-serif: var(--font-fraunces), "Times New Roman", Georgia, serif;
+  --ff-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--ff-sans);
+  font-weight: 400;
+  font-feature-settings: "ss01", "cv01";
+}
+
+.v-classic h1,
+.v-classic h2,
+.v-classic h3,
+.v-classic .font-serif {
+  font-family: var(--ff-serif);
   font-optical-sizing: auto;
   letter-spacing: -0.015em;
   font-weight: 400;
 }
 
-/* Tailwind v4 retire le curseur "pointer" par défaut : on le rétablit
-   sur tout ce qui est cliquable. */
+.v-classic .gold-rule {
+  height: 1px;
+  width: 56px;
+  background: var(--gold-light);
+}
+.v-classic .kicker {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--ff-sans);
+}
+.v-classic .btn-gold {
+  background: var(--ink);
+  color: var(--cream);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  border: none;
+  box-shadow: 0 12px 30px -16px rgba(14, 58, 79, 0.7);
+}
+.v-classic .btn-gold:hover:not(:disabled) {
+  background: var(--aegean);
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+.v-classic .btn-outline {
+  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  color: var(--ink);
+  background: transparent;
+  font-weight: 500;
+}
+.v-classic .btn-outline:hover {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+.v-classic .card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: 0 30px 70px -40px rgba(14, 58, 79, 0.4);
+}
+.v-classic .glass {
+  background: color-mix(in srgb, #ffffff 7%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--gold-light) 22%, transparent);
+}
+.v-classic .hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 44, 61, 0.45) 0%,
+    rgba(10, 44, 61, 0.25) 38%,
+    rgba(10, 44, 61, 0.82) 100%
+  );
+}
+.v-classic .grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.v-classic .field {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 0.65rem;
+  padding: 0.72rem 0.9rem;
+  color: var(--ink);
+  outline: none;
+}
+.v-classic .field:focus {
+  border-color: var(--aegean);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aegean) 18%, transparent);
+}
+.v-classic .field-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* Curseur pointer sur tout ce qui est cliquable (Tailwind v4 le retire) */
 button,
 [role="button"],
 a[href],
@@ -82,66 +241,114 @@ button[disabled] {
   cursor: not-allowed;
 }
 
-/* Filet décoratif (hairline) */
+/* ====================================================================== */
+/*  Classes « legacy » repensées (tunnel de réservation / confirmation)    */
+/* ====================================================================== */
 .gold-rule {
-  height: 1px;
-  width: 56px;
-  background: var(--gold-light);
+  height: 2px;
+  width: 80px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
 }
 
-/* Petite étiquette éditoriale */
 .kicker {
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-size: 0.7rem;
-  font-weight: 500;
-  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--font-serif);
 }
 
-/* Boutons : encre pleine, sans dégradé (esprit éditorial) */
 .btn-gold {
-  background: var(--ink);
-  color: var(--cream);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
-  box-shadow: 0 12px 30px -16px rgba(14, 58, 79, 0.7);
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 2px solid var(--accent);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.25s ease;
+  box-shadow: 0 8px 22px rgba(90, 90, 90, 0.18);
 }
 .btn-gold:hover:not(:disabled) {
-  background: var(--aegean);
-  transform: translateY(-1px);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-2px);
 }
 .btn-gold:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .btn-outline {
-  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
-  color: var(--ink);
-  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  background: #ffffff;
+  font-weight: 700;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 .btn-outline:hover {
-  background: var(--ink);
-  color: var(--cream);
-  border-color: var(--ink);
+  background: var(--accent);
+  color: #ffffff;
 }
 
-/* Cartes */
 .card {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  box-shadow: 0 30px 70px -40px rgba(14, 58, 79, 0.4);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)),
+    url("/img/paper_background.png") repeat;
+  background-size: auto, 620px;
+  border: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(90, 90, 90, 0.12);
 }
 
 .glass {
-  background: color-mix(in srgb, #ffffff 7%, transparent);
-  backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in srgb, var(--gold-light) 22%, transparent);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(6px);
 }
 
-/* Animations */
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(90, 90, 90, 0.35) 0%,
+    rgba(90, 90, 90, 0.2) 38%,
+    rgba(90, 90, 90, 0.72) 100%
+  );
+}
+
+/* Champs de formulaire (tunnel) */
+.field {
+  width: 100%;
+  border: 2px solid rgba(138, 138, 138, 0.38);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+.field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.wallet-code {
+  background-image:
+    repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(0deg, currentColor 0 2px, transparent 2px 4px);
+  background-size: 4px 4px;
+}
+
 @keyframes floatUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
@@ -150,53 +357,694 @@ button[disabled] {
   animation: floatUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.hero-overlay {
+[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+
+/* ====================================================================== */
+/*  ÉCRAN D'ACCUEIL (overlay)                                               */
+/* ====================================================================== */
+.inv-overlay {
+  position: fixed;
+  inset: 0;
   background:
-    linear-gradient(180deg, rgba(10, 44, 61, 0.45) 0%, rgba(10, 44, 61, 0.25) 38%, rgba(10, 44, 61, 0.82) 100%);
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+    var(--paper-base) url("/img/paper_background.png") repeat;
+  background-size: 100% 100%, 620px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.7s ease;
+}
+.inv-overlay.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.inv-overlay-content {
+  text-align: center;
+  padding: 5vh 6vw;
+  max-width: 85vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.inv-overlay-logo {
+  width: min(520px, 80vw);
+  margin-bottom: 3vh;
+  animation: fadeInDown 0.8s ease;
+}
+.inv-overlay-subtitle {
+  font-family: var(--font-script);
+  font-size: clamp(54px, 8vw, 78px);
+  font-weight: 400;
+  color: var(--accent);
+  margin: 0 0 2vh 0;
+  line-height: 1.2;
+  animation: fadeInUp 0.8s ease 0.3s backwards;
+}
+.inv-overlay-name {
+  display: block;
+  font-size: clamp(74px, 12vw, 116px);
+}
+.inv-overlay-button {
+  font-family: var(--font-serif);
+  font-size: clamp(14px, 2.5vw, 16px);
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--accent);
+  padding: 14px 40px;
+  border: 2px solid var(--accent);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.4s ease;
+  animation: fadeInUp 0.8s ease 0.6s backwards;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+.inv-overlay-button:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-3px);
 }
 
-/* Grain léger pour la photo (texture éditoriale) */
-.grain::after {
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====================================================================== */
+/*  NAVBAR                                                                  */
+/* ====================================================================== */
+.inv-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--accent);
+  padding: 14px clamp(6px, 2vw, 16px);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+.inv-navbar-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(2px, 1.2vw, 14px);
+  flex-wrap: nowrap;
+}
+.inv-nav-link {
+  font-family: var(--font-serif);
+  font-size: clamp(13px, 4vw, 20px);
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 5px clamp(4px, 2.5vw, 15px);
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.inv-nav-link:hover { color: #f5ecdd; }
+
+/* ====================================================================== */
+/*  SECTIONS & CARTES OVALES                                                */
+/* ====================================================================== */
+.inv-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.inv-box {
+  text-align: center;
+  width: 90vw;
+  max-width: 700px;
+  padding: 60px 50px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
+    url("/img/paper_background.png") repeat;
+  background-size: auto, 620px;
+  border: 6px solid var(--accent);
+  border-radius: 250px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.inv-box:hover {
+  box-shadow: 0 10px 30px rgba(138, 138, 138, 0.2);
+  transform: translateY(-4px);
+}
+.inv-box::before {
   content: "";
   position: absolute;
-  inset: 0;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
   pointer-events: none;
-  opacity: 0.06;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: lightShine 6s ease-in-out infinite;
+  z-index: 0;
+}
+.inv-box > * { position: relative; z-index: 1; }
+
+@keyframes lightShine {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, 20px); }
 }
 
-/* Champs de formulaire */
-.field {
-  width: 100%;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  border-radius: 0.65rem;
-  padding: 0.72rem 0.9rem;
-  color: var(--ink);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  outline: none;
+.inv-logo-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(340px, 70%);
+  height: auto;
+  opacity: 0.16;
+  z-index: 0;
+  pointer-events: none;
 }
-.field:focus {
-  border-color: var(--aegean);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aegean) 18%, transparent);
+
+.inv-hebrew {
+  font-family: var(--font-hebrew);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 10px;
+  direction: rtl;
 }
-.field-label {
-  font-size: 0.78rem;
+
+.inv-line {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0;
+  line-height: 1.4;
+}
+.inv-line--grand {
+  font-size: 20px;
   font-weight: 500;
-  color: var(--muted);
-  margin-bottom: 0.3rem;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+.inv-names-large { font-size: 21px; font-weight: 700; display: block; }
+
+.inv-main {
+  width: 100%;
+  text-align: center;
+  margin-top: 12px;
+  position: relative;
+  padding-bottom: 30px;
+}
+.inv-main::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+}
+.inv-main-text {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+.inv-name-img { max-width: 360px; width: 100%; height: auto; margin: 6px auto 0; }
+
+.inv-tribute { width: 100%; text-align: center; margin-top: 18px; }
+.inv-tribute-text {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--accent);
+  margin: 0 0 8px 0;
+}
+.inv-tribute-names {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--accent);
+  margin: 0;
+}
+
+/* Détails synagogue / cérémonie */
+.inv-title-script {
+  font-family: var(--font-script);
+  font-size: clamp(54px, 12vw, 80px);
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin: 0 0 16px 0;
+  text-align: center;
+  position: relative;
+  padding-bottom: 14px;
+}
+.inv-oukchartam { width: 80%; max-width: 100%; height: auto; margin: 0 0 16px 0; }
+.inv-intro {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+.inv-date {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 18px 0;
+}
+.inv-location {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 6px 0;
+  line-height: 1.4;
+}
+.inv-place-name {
+  font-family: var(--font-script);
+  font-size: clamp(34px, 10vw, 52px);
+  font-weight: 400;
+  color: var(--accent);
   display: block;
+  margin: 8px 0 0 0;
+  line-height: 1;
+  position: relative;
+  padding-bottom: 12px;
+}
+.inv-place-name::after,
+.inv-title-script::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+}
+.inv-address {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 14px 0 18px 0;
+  line-height: 1.5;
+}
+.inv-time {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 12px 0;
+}
+.inv-detail {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 6px 0 22px 0;
+  line-height: 1.5;
+}
+.inv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+}
+.inv-calendar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.inv-calendar-link:hover { color: var(--accent-deep); transform: translateY(-2px); }
+.inv-waze {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--accent);
+  padding: 12px 35px;
+  border: 2px solid var(--accent);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+.inv-waze:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-3px);
 }
 
-/* Code "wallet" (faux QR / data-matrix) pour les billets */
-.wallet-code {
-  background-image:
-    repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px),
-    repeating-linear-gradient(0deg, currentColor 0 2px, transparent 2px 4px);
-  background-size: 4px 4px;
+/* ====================================================================== */
+/*  SAVE THE DATE + COMPTE À REBOURS                                        */
+/* ====================================================================== */
+.std-section {
+  width: 100%;
+  padding: 60px 40px 80px;
+  background: color-mix(in srgb, var(--accent) 78%, transparent);
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.std-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  max-width: 900px;
+  width: 100%;
+}
+.std-title {
+  font-family: var(--font-script);
+  font-size: clamp(56px, 12vw, 80px);
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: #ffffff;
+  margin: 0;
+  text-align: center;
+  position: relative;
+  padding-bottom: 18px;
+}
+.std-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #ffffff, transparent);
+}
+.std-date {
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  margin: 0;
+}
+.std-countdown {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  justify-content: center;
+  gap: 24px clamp(20px, 6vw, 70px);
+  width: 100%;
+}
+.std-countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.std-countdown-number {
+  font-family: var(--font-serif);
+  font-size: clamp(54px, 12vw, 96px);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.std-countdown-label {
+  font-family: var(--font-serif);
+  font-size: clamp(15px, 3vw, 26px);
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+@media (max-width: 560px) {
+  .std-countdown { grid-template-columns: auto auto; gap: 24px 50px; }
 }
 
-/* Support RTL */
-[dir="rtl"] .rtl-flip {
-  transform: scaleX(-1);
+/* ====================================================================== */
+/*  PROGRAMME (timeline)                                                    */
+/* ====================================================================== */
+.prog-section {
+  width: 100%;
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  background:
+    linear-gradient(rgba(247, 243, 238, 0.86), rgba(247, 243, 238, 0.7)),
+    url("/img/paper_background.png") repeat;
+  background-size: auto, 620px;
 }
+.prog-container { width: 100%; max-width: 900px; text-align: center; }
+.prog-title {
+  font-family: var(--font-script);
+  font-size: clamp(54px, 12vw, 80px);
+  color: var(--accent);
+  margin-bottom: 50px;
+  position: relative;
+}
+.prog-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+}
+.prog-day { margin-bottom: 56px; }
+.prog-day-title {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 6vw, 34px);
+  color: var(--accent);
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+.prog-timeline {
+  position: relative;
+  margin: 0 auto;
+  padding-left: 40px;
+  text-align: left;
+}
+.prog-timeline::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  opacity: 0.5;
+}
+.prog-item { position: relative; margin-bottom: 30px; padding-left: 25px; }
+.prog-item::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 7px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.prog-time {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 18px;
+  display: block;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.prog-event {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.4;
+}
+.hebrew-page .prog-timeline { text-align: right; padding-left: 0; padding-right: 40px; }
+.hebrew-page .prog-timeline::before { left: auto; right: 10px; }
+.hebrew-page .prog-item { padding-left: 0; padding-right: 25px; }
+.hebrew-page .prog-item::before { left: auto; right: -1px; }
+
+/* ====================================================================== */
+/*  HÔTELS (vitrine sur /voyage)                                            */
+/* ====================================================================== */
+.hotels-section {
+  width: 100%;
+  padding: 0 20px 20px;
+  text-align: center;
+  box-sizing: border-box;
+  background:
+    linear-gradient(rgba(247, 243, 238, 0.86), rgba(247, 243, 238, 0.5)),
+    url("/img/paper_background.png") repeat;
+  background-size: auto, 620px;
+}
+.hotels-title {
+  font-family: var(--font-script);
+  font-size: clamp(54px, 12vw, 80px);
+  color: var(--accent);
+  margin-bottom: 50px;
+  position: relative;
+}
+.hotels-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+}
+.hotels-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  max-width: 900px;
+  margin: 0 auto 70px;
+}
+.hotel-card { cursor: pointer; transition: transform 0.3s ease; text-decoration: none; display: block; }
+.hotel-card:hover { transform: translateY(-5px); }
+.hotel-name {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 6vw, 28px);
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.hotel-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+.hotel-img { display: block; width: 100%; height: 320px; object-fit: cover; border-radius: 20px; }
+.hotel-detail-button {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 80%, transparent);
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(6px);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.hotel-card:hover .hotel-detail-button {
+  transform: translateY(-2px);
+  background: var(--accent-hover);
+}
+
+/* ====================================================================== */
+/*  BOUTON MUSIQUE / SÉLECTEUR DE LANGUE                                    */
+/* ====================================================================== */
+.inv-music {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  box-shadow: 0 8px 22px rgba(90, 90, 90, 0.22);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.inv-music:hover { background: var(--accent-hover); transform: translateY(-2px); }
+
+.inv-lang {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1100;
+  box-shadow: 0 8px 22px rgba(90, 90, 90, 0.22);
+  transition: transform 0.25s ease;
+  cursor: pointer;
+  padding: 0;
+}
+.inv-lang:hover { transform: translateY(-2px); }
+.inv-lang img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+@media (max-width: 480px) {
+  .inv-music, .inv-lang { width: 48px; height: 48px; right: 16px; left: 16px; bottom: 16px; }
+  .inv-music { left: auto; }
+  .inv-lang { right: auto; }
+  .inv-box { padding: 40px 24px; border-radius: 60px; }
+}
+
+/* Page hébraïque : RTL + police hébraïque */
+.hebrew-page { direction: rtl; }
+.hebrew-page :where(p, h1, h2, h3, h4, h5, h6, a, button, span, strong, label, input, textarea, legend, li, div) {
+  font-family: var(--font-hebrew);
+}
+.hebrew-page .inv-title-script,
+.hebrew-page .inv-place-name,
+.hebrew-page .std-title,
+.hebrew-page .prog-title,
+.hebrew-page .hotels-title,
+.hebrew-page .inv-overlay-subtitle {
+  font-family: var(--font-script);
+}
+
+/* Animations au scroll */
+.scroll-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.scroll-item.scroll-visible { opacity: 1; transform: translateY(0); }

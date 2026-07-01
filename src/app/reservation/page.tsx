@@ -5,8 +5,10 @@ import { WizardShell } from "@/components/reservation/WizardShell";
 
 export default function ReservationPage() {
   return (
-    <WizardProvider>
-      <WizardShell />
-    </WizardProvider>
+    <div className="theme-taupe">
+      <WizardProvider>
+        <WizardShell />
+      </WizardProvider>
+    </div>
   );
 }

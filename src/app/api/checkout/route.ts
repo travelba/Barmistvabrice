@@ -31,6 +31,7 @@ const schema = z.object({
   ceremonyAttending: z.boolean().optional(),
   ceremonyGuestCount: z.number().int().min(0).max(50).optional(),
   locale: z.enum(["fr", "he"]).optional(),
+  variant: z.enum(["new", "classic"]).optional(),
 });
 
 export async function POST(req: Request) {
@@ -47,6 +48,9 @@ export async function POST(req: Request) {
   }
   const draft: BookingDraft = parsed.data;
   const locale = parsed.data.locale ?? "fr";
+  // Variante de design : route le retour de paiement vers /confirmation (nouveau)
+  // ou /classic/confirmation (ancien), pour conserver le design choisi.
+  const basePath = parsed.data.variant === "classic" ? "/classic" : "";
   // Stripe Checkout ne propose pas l'hebreu : on laisse Stripe detecter ("auto").
   const stripeLocale = locale === "he" ? "auto" : "fr";
 
@@ -113,8 +117,8 @@ export async function POST(req: Request) {
       customer_email: draft.contact.email,
       client_reference_id: bookingId,
       metadata: { bookingId, locale },
-      success_url: `${appUrl()}/confirmation?session_id={CHECKOUT_SESSION_ID}&lang=${locale}`,
-      cancel_url: `${appUrl()}/reservation?canceled=1&lang=${locale}`,
+      success_url: `${appUrl()}${basePath}/confirmation?session_id={CHECKOUT_SESSION_ID}&lang=${locale}`,
+      cancel_url: `${appUrl()}${basePath}/reservation?canceled=1&lang=${locale}`,
       locale: stripeLocale,
     });
 

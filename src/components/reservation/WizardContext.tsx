@@ -72,8 +72,15 @@ const Ctx = createContext<WizardValue | null>(null);
 
 const STEP_COUNT = 4;
 
-export function WizardProvider({ children }: { children: React.ReactNode }) {
+export function WizardProvider({
+  children,
+  variant = "new",
+}: {
+  children: React.ReactNode;
+  variant?: "new" | "classic";
+}) {
   const { locale } = useI18n();
+  const basePath = variant === "classic" ? "/classic" : "";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hotels, setHotels] = useState<HotelAvailability[]>([]);
@@ -249,6 +256,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
           ceremonyAttending,
           ceremonyGuestCount,
           locale,
+          variant,
         }),
       });
       const data = await res.json();
@@ -256,7 +264,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       if (data.url) {
         window.location.href = data.url;
       } else if (data.demo && data.bookingId) {
-        window.location.href = `/confirmation?demo=1&booking_id=${data.bookingId}&lang=${locale}`;
+        window.location.href = `${basePath}/confirmation?demo=1&booking_id=${data.bookingId}&lang=${locale}`;
       } else {
         throw new Error("Réponse inattendue");
       }
@@ -264,7 +272,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       setSubmitError(e instanceof Error ? e.message : "Erreur lors du paiement");
       setSubmitting(false);
     }
-  }, [contact, hotelId, rooms, passengers, ceremonyAttending, ceremonyGuestCount, locale]);
+  }, [contact, hotelId, rooms, passengers, ceremonyAttending, ceremonyGuestCount, locale, variant, basePath]);
 
   const value: WizardValue = {
     loading,

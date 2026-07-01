@@ -1,0 +1,492 @@
+﻿/* ===== SECTION HOTELS ===== */
+.hotels-section {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding: 0px 20px 0px 20px;
+    text-align: center;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    /* 🔥 IDENTIQUE SAVE THE DATE */
+    background:
+        linear-gradient(rgba(247, 243, 238, 0.85), rgba(247, 243, 238, 0.473)),
+        url('/img/light_linen.png') repeat;
+
+    background-size: auto, contain;
+}
+
+.hotels-title {
+    font-family: "Luxurious Script", cursive;
+    font-size: 80px;
+    color: #b5a08b;
+    margin-bottom: 50px;
+    position: relative;
+    text-align: center;
+}
+
+/* 🔥 underline style identique aux autres sections */
+.hotels-title::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #b5a08b, transparent);
+}
+
+/* GRID */
+.hotels-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    max-width: 900px;
+
+    margin: 0 auto 80px auto;
+    /* 👈 PROPRE + espace bas */
+}
+
+/* CARD */
+.hotel-card {
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.hotel-card:hover {
+    transform: translateY(-5px);
+}
+
+.hotel-name {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 28px;
+    color: #b5a08b;
+    margin-bottom: 10px;
+}
+
+.hotel-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.hotel-img {
+    display: block;
+    width: 100%;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.hotel-detail-button {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 7px 11px;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(181, 160, 139, 0.78);
+    color: #fff;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.14);
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hotel-card:hover .hotel-detail-button {
+    transform: translateY(-2px);
+    background: rgba(166, 141, 117, 0.92);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.hotel-detail-button i {
+    font-size: 13px;
+}
+
+.flight-section-title {
+    margin-top: 10px;
+}
+
+.flight-grid {
+    margin-bottom: 80px;
+}
+
+/* ===== OVERLAY ===== */
+.hotel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 244, 229, 0.85);
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column; /* 🔥 IMPORTANT */
+    align-items: center;
+
+    z-index: 9999;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.35s ease;
+
+    overflow: hidden; /* on gère le scroll ailleurs */
+}
+
+.hotel-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    backdrop-filter: blur(10px);
+}
+
+
+.hidden {
+    display: none;
+}
+
+/* contenu animé */
+.hotel-overlay-content {
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    transform: translateY(20px) scale(0.96);
+    opacity: 0;
+
+    transition: all 0.4s ease;
+
+    /* 🔥 IMPORTANT */
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 60px 20px;
+    box-sizing: border-box;
+}
+
+
+.hotel-overlay.show .hotel-overlay-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* CLOSE */
+.hotel-close {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #b5a08b;
+    cursor: pointer;
+}
+
+/* SLIDER */
+.slider {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.slider img {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+
+    border: none;
+    cursor: pointer;
+
+    font-size: 24px;
+    color: white;
+
+    background: rgba(181, 160, 139, 0.85);
+    backdrop-filter: blur(6px);
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* gauche */
+.nav-btn.prev {
+    left: 10px;
+}
+
+/* droite */
+.nav-btn.next {
+    right: 10px;
+}
+
+/* hover */
+.nav-btn:hover {
+    transform: translateY(-50%) scale(1.05);
+    background: rgba(181, 160, 139, 1);
+}
+
+/* ROOM INFO */
+.room-info {
+    margin-top: 18px;
+    width: 100%;
+    max-width: 600px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    text-align: left;
+
+    padding-top: 14px;
+    border-top: 1px solid rgba(181, 160, 139, 0.25);
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.room-info h3 {
+    font-size: 24px;
+    color: #b5a08b;
+}
+
+/* ROOM BUTTONS */
+.room-buttons {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.room-buttons button {
+    padding: 10px 22px;
+    /* 🔥 moins haut */
+    border: 2px solid #b5a08b;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #b5a08b;
+
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+
+    border-radius: 10px;
+
+    width: 100%;
+    max-width: 420px;
+    /* 🔥 plus large */
+    margin: 0 auto;
+}
+
+.room-buttons button:hover {
+    background: #b5a08b;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(181, 160, 139, 0.25);
+}
+
+.room-buttons button.active {
+    background: #b5a08b;
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(181, 160, 139, 0.35);
+    transform: scale(1.02);
+}
+
+#room-name {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 38px;
+    /* 🔥 un peu plus grand */
+    font-weight: 700;
+    color: #b5a08b;
+
+    margin: 0 0 2px 0;
+}
+
+/* CAPACITÉ (petit mais lisible) */
+#room-capacity {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 27px;
+    /* 🔥 légèrement augmenté */
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+
+    margin: 0;
+}
+
+#room-price {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 25px;
+    /* 🔥 un peu plus visible */
+    font-weight: 700;
+
+    color: #6b4e2f;
+
+    margin: 0;
+}
+
+.hotel-overlay-content {
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .nav-btn {
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
+
+        background: rgba(181, 160, 139, 0.95);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .slider {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .nav-btn.prev {
+        left: 6px;
+    }
+
+    .nav-btn.next {
+        right: 6px;
+    }
+}
+
+.no-scroll {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+}
+
+.slider img {
+    width: 100%;
+    max-width: 600px;
+    height: 380px;
+    /* 🔥 taille fixe */
+    object-fit: cover;
+    /* 🔥 crop propre */
+    border-radius: 20px;
+}
+
+.hotel-overlay.flight-overlay .slider img {
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+.hotel-overlay.flight-overlay .nav-btn {
+    display: none;
+}
+
+.hotel-overlay-content {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE / Edge legacy */
+}
+
+.hotel-overlay-content::-webkit-scrollbar {
+    display: none;               /* Chrome / Safari */
+}
+
+.hotel-overlay-nav {
+    width: 100%;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 20px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: rgba(255, 244, 229, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* bouton retour stylé */
+.hotel-close {
+    position: relative; /* on enlève le absolute */
+    top: auto;
+    left: auto;
+
+    background: none;
+    border: none;
+
+    font-size: 18px;
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 700;
+
+    color: #b5a08b;
+    cursor: pointer;
+
+    padding: 8px 14px;
+    border-radius: 10px;
+
+    transition: all 0.3s ease;
+}
+
+.hotel-close:hover {
+    background: rgba(181, 160, 139, 0.15);
+    transform: translateX(-3px);
+}
+
+.hotel-overlay {
+    overflow-y: auto;
+}
+
+.hotel-overlay-content-wrapper {
+    width: 100%;
+    flex: 1;              /* prend tout l’espace restant */
+    overflow-y: auto;     /* scroll ici uniquement */
+    display: flex;
+    justify-content: center;
+}
+

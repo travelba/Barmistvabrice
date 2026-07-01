@@ -1,11 +1,9 @@
-import { redirect } from "next/navigation";
+import { TephilinesInvitation } from "@/components/invitation/TephilinesInvitation";
 
 /**
- * La racine n'expose rien : le client diffuse deux liens distincts
- *  - /ceremonie : invites a la mise des Tephilines uniquement
- *  - /voyage    : invites a la ceremonie ET au voyage a Mykonos
- * Par defaut on dirige vers l'experience complete.
+ * `/` — Téphilines seulement (français), sans lien week-end.
+ * Réplique de index.html du site d'origine ; le drapeau mène à /teph-he.
  */
-export default function RootPage() {
-  redirect("/voyage");
+export default function Home() {
+  return <TephilinesInvitation locale="fr" showWeekend={false} flagHref="/teph-he" />;
 }

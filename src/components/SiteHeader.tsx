@@ -5,7 +5,13 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { EVENT } from "@/lib/config";
 
-export function SiteHeader() {
+export function SiteHeader({
+  homeHref = "/",
+  reserveHref = "/reservation",
+}: {
+  homeHref?: string;
+  reserveHref?: string;
+} = {}) {
   const { t, toggleLocale, locale } = useI18n();
   const [scrolled, setScrolled] = useState(false);
 
@@ -23,7 +29,7 @@ export function SiteHeader() {
       }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 sm:px-10">
-        <Link href="/" className="flex flex-col leading-none">
+        <Link href={homeHref} className="flex flex-col leading-none">
           <span className="kicker text-gold-light">Bar Mitsvah</span>
           <span className="font-serif text-xl text-cream">{EVENT.childName}</span>
         </Link>
@@ -36,7 +42,7 @@ export function SiteHeader() {
           >
             {locale === "fr" ? "עברית" : "Français"}
           </button>
-          <Link href="/reservation" className="btn-gold rounded-full px-6 py-2.5 text-sm">
+          <Link href={reserveHref} className="btn-gold rounded-full px-6 py-2.5 text-sm">
             {t("nav.reserve")}
           </Link>
         </nav>

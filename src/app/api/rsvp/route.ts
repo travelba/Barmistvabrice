@@ -6,12 +6,21 @@ import { sendRsvpEmails } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
+const personSchema = z.object({
+  nom: z.string().min(1),
+  prenom: z.string().min(1),
+});
+
+// Le formulaire "Réponse" (clone bm-shon-bechet) n'envoie que des noms/prénoms.
+// On garde la compatibilité avec l'ancien format (name/email/phone) au cas où.
 const schema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  phone: z.string().min(6),
   attending: z.boolean(),
-  guestCount: z.number().int().min(1).max(50),
+  partySize: z.number().int().min(0).max(50).optional(),
+  persons: z.array(personSchema).optional(),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  guestCount: z.number().int().min(0).max(50).optional(),
   locale: z.enum(["fr", "he"]).optional(),
 });
 
@@ -28,20 +37,43 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
 
+  const data = parsed.data;
+  const locale = data.locale ?? "fr";
+
+  // Normalisation : on construit un nom lisible à partir des participants.
+  let name: string;
+  let guestCount: number;
+  if (data.persons && data.persons.length > 0) {
+    name = data.persons
+      .map((p) => `${p.prenom} ${p.nom}`.trim())
+      .filter(Boolean)
+      .join(", ");
+    guestCount = data.partySize ?? data.persons.length;
+  } else {
+    name = data.name ?? "";
+    guestCount = data.guestCount ?? (data.attending ? 1 : 0);
+  }
+  if (!name) name = data.attending ? "Invité(e)" : "Réponse : absent(e)";
+
+  const email = data.email ?? "";
+  const phone = data.phone ?? "";
+
   try {
-    const { locale = "fr", ...rsvpData } = parsed.data;
     const rsvp = await createCeremonyRsvp({
-      ...rsvpData,
-      // Si la personne ne vient pas, on enregistre 0 accompagnant.
-      guestCount: rsvpData.attending ? rsvpData.guestCount : 0,
+      name,
+      email,
+      phone,
+      attending: data.attending,
+      guestCount: data.attending ? guestCount : 0,
       source: "ceremony",
     });
 
     // Notifications best-effort (n'echouent pas la requete).
-    await Promise.allSettled([appendRsvpToSheet(rsvp), sendRsvpEmails(rsvp, locale)]).then((results) =>
-      results.forEach((r) => {
-        if (r.status === "rejected") console.error("[rsvp]", r.reason);
-      }),
+    await Promise.allSettled([appendRsvpToSheet(rsvp), sendRsvpEmails(rsvp, locale)]).then(
+      (results) =>
+        results.forEach((r) => {
+          if (r.status === "rejected") console.error("[rsvp]", r.reason);
+        }),
     );
 
     return NextResponse.json({ ok: true, id: rsvp.id });

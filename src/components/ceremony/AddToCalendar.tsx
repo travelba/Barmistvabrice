@@ -32,7 +32,7 @@ function buildIcs(): string {
   return lines.join("\r\n");
 }
 
-export function AddToCalendar() {
+export function AddToCalendar({ variant = "new" }: { variant?: "new" | "classic" }) {
   const { t } = useI18n();
   function download() {
     const blob = new Blob([buildIcs()], { type: "text/calendar;charset=utf-8" });
@@ -50,7 +50,11 @@ export function AddToCalendar() {
     <button
       type="button"
       onClick={download}
-      className="btn-outline inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm"
+      className={
+        variant === "classic"
+          ? "btn-outline inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm"
+          : "inv-calendar-link"
+      }
     >
       <CalendarPlus className="h-4 w-4" /> {t("ceremony.addToCalendar")}
     </button>

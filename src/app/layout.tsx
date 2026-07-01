@@ -1,18 +1,56 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter_Tight, Frank_Ruhl_Libre } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Luxurious_Script,
+  Great_Vibes,
+  David_Libre,
+  Fraunces,
+  Inter_Tight,
+} from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/i18n/I18nProvider";
-import { EVENT, appUrl } from "@/lib/config";
+import { appUrl } from "@/lib/config";
 
-// Serif d'affichage contemporain (fort contraste, optical sizing).
+// Serif élégant : tout le corps de texte (faire-part, formulaires…).
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+// Script de luxe pour les grands titres (« Save The Date », « Téphilines »…).
+const luxurious = Luxurious_Script({
+  variable: "--font-script",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400"],
+});
+
+// Script calligraphique fin pour le prénom de l'invité.
+const greatVibes = Great_Vibes({
+  variable: "--font-vibes",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400"],
+});
+
+// Serif hébraïque classique (בס״ד, versets, hébreu).
+const davidLibre = David_Libre({
+  variable: "--font-hebrew",
+  subsets: ["hebrew"],
+  display: "swap",
+  weight: ["400", "500", "700"],
+});
+
+// --- Polices de l'ancien design (version « classic » /classic) ---
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
   display: "swap",
   style: ["normal", "italic"],
 });
-
-// Grotesque net et moderne pour le texte / l'UI.
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
   subsets: ["latin"],
@@ -20,41 +58,44 @@ const interTight = Inter_Tight({
   weight: ["400", "500", "600", "700"],
 });
 
-// Serif hébraïque classique et élégant (versets, hébreu).
-const frankRuhl = Frank_Ruhl_Libre({
-  variable: "--font-hebrew",
-  subsets: ["hebrew"],
-  display: "swap",
-  weight: ["400", "500", "700", "900"],
-});
-
-const SITE_TITLE = `${EVENT.title} — ${EVENT.destination}`;
-const SITE_DESCRIPTION = `Inscription et réservation pour la Bar Mitsvah de ${EVENT.childName} à ${EVENT.destination}, 9–11 octobre 2026.`;
+// Métadonnées reprises à l'identique du site d'origine (bm-shon-bechet.fr) :
+// même titre, même favicon (logo_sans_fond.png), même image de partage
+// (preview.jpg), et pas de meta description — comme sur l'original.
+const SITE_TITLE = "Bar Mitsvah Shon Bechet";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
-  title: {
-    default: SITE_TITLE,
-    template: `%s · ${EVENT.title}`,
+  title: SITE_TITLE,
+  applicationName: SITE_TITLE,
+  icons: {
+    icon: [{ url: "/img/logo_sans_fond.png", type: "image/png" }],
+    apple: [{ url: "/img/logo_sans_fond.png" }],
   },
-  description: SITE_DESCRIPTION,
-  applicationName: EVENT.title,
   openGraph: {
     type: "website",
-    locale: "fr_FR",
-    siteName: EVENT.title,
+    url: "/",
+    siteName: SITE_TITLE,
     title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/img/preview.jpg",
+        secureUrl: new URL("/img/preview.jpg", appUrl()).toString(),
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt: "Invitation Bar Mitsvah Shon Bechet",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
+    images: ["/img/preview.jpg"],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a2c3d",
+  themeColor: "#8a8a8a",
 };
 
 export default function RootLayout({
@@ -66,9 +107,18 @@ export default function RootLayout({
     <html
       lang="fr"
       dir="ltr"
-      className={`${fraunces.variable} ${interTight.variable} ${frankRuhl.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${luxurious.variable} ${greatVibes.variable} ${davidLibre.variable} ${fraunces.variable} ${interTight.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Polices nommées + Font Awesome pour le clone fidèle (card3.css / style.css) */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=David+Libre:wght@400;500;700&family=Great+Vibes&family=Luxurious+Script&display=swap"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
         <I18nProvider>{children}</I18nProvider>
       </body>
     </html>
