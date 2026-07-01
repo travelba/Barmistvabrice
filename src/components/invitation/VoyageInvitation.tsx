@@ -483,10 +483,17 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
             </>
           )}
 
-          {/* Formulaire d'inscription : la sélection mène au tunnel de paiement Stripe */}
+          {/* Formulaire d'inscription : la sélection (hôtel + chambre) mène au
+              tunnel de paiement Stripe, avec pré-sélection via query params. */}
           <a
             className="hotel-reserve-button"
-            href={`/reservation?hotel=${openKey ?? ""}&lang=${locale}`}
+            href={
+              `/reservation?hotel=${encodeURIComponent(openKey ?? "")}` +
+              (!isFlight && currentRoom
+                ? `&room=${encodeURIComponent(currentRoom.name)}`
+                : "") +
+              `&lang=${locale}`
+            }
           >
             {c.reserve}
           </a>

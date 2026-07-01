@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type {
@@ -72,6 +73,31 @@ const Ctx = createContext<WizardValue | null>(null);
 
 const STEP_COUNT = 4;
 
+/* Correspondance entre les cles de la page voyage (/data/hotels.json :
+   hotelA, hotelB…) et les hotels du tunnel (/api/hotels), robuste aux
+   differences d'identifiants (demo vs Supabase) : on retombe sur une
+   recherche par id/nom normalise si la cle n'est pas un id direct. */
+const HOTEL_KEY_ALIASES: Record<string, string[]> = {
+  hotelA: ["once", "once in mykonos"],
+  hotelB: ["santa-marina", "santa marina"],
+};
+const normalizeKey = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+function resolveHotelByKey(
+  key: string,
+  hotels: HotelAvailability[],
+): HotelAvailability | null {
+  const direct = hotels.find((h) => h.id === key);
+  if (direct) return direct;
+  const wanted = (HOTEL_KEY_ALIASES[key] ?? [key]).map(normalizeKey);
+  return (
+    hotels.find((h) => {
+      const hid = normalizeKey(h.id);
+      const hname = normalizeKey(h.name);
+      return wanted.some((w) => w.length > 0 && (hid.includes(w) || hname.includes(w)));
+    }) ?? null
+  );
+}
+
 export function WizardProvider({
   children,
   variant = "new",
@@ -98,6 +124,18 @@ export function WizardProvider({
   const [ceremonyGuestCount, setCeremonyGuestCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  /* Pré-sélection depuis la page voyage : ?hotel=<cle>&room=<nom>.
+     Lue une seule fois (navigation par rechargement complet depuis /week-end). */
+  const prefillRef = useRef<{ hotel: string | null; room: string | null }>(
+    typeof window === "undefined"
+      ? { hotel: null, room: null }
+      : {
+          hotel: new URLSearchParams(window.location.search).get("hotel"),
+          room: new URLSearchParams(window.location.search).get("room"),
+        },
+  );
+  const prefillApplied = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -136,6 +174,27 @@ export function WizardProvider({
     () => hotels.find((h) => h.id === hotelId) ?? null,
     [hotels, hotelId],
   );
+
+  /* Applique la pré-sélection hôtel + chambre une fois les dispos chargées.
+     On ne change PAS d'étape : les coordonnées/participants (étape 0) restent
+     obligatoires avant le paiement — l'hôtel et la chambre sont simplement
+     déjà cochés quand l'utilisateur atteint les étapes correspondantes. */
+  useEffect(() => {
+    if (prefillApplied.current) return;
+    const { hotel: hotelKey, room: roomName } = prefillRef.current;
+    if (!hotelKey || hotels.length === 0) return;
+    const target = resolveHotelByKey(hotelKey, hotels);
+    if (!target) return;
+    prefillApplied.current = true;
+    setHotelIdState(target.id);
+    if (roomName && target.remaining > 0) {
+      const wanted = normalizeKey(roomName);
+      const rt =
+        target.roomTypes.find((r) => normalizeKey(r.name) === wanted) ??
+        target.roomTypes.find((r) => normalizeKey(r.name).includes(wanted));
+      if (rt && rt.available > 0) setRooms({ [rt.id]: 1 });
+    }
+  }, [hotels]);
 
   const setRoomQty = useCallback(
     (roomTypeId: string, qty: number) => {
