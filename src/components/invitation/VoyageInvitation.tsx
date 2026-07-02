@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
 import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
 import { resolveHotelByKey, resolveRoomByName } from "@/lib/hotel-match";
@@ -146,6 +147,10 @@ export interface VoyageInvitationProps {
 export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInvitationProps) {
   const { setLocale } = useI18n();
   const c = CONTENT[locale];
+
+  // La texture lin est un background CSS : le navigateur ne la decouvre
+  // qu'apres parsing du CSS. Le preload la telecharge des le debut du rendu.
+  preload("/img/light_linen.webp", { as: "image" });
 
   useEffect(() => {
     setLocale(locale);

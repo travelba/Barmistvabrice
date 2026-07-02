@@ -1,4 +1,4 @@
-﻿/* ===== SECTION HOTELS ===== */
+/* ===== SECTION HOTELS ===== */
 .hotels-section {
     width: 100vw;
     margin-left: calc(50% - 50vw);
@@ -6,10 +6,10 @@
     text-align: center;
     box-sizing: border-box;
     overflow-x: hidden;
-    /* 🔥 IDENTIQUE SAVE THE DATE */
+    /* ?? IDENTIQUE SAVE THE DATE */
     background:
         linear-gradient(rgba(247, 243, 238, 0.85), rgba(247, 243, 238, 0.473)),
-        url('/img/light_linen.png') repeat;
+        url('/img/light_linen.webp') repeat;
 
     background-size: auto, contain;
 }
@@ -23,7 +23,7 @@
     text-align: center;
 }
 
-/* 🔥 underline style identique aux autres sections */
+/* ?? underline style identique aux autres sections */
 .hotels-title::after {
     content: "";
     position: absolute;
@@ -43,7 +43,7 @@
     max-width: 900px;
 
     margin: 0 auto 80px auto;
-    /* 👈 PROPRE + espace bas */
+    /* ?? PROPRE + espace bas */
 }
 
 /* CARD */
@@ -128,7 +128,7 @@
     backdrop-filter: blur(10px);
 
     display: flex;
-    flex-direction: column; /* 🔥 IMPORTANT */
+    flex-direction: column; /* ?? IMPORTANT */
     align-items: center;
 
     z-index: 9999;
@@ -137,7 +137,7 @@
     visibility: hidden;
     transition: all 0.35s ease;
 
-    overflow: hidden; /* on gère le scroll ailleurs */
+    overflow: hidden; /* on g�re le scroll ailleurs */
 }
 
 .hotel-overlay.show {
@@ -151,7 +151,7 @@
     display: none;
 }
 
-/* contenu animé */
+/* contenu anim� */
 .hotel-overlay-content {
     width: 90%;
     max-width: 900px;
@@ -167,7 +167,7 @@ position: relative;
 
     transition: all 0.4s ease;
 
-    /* 🔥 IMPORTANT */
+    /* ?? IMPORTANT */
     max-height: 100vh;
     overflow-y: auto;
     padding: 60px 20px;
@@ -284,7 +284,7 @@ position: relative;
 
 .room-buttons button {
     padding: 10px 22px;
-    /* 🔥 moins haut */
+    /* ?? moins haut */
     border: 2px solid #b5a08b;
     background: rgba(255, 255, 255, 0.9);
     cursor: pointer;
@@ -301,7 +301,7 @@ position: relative;
 
     width: 100%;
     max-width: 420px;
-    /* 🔥 plus large */
+    /* ?? plus large */
     margin: 0 auto;
 }
 
@@ -323,18 +323,18 @@ position: relative;
 #room-name {
     font-family: "Cormorant Garamond", serif;
     font-size: 38px;
-    /* 🔥 un peu plus grand */
+    /* ?? un peu plus grand */
     font-weight: 700;
     color: #b5a08b;
 
     margin: 0 0 2px 0;
 }
 
-/* CAPACITÉ (petit mais lisible) */
+/* CAPACIT� (petit mais lisible) */
 #room-capacity {
     font-family: "Cormorant Garamond", serif;
     font-size: 27px;
-    /* 🔥 légèrement augmenté */
+    /* ?? l�g�rement augment� */
     font-weight: 500;
     color: rgb(0, 0, 0);
 
@@ -344,7 +344,7 @@ position: relative;
 #room-price {
     font-family: "Cormorant Garamond", serif;
     font-size: 25px;
-    /* 🔥 un peu plus visible */
+    /* ?? un peu plus visible */
     font-weight: 700;
 
     color: #6b4e2f;
@@ -409,9 +409,9 @@ position: relative;
     width: 100%;
     max-width: 600px;
     height: 380px;
-    /* 🔥 taille fixe */
+    /* ?? taille fixe */
     object-fit: cover;
-    /* 🔥 crop propre */
+    /* ?? crop propre */
     border-radius: 20px;
 }
 
@@ -451,9 +451,9 @@ position: relative;
     backdrop-filter: blur(10px);
 }
 
-/* bouton retour stylé */
+/* bouton retour styl� */
 .hotel-close {
-    position: relative; /* on enlève le absolute */
+    position: relative; /* on enl�ve le absolute */
     top: auto;
     left: auto;
 
@@ -484,7 +484,7 @@ position: relative;
 
 .hotel-overlay-content-wrapper {
     width: 100%;
-    flex: 1;              /* prend tout l’espace restant */
+    flex: 1;              /* prend tout l�espace restant */
     overflow-y: auto;     /* scroll ici uniquement */
     display: flex;
     justify-content: center;

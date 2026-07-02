@@ -8,6 +8,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { preload } from "react-dom";
 import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
 import { defaultCountryForLocale, normalizePhoneE164 } from "@/lib/phone";
@@ -173,6 +174,10 @@ export function TephilinesInvitation({
 }: TephilinesInvitationProps) {
   const { setLocale } = useI18n();
   const c = CONTENT[locale];
+
+  // La texture papier est un background CSS : le navigateur ne la decouvre
+  // qu'apres parsing du CSS. Le preload la telecharge des le debut du rendu.
+  preload("/img/paper_background.webp", { as: "image" });
 
   /* La langue est déterminée par la route : on la fixe au montage pour
      aligner dir/lang du document et la locale envoyée au backend RSVP. */

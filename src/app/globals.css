@@ -66,7 +66,7 @@ html {
 }
 
 body {
-  background: var(--paper-base) url("/img/paper_background.png") repeat;
+  background: var(--paper-base) url("/img/paper_background.webp") repeat;
   background-size: 620px;
   color: var(--text);
   font-family: var(--font-serif);
@@ -166,7 +166,7 @@ button[disabled] {
 .card {
   background:
     linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)),
-    url("/img/paper_background.png") repeat;
+    url("/img/paper_background.webp") repeat;
   background-size: auto, 620px;
   border: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
   border-radius: 14px;
@@ -238,7 +238,7 @@ button[disabled] {
   inset: 0;
   background:
     linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
-    var(--paper-base) url("/img/paper_background.png") repeat;
+    var(--paper-base) url("/img/paper_background.webp") repeat;
   background-size: 100% 100%, 620px;
   display: flex;
   justify-content: center;
@@ -359,7 +359,7 @@ button[disabled] {
   padding: 60px 50px;
   background:
     linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)),
-    url("/img/paper_background.png") repeat;
+    url("/img/paper_background.webp") repeat;
   background-size: auto, 620px;
   border: 6px solid var(--accent);
   border-radius: 250px;
@@ -693,7 +693,7 @@ button[disabled] {
   box-sizing: border-box;
   background:
     linear-gradient(rgba(247, 243, 238, 0.86), rgba(247, 243, 238, 0.7)),
-    url("/img/paper_background.png") repeat;
+    url("/img/paper_background.webp") repeat;
   background-size: auto, 620px;
 }
 .prog-container { width: 100%; max-width: 900px; text-align: center; }
@@ -780,7 +780,7 @@ button[disabled] {
   box-sizing: border-box;
   background:
     linear-gradient(rgba(247, 243, 238, 0.86), rgba(247, 243, 238, 0.5)),
-    url("/img/paper_background.png") repeat;
+    url("/img/paper_background.webp") repeat;
   background-size: auto, 620px;
 }
 .hotels-title {
