@@ -11,29 +11,19 @@ import {
 } from "@react-pdf/renderer";
 import QRCode from "qrcode";
 import { EVENT, FLIGHT, TRIP_NIGHTS } from "@/lib/config";
+import { PDF_THEME } from "@/lib/event-theme";
 import { formatEuro } from "@/lib/pricing";
 import { getHotels } from "@/lib/data";
 import type { Booking } from "@/lib/types";
 
-const C = {
-  navy: "#0e3a4f",       // bleu Égée profond (fonds sombres)
-  navyDeep: "#0a2c3d",
-  gold: "#15607e",       // accent froid (sur fond clair)
-  goldLight: "#d8cbab",  // warm sand (sur fond sombre)
-  ink: "#17181a",
-  cream: "#f4f1ea",
-  paper: "#fbfaf6",
-  muted: "#6b7077",
-  line: "#e1dccf",
-  white: "#ffffff",
-};
+const C = PDF_THEME;
 
 const s = StyleSheet.create({
   page: { backgroundColor: C.cream, paddingTop: 0, paddingBottom: 40, fontFamily: "Helvetica" },
   band: { backgroundColor: C.navy, paddingVertical: 26, paddingHorizontal: 40, textAlign: "center" },
   kicker: { color: C.goldLight, fontSize: 8, letterSpacing: 3, textAlign: "center" },
   bandTitle: { color: C.cream, fontFamily: "Times-Roman", fontSize: 26, marginTop: 6, textAlign: "center" },
-  bandSub: { color: "#cdd8e8", fontSize: 10, marginTop: 4, textAlign: "center" },
+  bandSub: { color: C.onDarkMuted, fontSize: 10, marginTop: 4, textAlign: "center" },
   body: { paddingHorizontal: 40, paddingTop: 26 },
   sectionLabel: { color: C.gold, fontSize: 8, letterSpacing: 3, marginBottom: 10 },
 
@@ -42,7 +32,7 @@ const s = StyleSheet.create({
   // Voucher
   vTop: { backgroundColor: C.navy, padding: 18 },
   vHotel: { color: C.cream, fontFamily: "Times-Roman", fontSize: 18 },
-  vMeta: { color: "#cdd8e8", fontSize: 9, marginTop: 3 },
+  vMeta: { color: C.onDarkMuted, fontSize: 9, marginTop: 3 },
   vBody: { padding: 18 },
   statRow: { flexDirection: "row", marginBottom: 14 },
   stat: { width: "25%" },
@@ -79,7 +69,7 @@ const s = StyleSheet.create({
   stub: { width: 132, backgroundColor: C.navy, padding: 14, justifyContent: "space-between" },
   stubKicker: { color: C.goldLight, fontSize: 7, letterSpacing: 1.5 },
   stubTitle: { color: C.cream, fontFamily: "Times-Roman", fontSize: 13, marginTop: 4 },
-  stubDates: { color: "#c4d2d9", fontSize: 7, marginTop: 6 },
+  stubDates: { color: C.onDarkMuted, fontSize: 7, marginTop: 6 },
   stubName: { color: C.cream, fontSize: 10, marginTop: 2 },
   qr: { width: 54, height: 54, marginTop: 8, backgroundColor: C.white, padding: 3, borderRadius: 4 },
   footer: { textAlign: "center", color: C.muted, fontSize: 8, marginTop: 8 },
@@ -355,7 +345,7 @@ export async function travelDocsBuffer(booking: Booking): Promise<Buffer> {
       QRCode.toDataURL(`TBPA|${ref}|${i + 1}|${p.firstName} ${p.lastName}`, {
         margin: 0,
         width: 160,
-        color: { dark: "#0e3a4f", light: "#ffffff" },
+        color: { dark: PDF_THEME.navyDeep, light: PDF_THEME.white },
       }).catch(() => ""),
     ),
   );
