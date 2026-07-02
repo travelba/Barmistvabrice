@@ -125,8 +125,8 @@ export async function sendConfirmationWhatsapp(
   }
   const contentSid =
     locale === "he"
-      ? process.env.TWILIO_WA_TEMPLATE_BOOKING_HE
-      : process.env.TWILIO_WA_TEMPLATE_BOOKING_FR;
+      ? process.env.TWILIO_WA_TEMPLATE_BOOKING_CONFIRMATION_HE
+      : process.env.TWILIO_WA_TEMPLATE_BOOKING_CONFIRMATION_FR;
   if (!contentSid) {
     console.warn("[whatsapp] template BOOKING manquant pour la langue", locale);
     return;
