@@ -50,10 +50,25 @@ export function toWhatsappAddress(raw: string, defaultCountry = "33"): string | 
 }
 
 function ceremonyDateLabel(locale: Locale): string {
-  return new Date(EVENT.tephilinesDate).toLocaleDateString(
-    locale === "he" ? "he-IL" : "fr-FR",
-    { weekday: "long", day: "numeric", month: "long", year: "numeric" },
-  );
+  const date = new Date(EVENT.tephilinesDate);
+  const lang = locale === "he" ? "he-IL" : "fr-FR";
+  // timeZone explicite : les serveurs Vercel tournent en UTC, sans elle
+  // l'heure affichee serait decalee (07:00 au lieu de 09:00).
+  const dateStr = date.toLocaleDateString(lang, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Europe/Paris",
+  });
+  const timeStr = date.toLocaleTimeString(lang, {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Paris",
+  });
+  return locale === "he"
+    ? `${dateStr}, ${timeStr}`
+    : `${dateStr} à ${timeStr.replace(":", "h")}`;
 }
 
 async function sendTemplate(opts: {
