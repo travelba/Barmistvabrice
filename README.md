@@ -31,7 +31,7 @@ Pages principales :
 - `/` — page d'accueil (hero, compte à rebours, save the date)
 - `/reservation` — tunnel d'inscription en 5 étapes
 - `/confirmation` — page de confirmation après paiement
-- `/admin` — back-office agence (mot de passe par défaut : `barmitsva2026`)
+- `/admin` — back-office agence (mot de passe par défaut : `2026`)
 
 ## Configuration complète (production)
 

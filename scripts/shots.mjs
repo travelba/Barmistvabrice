@@ -90,7 +90,7 @@ try {
   // 7. Admin — login + dashboard
   await page.goto(`${BASE}/admin/login`, { waitUntil: "networkidle" });
   await page.waitForTimeout(600);
-  await page.fill('input[type="password"]', "barmitsva2026");
+  await page.fill('input[type="password"]', "2026");
   await page.getByRole("button", { name: "Se connecter" }).click();
   await page.waitForTimeout(1500);
   await shot("08-admin-dashboard", { fullPage: true });
