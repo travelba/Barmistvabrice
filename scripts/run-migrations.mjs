@@ -9,6 +9,7 @@ const root = join(__dirname, "..");
 const files = [
   "supabase/migrations/0001_init.sql",
   "supabase/migrations/0002_ceremony.sql",
+  "supabase/migrations/0003_admin_actions.sql",
   "supabase/seed.sql",
 ];
 

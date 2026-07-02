@@ -13,10 +13,14 @@ interface Props {
   booking: Booking | null;
   paid: boolean;
   hotelMeta: { location?: string; stars?: number; photo?: string };
+  /** Lien signé vers le PDF carnet de voyage (calculé côté serveur). */
+  docsUrl: string | null;
 }
 
-export function ConfirmationView({ booking, paid, hotelMeta }: Props) {
-  const { t } = useI18n();
+export function ConfirmationView({ booking, paid, hotelMeta, docsUrl }: Props) {
+  const { t, locale } = useI18n();
+  // Retour vers la page voyage dans la langue du parcours.
+  const homeHref = locale === "he" ? "/weekend-hebrew" : "/week-end";
 
   return (
     <main className="min-h-screen bg-navy px-5 py-16 text-cream">
@@ -89,10 +93,10 @@ export function ConfirmationView({ booking, paid, hotelMeta }: Props) {
         )}
       </div>
 
-      {paid && booking && (
+      {paid && booking && docsUrl && (
         <div className="mx-auto mt-10 max-w-2xl text-center">
           <a
-            href={`/api/documents?booking_id=${booking.id}`}
+            href={docsUrl}
             className="btn-gold inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm"
           >
             <FileDown className="h-4 w-4" /> {t("confirm.downloadPdf")}
@@ -140,7 +144,7 @@ export function ConfirmationView({ booking, paid, hotelMeta }: Props) {
       )}
 
       <div className="mt-14 text-center">
-        <Link href="/" className="btn-gold inline-block rounded-full px-8 py-3 text-sm">
+        <Link href={homeHref} className="btn-gold inline-block rounded-full px-8 py-3 text-sm">
           {t("confirm.backHome")}
         </Link>
       </div>

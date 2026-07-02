@@ -487,3 +487,38 @@
     box-shadow: 0 12px 30px rgba(168, 153, 104, 0.34);
 }
 
+/* Chambre épuisée : bouton neutralisé (dispo lue en direct sur /api/hotels). */
+.card2-page .hotel-reserve-button-disabled,
+.card2-page .hotel-reserve-button-disabled:hover {
+    background: #cfc7bd;
+    border-color: #cfc7bd;
+    color: #f6f2ec;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Indicateur de disponibilité sous le prix de la chambre. */
+.card2-page .room-availability {
+    grid-column: 1 / -1;
+    margin: 6px 0 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.card2-page .room-availability-soldout {
+    color: #a33c2f;
+}
+
+.card2-page .room-availability-low {
+    color: #8a6d3b;
+}
+
+/* Pastille de chambre épuisée dans la liste des chambres. */
+.card2-page .room-buttons button.room-soldout {
+    opacity: 0.55;
+    text-decoration: line-through;
+}
+

@@ -4,8 +4,6 @@ import {
   Luxurious_Script,
   Great_Vibes,
   David_Libre,
-  Fraunces,
-  Inter_Tight,
 } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/i18n/I18nProvider";
@@ -42,20 +40,6 @@ const davidLibre = David_Libre({
   subsets: ["hebrew"],
   display: "swap",
   weight: ["400", "500", "700"],
-});
-
-// --- Polices de l'ancien design (version « classic » /classic) ---
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  display: "swap",
-  style: ["normal", "italic"],
-});
-const interTight = Inter_Tight({
-  variable: "--font-inter-tight",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
 });
 
 // Métadonnées reprises à l'identique du site d'origine (bm-shon-bechet.fr) :
@@ -107,10 +91,13 @@ export default function RootLayout({
     <html
       lang="fr"
       dir="ltr"
-      className={`${cormorant.variable} ${luxurious.variable} ${greatVibes.variable} ${davidLibre.variable} ${fraunces.variable} ${interTight.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${luxurious.variable} ${greatVibes.variable} ${davidLibre.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* Polices nommées + Font Awesome pour le clone fidèle (card3.css / style.css) */}
+        {/* Polices nommées + Font Awesome pour le clone fidèle : les CSS des
+            faire-part (card2/card3) référencent les familles par leur nom
+            littéral, que next/font n'expose pas. Layout racine = toutes pages. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=David+Libre:wght@400;500;700&family=Great+Vibes&family=Luxurious+Script&display=swap"

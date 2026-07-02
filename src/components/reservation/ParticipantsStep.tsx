@@ -19,6 +19,8 @@ export function ParticipantsStep() {
     removePassenger,
     ceremonyAttending,
     setCeremonyAttending,
+    ceremonyGuestCount,
+    setCeremonyGuestCount,
   } = useWizard();
 
   const ceremonyDate = new Date(EVENT.tephilinesDate).toLocaleDateString(
@@ -204,6 +206,28 @@ export function ParticipantsStep() {
             {t("voyage.ceremony.no")}
           </button>
         </div>
+
+        {ceremonyAttending && (
+          <div className="mt-4 max-w-xs">
+            <label className="field-label" htmlFor="ceremonyGuestCount">
+              {t("voyage.ceremony.guests")}
+            </label>
+            <input
+              id="ceremonyGuestCount"
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={50}
+              className="field"
+              value={ceremonyGuestCount}
+              onChange={(e) =>
+                setCeremonyGuestCount(
+                  Math.max(0, Math.min(50, parseInt(e.target.value, 10) || 0)),
+                )
+              }
+            />
+          </div>
+        )}
       </div>
     </div>
   );

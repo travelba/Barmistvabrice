@@ -172,6 +172,8 @@ function BoardingPassPdf({
           <Text style={s.stubDates}>09–11 OCT 2026</Text>
         </View>
         <View>
+          {/* Image de @react-pdf/renderer : pas d'attribut alt (faux positif a11y). */}
+          {/* eslint-disable-next-line jsx-a11y/alt-text */}
           {qr && <Image src={qr} style={s.qr} />}
           <Text style={[s.stubKicker, { marginTop: 8 }]}>PASSAGER</Text>
           <Text style={s.stubName}>{name}</Text>
@@ -219,6 +221,7 @@ function TravelDocs({
           <View style={s.card}>
             <View style={s.vTop}>
               {hotel.photoDataUri && (
+                // eslint-disable-next-line jsx-a11y/alt-text -- Image react-pdf, pas de prop alt
                 <Image src={hotel.photoDataUri} style={{ height: 120, marginBottom: 10, borderRadius: 6 }} />
               )}
               <Text style={s.vHotel}>{booking.hotelName}</Text>

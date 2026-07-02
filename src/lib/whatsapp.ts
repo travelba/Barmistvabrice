@@ -1,4 +1,5 @@
 import { appUrl, EVENT } from "./config";
+import { bookingDocsPath } from "./doc-token";
 import { formatEuro } from "./pricing";
 import type { Booking, CeremonyRsvp, Locale } from "./types";
 
@@ -115,7 +116,7 @@ export async function sendConfirmationWhatsapp(
     console.warn("[whatsapp] template BOOKING manquant pour la langue", locale);
     return;
   }
-  const docsUrl = `${appUrl()}/api/documents?booking_id=${b.id}`;
+  const docsUrl = `${appUrl()}${bookingDocsPath(b.id)}`;
   await sendTemplate({
     to,
     contentSid,

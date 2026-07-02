@@ -90,10 +90,10 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 117700,
         "description": "3 Personnes ou 2 adultes 2 enfants — 1177 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87719/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87720/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87721/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87722/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
+          "/hotels/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-suite-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
         ],
         "stockTotal": 3,
         "booked": 0,
@@ -107,12 +107,12 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 175200,
         "description": "3 Personnes ou 2 adultes 2 enfants — 1752 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87747/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87748/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87749/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87750/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87751/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-7_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87745/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-6_800x800_auto.jpg"
+          "/hotels/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-7_800x800_auto.jpg",
+          "/hotels/luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-6_800x800_auto.jpg"
         ],
         "stockTotal": 3,
         "booked": 0,
@@ -126,9 +126,9 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 252000,
         "description": "4 Personnes — 2520 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87736/2-bedroom-luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87737/2-bedroom-luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87735/2-bedroom-luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
+          "/hotels/2-bedroom-luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/2-bedroom-luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/2-bedroom-luxury-sea-view-pool-suite-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
         ],
         "stockTotal": 3,
         "booked": 0,
@@ -142,10 +142,10 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 195100,
         "description": "4 Personnes — 1951 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87727/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87728/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87729/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87730/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
+          "/hotels/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/2-bedroom-coral-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -159,11 +159,11 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 228700,
         "description": "4 Personnes — 2287 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87756/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87757/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87758/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-5_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87759/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87760/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
+          "/hotels/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-5_800x800_auto.jpg",
+          "/hotels/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/2-bedroom-crystal-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -177,10 +177,10 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 246300,
         "description": "4 Personnes — 2463 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87701/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87702/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87703/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-5_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87700/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
+          "/hotels/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-5_800x800_auto.jpg",
+          "/hotels/3-bedroom-emerald-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -194,8 +194,8 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 246300,
         "description": "6 Personnes — 2463 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87743/3-bedroom-pearl-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87744/3-bedroom-pearl-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
+          "/hotels/3-bedroom-pearl-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/3-bedroom-pearl-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -209,10 +209,10 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 326000,
         "description": "6 Personnes — 3260 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87772/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87773/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87774/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87771/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
+          "/hotels/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/3-bedroom-lapis-lazuli-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -226,9 +226,9 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 294700,
         "description": "6 Personnes — 2947 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87705/3-bedroom-sapphire-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87706/3-bedroom-sapphire-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87704/3-bedroom-sapphire-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
+          "/hotels/3-bedroom-sapphire-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/3-bedroom-sapphire-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/3-bedroom-sapphire-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -242,9 +242,9 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 324300,
         "description": "6 Personnes — 3243 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87716/4-bedroom-amethyst-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87718/4-bedroom-amethyst-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87715/4-bedroom-amethyst-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
+          "/hotels/4-bedroom-amethyst-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/4-bedroom-amethyst-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/4-bedroom-amethyst-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -258,13 +258,13 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 294700,
         "description": "8 Personnes — 2947 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87765/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87766/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87767/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-8_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87768/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87769/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-6_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87770/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-7_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87763/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
+          "/hotels/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-8_800x800_auto.jpg",
+          "/hotels/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-6_800x800_auto.jpg",
+          "/hotels/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-7_800x800_auto.jpg",
+          "/hotels/4-bedroom-topaz-sea-view-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -278,9 +278,9 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 319800,
         "description": "8 Personnes — 3198 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87789/4-bedroom-ruby-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87790/4-bedroom-ruby-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87788/4-bedroom-ruby-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
+          "/hotels/4-bedroom-ruby-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/4-bedroom-ruby-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/4-bedroom-ruby-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -294,10 +294,10 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 348800,
         "description": "8 Personnes — 3488 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87732/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87733/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87734/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87731/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
+          "/hotels/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/4-bedroom-diamond-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -311,10 +311,10 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 331700,
         "description": "10 Personnes — 3317 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87753/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87754/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87755/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87752/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
+          "/hotels/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/5-bedroom-tanzanite-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,
@@ -328,16 +328,16 @@ export const HOTELS_SEED: Hotel[] = [
         "priceCents": 383500,
         "description": "10 Personnes — 3835 € / nuit (séjour de 2 nuits).",
         "photos": [
-          "https://media.privateupgrades.com/_data/default-room_image/17/87777/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-5_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87778/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-10_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87779/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-9_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87780/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87781/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87782/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87783/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-8_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87784/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87775/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-6_800x800_auto.jpg",
-          "https://media.privateupgrades.com/_data/default-room_image/17/87776/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-7_800x800_auto.jpg"
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-5_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-10_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-9_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-2_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-3_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-4_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-8_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-1_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-6_800x800_auto.jpg",
+          "/hotels/5-bedroom-turquoise-pool-villa-santa-marina-a-luxury-collection-resort-mykonos-7_800x800_auto.jpg"
         ],
         "stockTotal": 1,
         "booked": 0,

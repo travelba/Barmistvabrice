@@ -11,7 +11,8 @@ remplit automatiquement un Google Sheet et notifie l'agence par e-mail.
 - **Supabase** (Postgres) — hôtels, chambres, inventaire, réservations, passagers
 - **Stripe Checkout** + webhook — paiement EUR (frais à la charge de l'agence)
 - **Google Sheets API** — listing automatique
-- **Resend** — e-mails de confirmation (invité + agence)
+- **Twilio WhatsApp** — confirmations envoyées à l'invité (réservation + RSVP)
+- **Resend** — e-mails de notification à l'agence
 - **i18n FR / Hébreu** avec support RTL
 - Déploiement **Vercel**
 
@@ -28,9 +29,10 @@ npm run dev
 ```
 
 Pages principales :
-- `/` — page d'accueil (hero, compte à rebours, save the date)
-- `/reservation` — tunnel d'inscription en 5 étapes
-- `/confirmation` — page de confirmation après paiement
+- `/` — invitation Téphilines (FR, version hébreu : `/teph-he`)
+- `/tephilines` + `/week-end` — invitation complète Téphilines + voyage Mykonos (HE : `/tephilines-hebrew` + `/weekend-hebrew`)
+- `/reservation` — tunnel d'inscription en 4 étapes (participants, hôtel, chambres, récapitulatif)
+- `/confirmation` — page de confirmation après paiement (PDF, bons, boarding passes)
 - `/admin` — back-office agence (mot de passe par défaut : `barmitsva2026`)
 
 ## Configuration complète (production)
@@ -40,8 +42,10 @@ Copier `.env.example` en `.env.local` et renseigner les variables.
 ### 1. Supabase
 
 1. Créer un projet sur [supabase.com](https://supabase.com).
-2. Dans le SQL Editor, exécuter `supabase/migrations/0001_init.sql` puis `supabase/seed.sql`.
-3. Renseigner `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
+2. Dans le SQL Editor, exécuter dans l'ordre `supabase/migrations/0001_init.sql`,
+   `0002_ceremony.sql`, `0003_admin_actions.sql`, puis `supabase/seed.sql`
+   (ou lancer `node scripts/run-migrations.mjs` avec `DATABASE_URL` défini).
+3. Renseigner `NEXT_PUBLIC_SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`.
 
 > Remplacer ensuite les données des 2 hôtels (noms, chambres, capacités, prix, places, photos)
 > dans `supabase/seed.sql` (ou directement en base) par les vraies informations du client.
@@ -60,12 +64,23 @@ Copier `.env.example` en `.env.local` et renseigner les variables.
 3. Créer un onglet nommé `Inscriptions`.
 4. Renseigner `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_SHEET_ID`.
 
-### 4. Resend (e-mails)
+### 4. Resend (e-mails agence)
+
+Les e-mails ne sont envoyés qu'à l'agence (nouvelle inscription / RSVP) ;
+l'invité reçoit ses confirmations par WhatsApp.
 
 1. Créer une clé API Resend et vérifier un domaine d'envoi.
 2. Renseigner `RESEND_API_KEY`, `EMAIL_FROM`, `AGENCY_NOTIFY_EMAIL`.
 
-### 5. Admin
+### 5. Twilio WhatsApp (confirmations invité)
+
+1. Créer un compte Twilio avec un expéditeur WhatsApp approuvé (`TWILIO_ACCOUNT_SID`,
+   `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`).
+2. Créer et faire approuver les 6 templates (BOOKING / RSVP_YES / RSVP_NO × FR/HE)
+   dans le Content Template Builder, puis renseigner les `TWILIO_WA_TEMPLATE_*`
+   (détail des variables dans `.env.example`).
+
+### 6. Admin
 
 Définir `ADMIN_PASSWORD` et `ADMIN_SECRET`.
 
@@ -99,7 +114,7 @@ src/
   lib/                       config, data, pricing, stripe, sheets, email, fulfillment
   i18n/                      Dictionnaires FR/Hébreu + provider
 supabase/
-  migrations/0001_init.sql   Schéma + fonctions atomiques (anti-survente)
+  migrations/                Schéma + fonctions atomiques (0001 à 0003)
   seed.sql                   Données de démonstration
 ```
 
@@ -107,6 +122,7 @@ supabase/
 
 - Les montants sont **toujours recalculés côté serveur** (`computePrice`) — les prix envoyés par le
   client ne sont jamais utilisés.
-- L'inventaire est protégé contre la survente par des **holds temporaires** et une fonction Postgres
-  atomique (`reserve_booking`) avec verrouillage de ligne.
+- L'inventaire est protégé contre la survente par des **holds** posés à la création de la
+  réservation et une fonction Postgres atomique (`reserve_booking`) avec verrouillage de ligne.
+  Une réservation en attente bloque ses places jusqu'à annulation ou relance depuis le back-office.
 - L'accès aux données passe par la clé `service_role` ; RLS est activé sans policy publique.

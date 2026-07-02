@@ -3,20 +3,23 @@ import { isAdminAuthed } from "@/lib/admin-auth";
 import { getHotels, listBookings, listCeremonyRsvps } from "@/lib/data";
 import { formatEuro } from "@/lib/pricing";
 import { isSupabaseConfigured } from "@/lib/config";
+import { adminT, adminDateLocale, resolveAdminLang } from "@/lib/admin-i18n";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 import { BookingActions } from "@/components/admin/BookingActions";
 
 export const dynamic = "force-dynamic";
 
-const STATUS_LABEL: Record<string, string> = {
-  paid: "Payé",
-  pending: "En attente",
-  cancelled: "Annulé",
-  expired: "Expiré",
-};
-
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}) {
   if (!(await isAdminAuthed())) redirect("/admin/login");
+
+  const lang = resolveAdminLang((await searchParams).lang);
+  const t = adminT(lang);
+  const dateLocale = adminDateLocale(lang);
+  const otherLangHref = lang === "he" ? "/admin" : "/admin?lang=he";
 
   const [hotels, bookings, rsvps] = await Promise.all([
     getHotels(),
@@ -35,59 +38,69 @@ export default async function AdminPage() {
     .reduce((acc, b) => acc + b.passengerCount + b.ceremonyGuestCount, 0);
   const ceremonyTotal = ceremonyFromRsvp + ceremonyFromTrip;
 
+  const statusLabel: Record<string, string> = {
+    paid: t("status.paid"),
+    pending: t("status.pending"),
+    cancelled: t("status.cancelled"),
+    expired: t("status.expired"),
+  };
+
   return (
-    <main className="min-h-screen bg-cream">
+    <main className="min-h-screen bg-cream" dir={lang === "he" ? "rtl" : "ltr"}>
       <header className="border-b border-navy/10 bg-navy text-cream">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
           <div>
-            <p className="kicker text-gold-light">Espace agence</p>
+            <p className="kicker text-gold-light">{t("header.kicker")}</p>
             <h1 className="font-serif text-2xl">Bar Mitsvah Shon Bechet</h1>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/api/admin/export" className="btn-gold rounded-full px-4 py-2 text-sm">
-              Export CSV
+            <a
+              href={otherLangHref}
+              className="rounded-full border border-cream/30 px-3 py-2 text-sm text-cream transition hover:bg-cream/10"
+            >
+              {t("header.lang")}
             </a>
-            <AdminLogout />
+            <a href="/api/admin/export" className="btn-gold rounded-full px-4 py-2 text-sm">
+              {t("header.export")}
+            </a>
+            <AdminLogout lang={lang} />
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-6xl space-y-10 px-5 py-10">
         {!isSupabaseConfigured && (
-          <p className="rounded-lg bg-gold/15 px-4 py-3 text-sm text-navy">
-            Mode démonstration (Supabase non configuré) — les données ne sont pas persistées entre les
-            redémarrages du serveur.
-          </p>
+          <p className="rounded-lg bg-gold/15 px-4 py-3 text-sm text-navy">{t("demo.notice")}</p>
         )}
 
         {/* KPIs */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <Kpi label="Réservations payées" value={String(paid.length)} />
-          <Kpi label="Passagers (vols)" value={String(passengers)} />
-          <Kpi label="Présents cérémonie" value={String(ceremonyTotal)} />
-          <Kpi label="Chiffre d'affaires" value={formatEuro(revenue)} />
+          <Kpi label={t("kpi.paid")} value={String(paid.length)} />
+          <Kpi label={t("kpi.passengers")} value={String(passengers)} />
+          <Kpi label={t("kpi.ceremony")} value={String(ceremonyTotal)} />
+          <Kpi label={t("kpi.revenue")} value={formatEuro(revenue)} />
         </div>
 
         {/* Disponibilites */}
         <section>
-          <h2 className="font-serif text-2xl text-navy">Places restantes</h2>
+          <h2 className="font-serif text-2xl text-navy">{t("stock.title")}</h2>
           <div className="mt-4 grid gap-6 md:grid-cols-2">
             {hotels.map((h) => (
               <div key={h.id} className="card rounded-2xl p-5">
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif text-xl text-navy">{h.name}</h3>
                   <span className="rounded-full bg-navy px-3 py-1 text-xs text-cream">
-                    {h.remaining} restantes
+                    {h.remaining} {t("stock.remaining")}
                   </span>
                 </div>
                 <table className="mt-4 w-full text-sm">
                   <thead>
-                    <tr className="text-left text-muted">
-                      <th className="pb-2 font-medium">Chambre</th>
-                      <th className="pb-2 text-center font-medium">Cap.</th>
-                      <th className="pb-2 text-center font-medium">Stock</th>
-                      <th className="pb-2 text-center font-medium">Réservées</th>
-                      <th className="pb-2 text-center font-medium">Dispo</th>
+                    <tr className="text-start text-muted">
+                      <th className="pb-2 text-start font-medium">{t("stock.room")}</th>
+                      <th className="pb-2 text-center font-medium">{t("stock.capacity")}</th>
+                      <th className="pb-2 text-center font-medium">{t("stock.stock")}</th>
+                      <th className="pb-2 text-center font-medium">{t("stock.booked")}</th>
+                      <th className="pb-2 text-center font-medium">{t("stock.available")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -109,33 +122,35 @@ export default async function AdminPage() {
 
         {/* Inscriptions */}
         <section>
-          <h2 className="font-serif text-2xl text-navy">Inscriptions ({bookings.length})</h2>
+          <h2 className="font-serif text-2xl text-navy">
+            {t("bookings.title")} ({bookings.length})
+          </h2>
           <div className="mt-4 overflow-x-auto card rounded-2xl">
             <table className="w-full min-w-[760px] text-sm">
-              <thead className="bg-navy/5 text-left text-muted">
+              <thead className="bg-navy/5 text-muted">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Groupe</th>
-                  <th className="px-4 py-3 font-medium">Contact</th>
-                  <th className="px-4 py-3 font-medium">Hôtel</th>
-                  <th className="px-4 py-3 text-center font-medium">Pax</th>
-                  <th className="px-4 py-3 text-right font-medium">Total</th>
-                  <th className="px-4 py-3 text-center font-medium">Statut</th>
-                  <th className="px-4 py-3 text-right font-medium">Actions</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("bookings.date")}</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("bookings.group")}</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("bookings.contact")}</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("bookings.hotel")}</th>
+                  <th className="px-4 py-3 text-center font-medium">{t("bookings.pax")}</th>
+                  <th className="px-4 py-3 text-end font-medium">{t("bookings.total")}</th>
+                  <th className="px-4 py-3 text-center font-medium">{t("bookings.status")}</th>
+                  <th className="px-4 py-3 text-end font-medium">{t("bookings.actions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {bookings.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-4 py-8 text-center text-muted">
-                      Aucune inscription pour le moment.
+                      {t("bookings.empty")}
                     </td>
                   </tr>
                 ) : (
                   bookings.map((b) => (
                     <tr key={b.id} className="border-t border-navy/5">
                       <td className="px-4 py-3 text-muted">
-                        {new Date(b.createdAt).toLocaleDateString("fr-FR")}
+                        {new Date(b.createdAt).toLocaleDateString(dateLocale)}
                       </td>
                       <td className="px-4 py-3 font-medium text-navy">{b.groupName}</td>
                       <td className="px-4 py-3 text-muted">
@@ -145,7 +160,7 @@ export default async function AdminPage() {
                       </td>
                       <td className="px-4 py-3 text-muted">{b.hotelName}</td>
                       <td className="px-4 py-3 text-center text-muted">{b.passengerCount}</td>
-                      <td className="px-4 py-3 text-right font-medium text-navy">
+                      <td className="px-4 py-3 text-end font-medium text-navy">
                         {formatEuro(b.totalCents)}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -158,11 +173,11 @@ export default async function AdminPage() {
                                 : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {STATUS_LABEL[b.status] ?? b.status}
+                          {statusLabel[b.status] ?? b.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right">
-                        <BookingActions bookingId={b.id} status={b.status} />
+                      <td className="px-4 py-3 text-end">
+                        <BookingActions bookingId={b.id} status={b.status} lang={lang} />
                       </td>
                     </tr>
                   ))
@@ -175,34 +190,32 @@ export default async function AdminPage() {
         {/* RSVP mise des Tephilines (lien ceremonie seul) */}
         <section>
           <h2 className="font-serif text-2xl text-navy">
-            Mise des Téphilines — RSVP ({rsvps.length})
+            {t("rsvp.title")} ({rsvps.length})
           </h2>
-          <p className="mt-1 text-sm text-muted">
-            Réponses reçues via le lien cérémonie (hors voyageurs, comptés dans les inscriptions).
-          </p>
+          <p className="mt-1 text-sm text-muted">{t("rsvp.subtitle")}</p>
           <div className="mt-4 overflow-x-auto card rounded-2xl">
             <table className="w-full min-w-[640px] text-sm">
-              <thead className="bg-navy/5 text-left text-muted">
+              <thead className="bg-navy/5 text-muted">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Nom</th>
-                  <th className="px-4 py-3 font-medium">Contact</th>
-                  <th className="px-4 py-3 text-center font-medium">Réponse</th>
-                  <th className="px-4 py-3 text-center font-medium">Personnes</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("bookings.date")}</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("rsvp.name")}</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("bookings.contact")}</th>
+                  <th className="px-4 py-3 text-center font-medium">{t("rsvp.answer")}</th>
+                  <th className="px-4 py-3 text-center font-medium">{t("rsvp.guests")}</th>
                 </tr>
               </thead>
               <tbody>
                 {rsvps.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-4 py-8 text-center text-muted">
-                      Aucune réponse pour le moment.
+                      {t("rsvp.empty")}
                     </td>
                   </tr>
                 ) : (
                   rsvps.map((r) => (
                     <tr key={r.id} className="border-t border-navy/5">
                       <td className="px-4 py-3 text-muted">
-                        {new Date(r.createdAt).toLocaleDateString("fr-FR")}
+                        {new Date(r.createdAt).toLocaleDateString(dateLocale)}
                       </td>
                       <td className="px-4 py-3 font-medium text-navy">{r.name}</td>
                       <td className="px-4 py-3 text-muted">
@@ -216,7 +229,7 @@ export default async function AdminPage() {
                             r.attending ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {r.attending ? "Présent" : "Absent"}
+                          {r.attending ? t("rsvp.present") : t("rsvp.absent")}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center text-muted">

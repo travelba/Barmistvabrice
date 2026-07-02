@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
+import { resolveHotelByKey, resolveRoomByName } from "@/lib/hotel-match";
+import type { HotelAvailability } from "@/lib/types";
 import "./card2.css";
 import "./card2-hotel.css";
 import "./card2-detail.css";
@@ -39,6 +42,9 @@ const CONTENT = {
     detail: "Détails",
     back: "← Retour",
     reserve: "Réserver",
+    soldout: "Complet",
+    soldoutNote: "Cette chambre n'est plus disponible.",
+    lastOnes: (n: number) => `Plus que ${n} disponible${n > 1 ? "s" : ""}`,
     scrollHint: "Faites défiler pour voir toutes les chambres",
   },
   he: {
@@ -64,6 +70,9 @@ const CONTENT = {
     detail: "פרטים",
     back: "חזרה ←",
     reserve: "להזמין",
+    soldout: "מלא",
+    soldoutNote: "חדר זה אינו זמין יותר.",
+    lastOnes: (n: number) => `נותרו רק ${n}`,
     scrollHint: "גללו כדי לראות את כל החדרים",
   },
 };
@@ -112,11 +121,11 @@ const PROGRAM: ProgDay[] = [
 ];
 
 /* Cartes hôtels : ordre identique à l'original (Santa Marina, Once, Avion). */
-const HOTEL_CARDS: { key: string; name: string; img: string }[] = [
-  { key: "hotelB", name: "Santa Marina - Mykonos", img: "/img/AerialandBeachSantaMarina.jpg" },
-  { key: "hotelA", name: "Once in Mykonos", img: "/img/once.webp" },
+const HOTEL_CARDS: { key: string; name: string; img: string; w: number; h: number }[] = [
+  { key: "hotelB", name: "Santa Marina - Mykonos", img: "/img/AerialandBeachSantaMarina.jpg", w: 1216, h: 560 },
+  { key: "hotelA", name: "Once in Mykonos", img: "/img/once.webp", w: 1920, h: 1280 },
 ];
-const FLIGHT_CARD = { key: "avion", name: "Boeing 737-800", img: "/img/avion.jpeg" };
+const FLIGHT_CARD = { key: "avion", name: "Boeing 737-800", img: "/img/avion.jpeg", w: 678, h: 443 };
 
 type Room = { name: string; capacity: string; price: string; images: string[] };
 type Hotel = { name: string; rooms: Room[] };
@@ -217,6 +226,34 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
       .catch(() => setHotels(null));
   }, [locale]);
 
+  /* Disponibilités réelles (/api/hotels) superposées au contenu statique :
+     permet d'afficher "Complet" et de bloquer la réservation d'une chambre
+     épuisée directement depuis la vitrine. En cas d'échec, on n'affiche
+     simplement aucune information de stock. */
+  const [liveHotels, setLiveHotels] = useState<HotelAvailability[]>([]);
+  useEffect(() => {
+    fetch("/api/hotels", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.hotels) setLiveHotels(d.hotels as HotelAvailability[]);
+      })
+      .catch(() => {});
+  }, []);
+
+  /** Chambres restantes pour (hotelKey, roomName) ; null = inconnu. */
+  const roomAvailability = useCallback(
+    (hotelKey: string | null, roomName: string | undefined): number | null => {
+      if (!hotelKey || hotelKey === "avion" || !roomName || liveHotels.length === 0) {
+        return null;
+      }
+      const hotel = resolveHotelByKey(hotelKey, liveHotels);
+      if (!hotel) return null;
+      const rt = resolveRoomByName(hotel, roomName);
+      return rt ? rt.available : null;
+    },
+    [liveHotels],
+  );
+
   const openHotel = useCallback((key: string) => {
     setOpenKey(key);
     setRoomIndex(0);
@@ -242,6 +279,8 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
   const currentHotel = openKey && hotels ? hotels[openKey] : null;
   const currentRoom = currentHotel?.rooms[roomIndex] ?? null;
   const isFlight = openKey === "avion";
+  const currentAvailability = roomAvailability(openKey, currentRoom?.name);
+  const currentSoldOut = currentAvailability === 0;
 
   const prevImg = useCallback(() => {
     if (!currentRoom) return;
@@ -263,7 +302,14 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
         style={{ opacity: revealed ? 0 : 1, pointerEvents: revealed ? "none" : "auto" }}
       >
         <div id="overlay-content" className="overlay-content">
-          <img src="/img/logo_shine_marron_sans_fond.png" className="overlay-logo" alt="Logo" />
+          <Image
+            src="/img/logo_shine_marron_sans_fond.png"
+            width={1000}
+            height={1111}
+            className="overlay-logo"
+            alt="Logo"
+            priority
+          />
           <p className="overlay-subtitle">
             {c.overlaySubtitle}
             <br />
@@ -291,7 +337,7 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
 
       {/* Changement de langue */}
       <a href={flagHref} className="language-switch" aria-label={c.flagLabel} title={c.flagLabel}>
-        <img src={c.flag} alt="" />
+        <Image src={c.flag} width={52} height={52} alt="" />
       </a>
 
       {/* Navigation */}
@@ -328,7 +374,7 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
 
             <div className="presentation-main">
               <p className="main-text">{c.mainText}</p>
-              <img src="/img/nom_marron.png" alt="Shon" className="bar-mitsvah-image" />
+              <Image src="/img/nom_marron.png" width={785} height={318} alt="Shon" className="bar-mitsvah-image" />
             </div>
 
             <div className="tribute">
@@ -338,7 +384,7 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
               </p>
             </div>
           </div>
-          <img src="/img/logo_shine_marron_sans_fond.png" alt="Logo" className="section-logo-bg" />
+          <Image src="/img/logo_shine_marron_sans_fond.png" width={1000} height={1111} alt="Logo" className="section-logo-bg" />
         </div>
       </section>
 
@@ -398,7 +444,7 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
             <div key={h.key} className="hotel-card" onClick={() => openHotel(h.key)}>
               <h3 className="hotel-name">{h.name}</h3>
               <div className="hotel-media">
-                <img src={h.img} className="hotel-img" alt={h.name} />
+                <Image src={h.img} width={h.w} height={h.h} className="hotel-img" alt={h.name} />
                 <button type="button" className="hotel-detail-button">
                   <i className="fa-solid fa-circle-info" aria-hidden="true"></i>
                   {" "}
@@ -414,7 +460,13 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
           <div className="hotel-card" onClick={() => openHotel(FLIGHT_CARD.key)}>
             <h3 className="hotel-name">{FLIGHT_CARD.name}</h3>
             <div className="hotel-media">
-              <img src={FLIGHT_CARD.img} className="hotel-img" alt={FLIGHT_CARD.name} />
+              <Image
+                src={FLIGHT_CARD.img}
+                width={FLIGHT_CARD.w}
+                height={FLIGHT_CARD.h}
+                className="hotel-img"
+                alt={FLIGHT_CARD.name}
+              />
               <button type="button" className="hotel-detail-button">
                 <i className="fa-solid fa-circle-info" aria-hidden="true"></i>
                 {" "}
@@ -443,7 +495,13 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
               </button>
             )}
             {currentRoom && (
-              <img id="slider-img" src={resolveImg(currentRoom.images[imageIndex])} alt="room" />
+              <Image
+                id="slider-img"
+                src={resolveImg(currentRoom.images[imageIndex])}
+                width={800}
+                height={800}
+                alt={currentRoom.name}
+              />
             )}
             {!isFlight && currentRoom && currentRoom.images.length > 1 && (
               <button id="next-img" className="nav-btn next" onClick={nextImg} type="button">
@@ -456,6 +514,15 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
             <h3 id="room-name">{currentRoom?.name}</h3>
             {currentRoom?.capacity && <p id="room-capacity">{currentRoom.capacity}</p>}
             <p id="room-price">{currentRoom?.price}</p>
+            {currentSoldOut ? (
+              <p className="room-availability room-availability-soldout">
+                {c.soldout} — {c.soldoutNote}
+              </p>
+            ) : currentAvailability !== null && currentAvailability <= 2 ? (
+              <p className="room-availability room-availability-low">
+                {c.lastOnes(currentAvailability)}
+              </p>
+            ) : null}
           </div>
 
           {!isFlight && currentHotel && currentHotel.rooms.length > 1 && (
@@ -466,37 +533,50 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
                 </p>
               )}
               <div className={"room-buttons" + (currentHotel.rooms.length > 5 ? " scrollable-rooms" : "")}>
-                {currentHotel.rooms.map((room, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={i === roomIndex ? "active" : ""}
-                    onClick={() => {
-                      setRoomIndex(i);
-                      setImageIndex(0);
-                    }}
-                  >
-                    {room.name}
-                  </button>
-                ))}
+                {currentHotel.rooms.map((room, i) => {
+                  const soldOut = roomAvailability(openKey, room.name) === 0;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={
+                        (i === roomIndex ? "active" : "") + (soldOut ? " room-soldout" : "")
+                      }
+                      onClick={() => {
+                        setRoomIndex(i);
+                        setImageIndex(0);
+                      }}
+                    >
+                      {room.name}
+                      {soldOut ? ` — ${c.soldout}` : ""}
+                    </button>
+                  );
+                })}
               </div>
             </>
           )}
 
           {/* Formulaire d'inscription : la sélection (hôtel + chambre) mène au
-              tunnel de paiement Stripe, avec pré-sélection via query params. */}
-          <a
-            className="hotel-reserve-button"
-            href={
-              `/reservation?hotel=${encodeURIComponent(openKey ?? "")}` +
-              (!isFlight && currentRoom
-                ? `&room=${encodeURIComponent(currentRoom.name)}`
-                : "") +
-              `&lang=${locale}`
-            }
-          >
-            {c.reserve}
-          </a>
+              tunnel de paiement Stripe, avec pré-sélection via query params.
+              Une chambre épuisée ne peut pas être réservée depuis la vitrine. */}
+          {currentSoldOut ? (
+            <span className="hotel-reserve-button hotel-reserve-button-disabled" aria-disabled="true">
+              {c.soldout}
+            </span>
+          ) : (
+            <a
+              className="hotel-reserve-button"
+              href={
+                `/reservation?hotel=${encodeURIComponent(openKey ?? "")}` +
+                (!isFlight && currentRoom
+                  ? `&room=${encodeURIComponent(currentRoom.name)}`
+                  : "") +
+                `&lang=${locale}`
+              }
+            >
+              {c.reserve}
+            </a>
+          )}
         </div>
       </div>
     </div>

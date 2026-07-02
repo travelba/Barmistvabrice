@@ -1,4 +1,5 @@
 import { getBookingById } from "@/lib/data";
+import { verifyBookingDocToken } from "@/lib/doc-token";
 import { travelDocsBuffer } from "@/lib/pdf/travelDocs";
 
 export const runtime = "nodejs";
@@ -9,6 +10,11 @@ export async function GET(req: Request) {
   const bookingId = searchParams.get("booking_id");
   if (!bookingId) {
     return new Response("booking_id manquant", { status: 400 });
+  }
+  // Le PDF contient des donnees personnelles : le lien doit porter le jeton
+  // signe genere cote serveur (WhatsApp, page de confirmation).
+  if (!verifyBookingDocToken(bookingId, searchParams.get("token"))) {
+    return new Response("Lien invalide ou expiré", { status: 403 });
   }
 
   const booking = await getBookingById(bookingId);

@@ -8,6 +8,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
 import "./card3.css";
 
@@ -67,10 +68,12 @@ const CONTENT = {
       prenom: "Prénom",
       summaryTitle: "Récapitulatif",
       answeredNo: "Vous avez répondu non.",
+      noIntro: "Indiquez votre nom afin que la famille soit informée de votre réponse.",
       countSummary: (n: number) => `${n} ${n > 1 ? "personnes" : "personne"}`,
       phoneLabel: "Téléphone (WhatsApp)",
       phonePlaceholder: "+33 6 12 34 56 78",
       phoneHint: "Vous recevrez votre confirmation par WhatsApp.",
+      phoneOptionalHint: "Facultatif — pour recevoir un accusé par WhatsApp.",
       next: "Suivant",
       submit: "Envoyer",
       prev: "Retour",
@@ -128,10 +131,12 @@ const CONTENT = {
       prenom: "שם פרטי",
       summaryTitle: "סיכום",
       answeredNo: "השבתם לא.",
+      noIntro: "אנא ציינו את שמכם כדי שהמשפחה תעודכן בתשובתכם.",
       countSummary: (n: number) => `${n} ${n > 1 ? "אנשים" : "איש"}`,
       phoneLabel: "טלפון (וואטסאפ)",
       phonePlaceholder: "+972 5X XXX XXXX",
       phoneHint: "האישור יישלח אליכם בוואטסאפ.",
+      phoneOptionalHint: "לא חובה — לקבלת אישור בוואטסאפ.",
       next: "הבא",
       submit: "שליחה",
       prev: "חזרה",
@@ -253,7 +258,14 @@ export function TephilinesInvitation({
         style={{ opacity: revealed ? 0 : 1, pointerEvents: revealed ? "none" : "auto" }}
       >
         <div id="overlay-content" className="overlay-content">
-          <img src="/img/logo_shine_sans_fond.png" className="overlay-logo" alt="Logo" />
+          <Image
+            src="/img/logo_shine_sans_fond.png"
+            width={234}
+            height={260}
+            className="overlay-logo"
+            alt="Logo"
+            priority
+          />
           <p className="overlay-subtitle">
             {c.overlaySubtitle}
             <br />
@@ -295,7 +307,7 @@ export function TephilinesInvitation({
         aria-label={c.flagLabel}
         title={c.flagLabel}
       >
-        <img src={c.flag} alt="" />
+        <Image src={c.flag} width={52} height={52} alt="" />
       </a>
 
       {/* Navigation */}
@@ -323,7 +335,7 @@ export function TephilinesInvitation({
         <div className="presentation-box">
           <div className="hebrew-letter">בס״ד</div>
 
-          <img src="/img/nom.png" alt="Shon" className="bar-mitsvah-image" />
+          <Image src="/img/nom.png" width={516} height={209} alt="Shon" className="bar-mitsvah-image" />
           <h2 className="name-david-moshe" style={{ color: "#8a8a8a", fontSize: "60px" }}>
             {c.davidMoshe}
           </h2>
@@ -351,7 +363,7 @@ export function TephilinesInvitation({
               </p>
             </div>
           </div>
-          <img src="/img/logo_shine_sans_fond.png" alt="Logo" className="section-logo-bg" />
+          <Image src="/img/logo_shine_sans_fond.png" width={234} height={260} alt="Logo" className="section-logo-bg" />
         </div>
       </section>
 
@@ -386,7 +398,7 @@ export function TephilinesInvitation({
         <div className="synagogue-text-silver">
           <div className="hebrew-letter">בס״ד</div>
           <h2 className="section-title">{c.sectionTitle}</h2>
-          <img src="/img/oukchartam.png" alt="Oukchartam" className="oukchartam-image" />
+          <Image src="/img/oukchartam.png" width={1684} height={626} alt="Oukchartam" className="oukchartam-image" />
           <p className="synagogue-intro">
             {c.synIntro[0]}
             <br />
@@ -425,7 +437,7 @@ export function TephilinesInvitation({
           <a href={WAZE_URL} className="waze-button" target="_blank" rel="noreferrer">
             {c.waze}
           </a>
-          <img src="/img/logo_shine_sans_fond.png" alt="Logo" className="section-logo-bg" />
+          <Image src="/img/logo_shine_sans_fond.png" width={234} height={260} alt="Logo" className="section-logo-bg" />
           <br />
         </div>
       </section>
@@ -534,19 +546,27 @@ function ResponseForm({
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (isSending || isComplete || attendance !== "oui") return;
+    if (isSending || isComplete || !attendance) return;
 
-    const firstMissing = syncedPersons.findIndex(
+    const attending = attendance === "oui";
+    // En cas d'absence, seule la premiere personne (le repondant) est envoyee.
+    const personsToSend = attending ? syncedPersons : syncedPersons.slice(0, 1);
+
+    const firstMissing = personsToSend.findIndex(
       (p) => !p.nom.trim() || !p.prenom.trim(),
     );
     if (firstMissing !== -1) {
-      setStep(STEP_PERSON);
-      setCurrentPerson(firstMissing);
+      if (attending) {
+        setStep(STEP_PERSON);
+        setCurrentPerson(firstMissing);
+      }
       setStatus({ msg: r.errorPerson, type: "error" });
       return;
     }
 
-    if (phone.replace(/\D/g, "").length < 8) {
+    const phoneDigits = phone.replace(/\D/g, "");
+    // Telephone obligatoire si present ; facultatif en cas d'absence.
+    if (attending ? phoneDigits.length < 8 : phoneDigits.length > 0 && phoneDigits.length < 8) {
       setStep(STEP_SUMMARY);
       setStatus({ msg: r.errorPhone, type: "error" });
       return;
@@ -559,9 +579,9 @@ function ResponseForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          attending: true,
-          partySize,
-          persons: syncedPersons.map((p) => ({
+          attending,
+          partySize: attending ? partySize : 0,
+          persons: personsToSend.map((p) => ({
             nom: p.nom.trim(),
             prenom: p.prenom.trim(),
           })),
@@ -582,7 +602,7 @@ function ResponseForm({
 
   const showPrev = step !== STEP_ATTENDANCE && !isComplete;
   const showNext = step !== STEP_SUMMARY && !isComplete;
-  const showSubmit = step === STEP_SUMMARY && attendance === "oui" && !isComplete;
+  const showSubmit = step === STEP_SUMMARY && attendance !== null && !isComplete;
 
   return (
     <form id="teph-response-form" className="response-card" noValidate onSubmit={submit}>
@@ -707,7 +727,50 @@ function ResponseForm({
           <div className="response-step response-summary animate-in">
             <h3>{r.summaryTitle}</h3>
             {attendance === "non" ? (
-              <p className="response-summary-count">{r.answeredNo}</p>
+              <>
+                <p className="response-summary-count">{r.answeredNo}</p>
+                {!isComplete && <p className="response-step-note">{r.noIntro}</p>}
+                <div className="response-fields">
+                  <div className="response-field">
+                    <label htmlFor="decline-nom">{r.nom}</label>
+                    <input
+                      id="decline-nom"
+                      type="text"
+                      autoComplete="family-name"
+                      required
+                      value={syncedPersons[0]?.nom ?? ""}
+                      onChange={(e) => setPersonField(0, "nom", e.target.value)}
+                      disabled={isComplete}
+                    />
+                  </div>
+                  <div className="response-field">
+                    <label htmlFor="decline-prenom">{r.prenom}</label>
+                    <input
+                      id="decline-prenom"
+                      type="text"
+                      autoComplete="given-name"
+                      required
+                      value={syncedPersons[0]?.prenom ?? ""}
+                      onChange={(e) => setPersonField(0, "prenom", e.target.value)}
+                      disabled={isComplete}
+                    />
+                  </div>
+                </div>
+                <div className="response-field response-phone-field">
+                  <label htmlFor="rsvp-phone-decline">{r.phoneLabel}</label>
+                  <input
+                    id="rsvp-phone-decline"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder={r.phonePlaceholder}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    disabled={isComplete}
+                  />
+                  <p className="response-phone-hint">{r.phoneOptionalHint}</p>
+                </div>
+              </>
             ) : (
               <>
                 <p className="response-summary-count">{r.countSummary(partySize)}</p>

@@ -57,7 +57,9 @@ export async function createCheckoutSessionForBooking(
     metadata: { bookingId: booking.id },
     success_url: `${appUrl()}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl()}/reservation?canceled=1`,
-    locale: "fr",
+    // La langue du parcours d'origine n'est pas stockee sur la reservation :
+    // on laisse Stripe s'adapter au navigateur de l'invite.
+    locale: "auto",
   });
 
   if (!session.url) throw new Error("URL de paiement indisponible");

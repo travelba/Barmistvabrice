@@ -131,10 +131,16 @@ const ts = `import type { Hotel } from "./types";
  * Genere par scripts/build-seed.mjs.
  */
 export const HOTELS_SEED: Hotel[] = ${JSON.stringify(
-  hotels.map(({ sortOrder, ...h }) => ({
-    ...h,
-    roomTypes: h.roomTypes.map(({ sortOrder: _s, ...rt }) => rt),
-  })),
+  hotels.map((hotel) => {
+    const { ...h } = hotel;
+    delete h.sortOrder;
+    h.roomTypes = h.roomTypes.map((room) => {
+      const { ...rt } = room;
+      delete rt.sortOrder;
+      return rt;
+    });
+    return h;
+  }),
   null,
   2,
 )};

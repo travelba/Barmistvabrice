@@ -1,11 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
+import { adminT, resolveAdminLang, type AdminLang } from "@/lib/admin-i18n";
+
+const subscribeNoop = () => () => {};
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  // Langue lue depuis ?lang=he (hydration-safe : "fr" côté serveur).
+  const lang = useSyncExternalStore<AdminLang>(
+    subscribeNoop,
+    () => resolveAdminLang(new URLSearchParams(window.location.search).get("lang") ?? undefined),
+    () => "fr",
+  );
+  const t = adminT(lang);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,26 +32,29 @@ export default function AdminLoginPage() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.error ?? "Erreur");
+        throw new Error(d.error ?? t("login.error"));
       }
-      router.push("/admin");
+      router.push(lang === "he" ? "/admin?lang=he" : "/admin");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(e instanceof Error ? e.message : t("login.error"));
       setLoading(false);
     }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-navy px-5">
+    <main
+      className="flex min-h-screen items-center justify-center bg-navy px-5"
+      dir={lang === "he" ? "rtl" : "ltr"}
+    >
       <form onSubmit={submit} className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl">
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gold/15">
           <Lock className="h-6 w-6 text-gold" />
         </div>
-        <h1 className="text-center font-serif text-2xl text-navy">Espace agence</h1>
-        <p className="mt-1 text-center text-sm text-muted">Accès réservé à l&apos;administration.</p>
+        <h1 className="text-center font-serif text-2xl text-navy">{t("login.title")}</h1>
+        <p className="mt-1 text-center text-sm text-muted">{t("login.subtitle")}</p>
 
-        <label className="field-label mt-6">Mot de passe</label>
+        <label className="field-label mt-6">{t("login.password")}</label>
         <input
           type="password"
           className="field"
@@ -52,7 +65,7 @@ export default function AdminLoginPage() {
         {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
 
         <button type="submit" disabled={loading} className="btn-gold mt-6 w-full rounded-full py-3 text-sm">
-          {loading ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : "Se connecter"}
+          {loading ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : t("login.submit")}
         </button>
       </form>
     </main>

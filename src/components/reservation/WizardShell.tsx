@@ -1,8 +1,8 @@
 "use client";
 
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, X } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { EVENT } from "@/lib/config";
 import { useWizard } from "./WizardContext";
@@ -13,10 +13,30 @@ import { RoomsStep } from "./RoomsStep";
 import { RecapStep } from "./RecapStep";
 import { OrderSummary } from "./OrderSummary";
 
+/* L'URL ne change pas pendant la vie du composant : abonnement inerte,
+   seule la lecture initiale (cote client) compte. */
+const subscribeNoop = () => () => {};
+const readCanceledParam = () =>
+  new URLSearchParams(window.location.search).get("canceled") === "1";
+
 export function WizardShell() {
   const { t, toggleLocale, locale } = useI18n();
-  const pathname = usePathname();
-  const homeHref = pathname?.startsWith("/classic") ? "/classic/voyage" : "/";
+  const homeHref = locale === "he" ? "/weekend-hebrew" : "/week-end";
+
+  // Retour d'un paiement Stripe abandonne (?canceled=1) : on informe
+  // l'utilisateur qu'il peut reprendre sa reservation.
+  const canceledInUrl = useSyncExternalStore(subscribeNoop, readCanceledParam, () => false);
+  const [canceledDismissed, setCanceledDismissed] = useState(false);
+  const showCanceled = canceledInUrl && !canceledDismissed;
+
+  function dismissCanceled() {
+    setCanceledDismissed(true);
+    const params = new URLSearchParams(window.location.search);
+    params.delete("canceled");
+    const qs = params.toString();
+    window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : ""));
+  }
+
   const {
     loading,
     error,
@@ -47,6 +67,23 @@ export function WizardShell() {
       </header>
 
       <div className="mx-auto max-w-6xl px-5 py-10">
+        {showCanceled && (
+          <div className="mb-8 flex items-start justify-between gap-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <div>
+              <p className="font-medium">{t("cancel.title")}</p>
+              <p className="mt-0.5">{t("cancel.subtitle")}</p>
+            </div>
+            <button
+              type="button"
+              onClick={dismissCanceled}
+              aria-label={t("common.back")}
+              className="shrink-0 rounded-full p-1 transition hover:bg-amber-100"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
         <Stepper current={step} />
 
         {loading ? (
@@ -54,7 +91,7 @@ export function WizardShell() {
             <Loader2 className="h-5 w-5 animate-spin" /> {t("common.loading")}
           </div>
         ) : error ? (
-          <p className="mt-20 text-center text-red-500">{error}</p>
+          <p className="mt-20 text-center text-red-500">{t(error)}</p>
         ) : (
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_340px]">
             <div>

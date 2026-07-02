@@ -114,6 +114,8 @@ export function BoardingPass({
 
         <div className="mt-4">
           {codeSrc ? (
+            // Data URL (QR généré côté serveur) : non optimisable par next/image.
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={codeSrc}
               alt="QR"

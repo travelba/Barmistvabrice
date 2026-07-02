@@ -3,15 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw, Trash2, Copy, Check } from "lucide-react";
+import { adminT, type AdminLang } from "@/lib/admin-i18n";
 
 export function BookingActions({
   bookingId,
   status,
+  lang = "fr",
 }: {
   bookingId: string;
   status: string;
+  lang?: AdminLang;
 }) {
   const router = useRouter();
+  const t = adminT(lang);
   const [loading, setLoading] = useState<null | "relaunch" | "cancel">(null);
   const [url, setUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -31,17 +35,17 @@ export function BookingActions({
         body: JSON.stringify({ bookingId }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Erreur");
+      if (!res.ok) throw new Error(data.error ?? t("actions.error"));
       setUrl(data.url as string);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(e instanceof Error ? e.message : t("actions.error"));
     } finally {
       setLoading(null);
     }
   }
 
   async function cancel() {
-    if (!window.confirm("Libérer la place ? La réservation sera annulée.")) return;
+    if (!window.confirm(t("actions.confirmRelease"))) return;
     setLoading("cancel");
     setError(null);
     try {
@@ -51,10 +55,10 @@ export function BookingActions({
         body: JSON.stringify({ bookingId }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Erreur");
+      if (!res.ok) throw new Error(data.error ?? t("actions.error"));
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
+      setError(e instanceof Error ? e.message : t("actions.error"));
       setLoading(null);
     }
   }
@@ -80,7 +84,7 @@ export function BookingActions({
           className="inline-flex items-center gap-1 rounded-full border border-gold bg-gold/10 px-3 py-1.5 text-xs font-medium text-navy transition hover:bg-gold disabled:opacity-40"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading === "relaunch" ? "animate-spin" : ""}`} />
-          Relancer
+          {t("actions.relaunch")}
         </button>
         <button
           type="button"
@@ -89,7 +93,7 @@ export function BookingActions({
           className="inline-flex items-center gap-1 rounded-full border border-red-300 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-40"
         >
           <Trash2 className="h-3.5 w-3.5" />
-          Libérer
+          {t("actions.release")}
         </button>
       </div>
 
@@ -105,7 +109,7 @@ export function BookingActions({
             type="button"
             onClick={copyUrl}
             className="shrink-0 rounded-md p-1 text-navy transition hover:bg-navy/10"
-            aria-label="Copier le lien"
+            aria-label={t("actions.copy")}
           >
             {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
           </button>

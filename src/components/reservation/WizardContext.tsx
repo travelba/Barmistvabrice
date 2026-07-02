@@ -16,6 +16,7 @@ import type {
   PriceBreakdown,
 } from "@/lib/types";
 import { useI18n } from "@/i18n/I18nProvider";
+import { resolveHotelByKey, resolveRoomByName } from "@/lib/hotel-match";
 
 export interface FlightInfo {
   pricePerPassengerCents: number;
@@ -73,40 +74,8 @@ const Ctx = createContext<WizardValue | null>(null);
 
 const STEP_COUNT = 4;
 
-/* Correspondance entre les cles de la page voyage (/data/hotels.json :
-   hotelA, hotelB…) et les hotels du tunnel (/api/hotels), robuste aux
-   differences d'identifiants (demo vs Supabase) : on retombe sur une
-   recherche par id/nom normalise si la cle n'est pas un id direct. */
-const HOTEL_KEY_ALIASES: Record<string, string[]> = {
-  hotelA: ["once", "once in mykonos"],
-  hotelB: ["santa-marina", "santa marina"],
-};
-const normalizeKey = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-function resolveHotelByKey(
-  key: string,
-  hotels: HotelAvailability[],
-): HotelAvailability | null {
-  const direct = hotels.find((h) => h.id === key);
-  if (direct) return direct;
-  const wanted = (HOTEL_KEY_ALIASES[key] ?? [key]).map(normalizeKey);
-  return (
-    hotels.find((h) => {
-      const hid = normalizeKey(h.id);
-      const hname = normalizeKey(h.name);
-      return wanted.some((w) => w.length > 0 && (hid.includes(w) || hname.includes(w)));
-    }) ?? null
-  );
-}
-
-export function WizardProvider({
-  children,
-  variant = "new",
-}: {
-  children: React.ReactNode;
-  variant?: "new" | "classic";
-}) {
+export function WizardProvider({ children }: { children: React.ReactNode }) {
   const { locale } = useI18n();
-  const basePath = variant === "classic" ? "/classic" : "";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hotels, setHotels] = useState<HotelAvailability[]>([]);
@@ -149,7 +118,8 @@ export function WizardProvider({
         setFlight(data.flight);
         if (data.nights) setNights(data.nights);
       } catch {
-        if (active) setError("Impossible de charger les disponibilités.");
+        // Cle i18n traduite a l'affichage (la langue peut changer apres coup).
+        if (active) setError("common.loadError");
       } finally {
         if (active) setLoading(false);
       }
@@ -188,10 +158,7 @@ export function WizardProvider({
     prefillApplied.current = true;
     setHotelIdState(target.id);
     if (roomName && target.remaining > 0) {
-      const wanted = normalizeKey(roomName);
-      const rt =
-        target.roomTypes.find((r) => normalizeKey(r.name) === wanted) ??
-        target.roomTypes.find((r) => normalizeKey(r.name).includes(wanted));
+      const rt = resolveRoomByName(target, roomName);
       if (rt && rt.available > 0) setRooms({ [rt.id]: 1 });
     }
   }, [hotels]);
@@ -315,7 +282,6 @@ export function WizardProvider({
           ceremonyAttending,
           ceremonyGuestCount,
           locale,
-          variant,
         }),
       });
       const data = await res.json();
@@ -323,7 +289,7 @@ export function WizardProvider({
       if (data.url) {
         window.location.href = data.url;
       } else if (data.demo && data.bookingId) {
-        window.location.href = `${basePath}/confirmation?demo=1&booking_id=${data.bookingId}&lang=${locale}`;
+        window.location.href = `/confirmation?demo=1&booking_id=${data.bookingId}&lang=${locale}`;
       } else {
         throw new Error("Réponse inattendue");
       }
@@ -331,7 +297,7 @@ export function WizardProvider({
       setSubmitError(e instanceof Error ? e.message : "Erreur lors du paiement");
       setSubmitting(false);
     }
-  }, [contact, hotelId, rooms, passengers, ceremonyAttending, ceremonyGuestCount, locale, variant, basePath]);
+  }, [contact, hotelId, rooms, passengers, ceremonyAttending, ceremonyGuestCount, locale]);
 
   const value: WizardValue = {
     loading,
