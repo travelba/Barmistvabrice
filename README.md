@@ -33,7 +33,7 @@ Pages principales :
 - `/tephilines` + `/week-end` — invitation complète Téphilines + voyage Mykonos (HE : `/tephilines-hebrew` + `/weekend-hebrew`)
 - `/reservation` — tunnel d'inscription en 4 étapes (participants, hôtel, chambres, récapitulatif)
 - `/confirmation` — page de confirmation après paiement (PDF, bons, boarding passes)
-- `/admin` — back-office agence (mot de passe par défaut : `barmitsva2026`)
+- `/admin` — back-office agence (mot de passe fixé dans le code : `2026`, bilingue FR/HE via `?lang=he`)
 
 ## Configuration complète (production)
 
@@ -82,7 +82,7 @@ l'invité reçoit ses confirmations par WhatsApp.
 
 ### 6. Admin
 
-Définir `ADMIN_PASSWORD` et `ADMIN_SECRET`.
+Définir `ADMIN_SECRET` si besoin d'invalider les sessions. Le mot de passe admin est fixé à `2026` dans le code.
 
 ## Déploiement Vercel
 
