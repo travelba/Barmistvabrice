@@ -25,6 +25,28 @@ export const EVENT = {
 export const TRIP_NIGHTS = 2;
 
 /**
+ * Code couleur de l'evenement — charte « faire-part de luxe » (theme voyage).
+ * Repris a l'identique de `.theme-taupe` / `:root` dans globals.css afin que le
+ * carnet de voyage (PDF) et les e-mails partagent exactement la meme identite
+ * visuelle que le site (taupe & or sur papier creme).
+ */
+export const BRAND = {
+  taupe: "#b5a08b", // accent principal (taupe)
+  taupeDeep: "#6b4e2f", // brun profond — bandeaux sombres
+  gold: "#a89968", // or chaud — accents / filets sur fond clair
+  goldLight: "#e7d9b6", // or clair — accents sur fond sombre
+  ink: "#5a5a5a", // texte principal
+  muted: "#7a7264", // texte secondaire (brun-gris)
+  cream: "#f4efe4", // papier
+  sand: "#ece6d8", // papier alternatif
+  paper: "#ffffff", // cartes
+  line: "#d8d1c0", // filets / bordures
+  bandText: "#f6f1e6", // texte clair sur bandeaux sombres
+  bandSubText: "#e2d7c3", // sous-texte clair sur bandeaux sombres
+  white: "#ffffff",
+} as const;
+
+/**
  * Vol prive affrete : prix fixe par passager (en centimes d'euro).
  * 890 EUR aller-retour par personne (Boeing 737-800).
  * Identite "compagnie privee" facon billet d'embarquement.
