@@ -132,6 +132,22 @@ export async function sendConfirmationWhatsapp(
       "6": docsUrl,
     },
   });
+
+  // Second message : le carnet de voyage PDF en piece jointe, via un template
+  // "media" dont l'URL du document est la variable {{1}}. Optionnel (best
+  // effort) : si le template n'est pas configure ou que l'envoi echoue, la
+  // confirmation ci-dessus contient deja le lien de telechargement.
+  const docsSid =
+    locale === "he"
+      ? process.env.TWILIO_WA_TEMPLATE_BOOKING_DOCS_HE
+      : process.env.TWILIO_WA_TEMPLATE_BOOKING_DOCS_FR;
+  if (docsSid) {
+    try {
+      await sendTemplate({ to, contentSid: docsSid, variables: { "1": docsUrl } });
+    } catch (e) {
+      console.error("[whatsapp] echec envoi carnet PDF pour", b.id, e);
+    }
+  }
 }
 
 /* ------------------------------------------------------------------ */
