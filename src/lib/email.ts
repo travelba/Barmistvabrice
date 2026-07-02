@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { EVENT } from "./config";
+import { agencyEmailHtml } from "./email-template";
 import { formatEuro } from "./pricing";
 import type { Booking, CeremonyRsvp, Locale } from "./types";
 
@@ -62,15 +63,24 @@ export async function sendConfirmationAgencyEmail(
     from: fromAddress(),
     to: agencyAddress(),
     subject: `Nouvelle inscription — ${b.groupName} (${formatEuro(b.totalCents)})`,
-    html: `<p>Nouvelle réservation confirmée.</p>
-      <p><strong>${b.groupName}</strong> — ${b.email} — ${b.phone}</p>
-      <p>Hôtel : ${b.hotelName}</p>
-      <p>Passagers : ${b.passengerCount}</p>
-      <p>Cérémonie : ${b.ceremonyAttending ? "présent(s)" : "absent(s)"}${
-        b.ceremonyGuestCount ? ` (+${b.ceremonyGuestCount} invité(s))` : ""
-      }</p>
-      <p>Total : ${formatEuro(b.totalCents)}</p>
-      <p>Réf : ${b.id}</p>`,
+    html: agencyEmailHtml({
+      title: "Nouvelle réservation confirmée",
+      subtitle: `${b.groupName} · ${EVENT.destination}`,
+      ref: b.id,
+      rows: [
+        { label: "Groupe", value: `<strong>${b.groupName}</strong>` },
+        { label: "Contact", value: `${b.email}<br>${b.phone}` },
+        { label: "Hôtel", value: b.hotelName },
+        { label: "Passagers", value: String(b.passengerCount) },
+        {
+          label: "Cérémonie",
+          value: `${b.ceremonyAttending ? "présent(s)" : "absent(s)"}${
+            b.ceremonyGuestCount ? ` (+${b.ceremonyGuestCount} invité(s))` : ""
+          }`,
+        },
+        { label: "Total", value: `<strong>${formatEuro(b.totalCents)}</strong>` },
+      ],
+    }),
   });
 }
 
@@ -92,11 +102,19 @@ export async function sendRsvpAgencyEmail(
     from: fromAddress(),
     to: agencyAddress(),
     subject: `RSVP Téphilines — ${r.name} (${r.attending ? "présent" : "absent"})`,
-    html: `<p>Nouvelle réponse à la mise des Téphilines.</p>
-      <p><strong>${r.name}</strong> — ${r.phone || "tél. non fourni"}${
-        r.email ? ` — ${r.email}` : ""
-      }</p>
-      <p>Réponse : ${r.attending ? "présent(e)" : "absent(e)"}</p>
-      <p>Personnes : ${r.guestCount}</p>`,
+    html: agencyEmailHtml({
+      title: "Nouvelle réponse — Téphilines",
+      subtitle: EVENT.tephilinesPlace,
+      ref: r.id,
+      rows: [
+        { label: "Invité", value: `<strong>${r.name}</strong>` },
+        {
+          label: "Contact",
+          value: `${r.phone || "tél. non fourni"}${r.email ? `<br>${r.email}` : ""}`,
+        },
+        { label: "Réponse", value: r.attending ? "présent(e)" : "absent(e)" },
+        { label: "Personnes", value: String(r.guestCount) },
+      ],
+    }),
   });
 }

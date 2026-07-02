@@ -5,6 +5,7 @@ import { toPng } from "html-to-image";
 import QRCode from "qrcode";
 import { Download } from "lucide-react";
 import { BoardingPass } from "./BoardingPass";
+import { EVENT_THEME } from "@/lib/event-theme";
 import { useI18n } from "@/i18n/I18nProvider";
 import type { Passenger } from "@/lib/types";
 
@@ -24,7 +25,7 @@ export function BoardingPasses({ passengers, bookingRef }: Props) {
       passengers.map((p, i) =>
         QRCode.toDataURL(
           `TBPA|${bookingRef}|${i + 1}|${p.firstName} ${p.lastName}`,
-          { margin: 0, width: 200, color: { dark: "#0e3a4f", light: "#ffffff" } },
+          { margin: 0, width: 200, color: { dark: EVENT_THEME.accentDeep, light: EVENT_THEME.white } },
         ).catch(() => ""),
       ),
     ).then((urls) => {

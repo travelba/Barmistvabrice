@@ -93,7 +93,10 @@ h1, h2, h3, .font-serif {
   --accent-hover: #a89968;
   --accent-deep: #6b4e2f;
   --navy: #b5a08b;
+  --navy-deep: #6b4e2f;
+  --aegean: #a89968;
   --gold: #a89968;
+  --gold-light: #e7d9b6;
 }
 
 /* ====================================================================== */
