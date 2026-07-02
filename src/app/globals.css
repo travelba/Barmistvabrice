@@ -191,6 +191,10 @@ button[disabled] {
 /* Champs de formulaire (tunnel) */
 .field {
   width: 100%;
+  /* Les inputs (date notamment) ont une largeur intrinseque : sans min-width 0,
+     ils refusent de retrecir et debordent de leur colonne sur mobile. */
+  min-width: 0;
+  max-width: 100%;
   border: 2px solid rgba(138, 138, 138, 0.38);
   background: rgba(255, 255, 255, 0.92);
   border-radius: 10px;
@@ -200,6 +204,14 @@ button[disabled] {
   font-weight: 600;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   outline: none;
+}
+/* iOS/Safari : le champ date garde un rendu natif inline-flex non compressible
+   et une hauteur differente des champs texte. On force un rendu uniforme. */
+input.field[type="date"] {
+  display: block;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 2.95rem;
 }
 .field:focus {
   border-color: var(--accent);
