@@ -33,6 +33,13 @@ for (const [tab, row] of Object.entries(headers)) {
     console.log(`!! Onglet manquant: ${tab}`);
     continue;
   }
+  if (process.argv.includes("--reset")) {
+    await sheets.spreadsheets.values.clear({
+      spreadsheetId: sheetId,
+      range: `${tab}!A:Z`,
+    });
+    console.log(`Donnees effacees: ${tab}`);
+  }
   await sheets.spreadsheets.values.update({
     spreadsheetId: sheetId,
     range: `${tab}!A1`,
