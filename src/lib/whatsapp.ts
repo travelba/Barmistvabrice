@@ -1,5 +1,5 @@
 import { appUrl, EVENT } from "./config";
-import { bookingDocsPath } from "./doc-token";
+import { bookingDocsFileName, bookingDocsPath } from "./doc-token";
 import { defaultCountryForLocale, normalizePhoneE164 } from "./phone";
 import { formatEuro } from "./pricing";
 import type { Booking, CeremonyRsvp, Locale } from "./types";
@@ -134,16 +134,22 @@ export async function sendConfirmationWhatsapp(
   });
 
   // Second message : le carnet de voyage PDF en piece jointe, via un template
-  // "media" dont l'URL du document est la variable {{1}}. Optionnel (best
-  // effort) : si le template n'est pas configure ou que l'envoi echoue, la
-  // confirmation ci-dessus contient deja le lien de telechargement.
+  // "media" dont l'URL est ancree au domaine — {{1}} ne contient que le nom
+  // de fichier (exigence Meta : URL non entierement variable, extension .pdf).
+  //   Media URL du template : https://<domaine>/api/documents/{{1}}
+  // Optionnel (best effort) : si le template n'est pas configure ou que
+  // l'envoi echoue, la confirmation ci-dessus reste suffisante.
   const docsSid =
     locale === "he"
       ? process.env.TWILIO_WA_TEMPLATE_BOOKING_DOCS_HE
       : process.env.TWILIO_WA_TEMPLATE_BOOKING_DOCS_FR;
   if (docsSid) {
     try {
-      await sendTemplate({ to, contentSid: docsSid, variables: { "1": docsUrl } });
+      await sendTemplate({
+        to,
+        contentSid: docsSid,
+        variables: { "1": bookingDocsFileName(b.id) },
+      });
     } catch (e) {
       console.error("[whatsapp] echec envoi carnet PDF pour", b.id, e);
     }
