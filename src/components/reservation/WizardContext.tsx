@@ -17,6 +17,7 @@ import type {
 } from "@/lib/types";
 import { useI18n } from "@/i18n/I18nProvider";
 import { resolveHotelByKey, resolveRoomByName } from "@/lib/hotel-match";
+import { defaultCountryForLocale, isValidPhone, normalizePhoneE164 } from "@/lib/phone";
 
 export interface FlightInfo {
   pricePerPassengerCents: number;
@@ -244,7 +245,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
         return (
           contact.groupName.trim().length > 1 &&
           emailValid &&
-          contact.phone.trim().length >= 6 &&
+          isValidPhone(contact.phone, defaultCountryForLocale(locale)) &&
           passengers.length > 0 &&
           passengers.every(
             (p) => p.firstName.trim() && p.lastName.trim() && p.dateOfBirth,
@@ -260,7 +261,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       default:
         return false;
     }
-  }, [step, contact, emailValid, hotelId, roomsCount, selectedCapacity, passengers]);
+  }, [step, contact, emailValid, hotelId, roomsCount, selectedCapacity, passengers, locale]);
 
   const goNext = useCallback(() => setStep((s) => Math.min(STEP_COUNT - 1, s + 1)), []);
   const goBack = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
@@ -275,7 +276,13 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contact,
+          contact: {
+            ...contact,
+            // Numero envoye au format international (+33..., +972...).
+            phone:
+              normalizePhoneE164(contact.phone, defaultCountryForLocale(locale)) ??
+              contact.phone,
+          },
           hotelId,
           rooms: Object.entries(rooms).map(([roomTypeId, quantity]) => ({ roomTypeId, quantity })),
           passengers,

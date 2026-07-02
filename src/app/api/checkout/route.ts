@@ -5,6 +5,7 @@ import { getHotels, createPendingBooking, attachStripeSession } from "@/lib/data
 import { computePrice } from "@/lib/pricing";
 import { getStripe } from "@/lib/stripe";
 import { fulfillBooking, recordBookingInSheet } from "@/lib/fulfillment";
+import { defaultCountryForLocale, normalizePhoneE164 } from "@/lib/phone";
 import type { BookingDraft } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -45,8 +46,17 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
   }
-  const draft: BookingDraft = parsed.data;
   const locale = parsed.data.locale ?? "fr";
+  // Telephone stocke en E.164 (FR -> +33, HE -> +972) pour un envoi WhatsApp fiable.
+  const draft: BookingDraft = {
+    ...parsed.data,
+    contact: {
+      ...parsed.data.contact,
+      phone:
+        normalizePhoneE164(parsed.data.contact.phone, defaultCountryForLocale(locale)) ??
+        parsed.data.contact.phone,
+    },
+  };
   // Stripe Checkout ne propose pas l'hebreu : on laisse Stripe detecter ("auto").
   const stripeLocale = locale === "he" ? "auto" : "fr";
 

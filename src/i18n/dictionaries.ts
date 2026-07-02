@@ -104,7 +104,8 @@ export const dictionaries: Record<Locale, Dict> = {
 
     "contact.groupName": "Nom de la famille / du groupe",
     "contact.email": "Adresse e-mail",
-    "contact.phone": "Téléphone",
+    "contact.phone": "Téléphone (WhatsApp)",
+    "contact.phoneInvalid": "Numéro invalide — ex. 06 12 34 56 78 ou +33 6 12 34 56 78.",
 
     "hotel.title": "Choisissez votre hôtel",
     "hotel.subtitle": "Deux adresses d'exception. Les places sont limitées par hôtel.",
@@ -310,7 +311,8 @@ export const dictionaries: Record<Locale, Dict> = {
 
     "contact.groupName": "שם המשפחה / הקבוצה",
     "contact.email": "כתובת אימייל",
-    "contact.phone": "טלפון",
+    "contact.phone": "טלפון (וואטסאפ)",
+    "contact.phoneInvalid": "מספר לא תקין — למשל 050-123-4567.",
 
     "hotel.title": "בחרו את המלון שלכם",
     "hotel.subtitle": "שתי כתובות יוקרה. מספר המקומות מוגבל לכל מלון.",

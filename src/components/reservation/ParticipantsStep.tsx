@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { formatEuro } from "@/lib/pricing";
 import { EVENT } from "@/lib/config";
 import { suggestEmailCorrection } from "@/lib/email-typo";
+import { defaultCountryForLocale, isValidPhone, normalizePhoneE164, phonePlaceholder } from "@/lib/phone";
 import { useWizard } from "./WizardContext";
 
 export function ParticipantsStep() {
@@ -83,12 +84,25 @@ export function ParticipantsStep() {
               <input
                 id="phone"
                 type="tel"
+                inputMode="tel"
+                dir="ltr"
                 className="field"
                 value={contact.phone}
                 onChange={(e) => setContact({ phone: e.target.value })}
-                placeholder="+33 6 12 34 56 78"
+                onBlur={() => {
+                  const normalized = normalizePhoneE164(
+                    contact.phone,
+                    defaultCountryForLocale(locale),
+                  );
+                  if (normalized) setContact({ phone: normalized });
+                }}
+                placeholder={phonePlaceholder(locale)}
                 autoComplete="tel"
               />
+              {contact.phone.trim().length > 0 &&
+                !isValidPhone(contact.phone, defaultCountryForLocale(locale)) && (
+                  <p className="mt-1.5 text-sm text-red-500">{t("contact.phoneInvalid")}</p>
+                )}
             </div>
           </div>
         </div>

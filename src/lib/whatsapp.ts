@@ -1,5 +1,6 @@
 import { appUrl, EVENT } from "./config";
 import { bookingDocsPath } from "./doc-token";
+import { defaultCountryForLocale, normalizePhoneE164 } from "./phone";
 import { formatEuro } from "./pricing";
 import type { Booking, CeremonyRsvp, Locale } from "./types";
 
@@ -26,27 +27,13 @@ export function isWhatsappConfigured(): boolean {
 }
 
 /**
- * Normalise un numero saisi librement en format WhatsApp E.164 (whatsapp:+...).
- * - conserve un numero deja international (+33..., 0033...)
- * - convertit un numero national FR (06..., 07...) en +33
- * `defaultCountry` gere le prefixe par defaut (France ici).
+ * Normalise un numero saisi librement en format WhatsApp (whatsapp:+...).
+ * La normalisation E.164 est partagee avec les formulaires (src/lib/phone.ts) ;
+ * `defaultCountry` gere le prefixe national par defaut (33 = France, 972 = Israel).
  */
 export function toWhatsappAddress(raw: string, defaultCountry = "33"): string | null {
-  if (!raw) return null;
-  let n = raw.trim().replace(/[\s().-]/g, "");
-  if (n.startsWith("+")) {
-    n = "+" + n.slice(1).replace(/\D/g, "");
-  } else if (n.startsWith("00")) {
-    n = "+" + n.slice(2).replace(/\D/g, "");
-  } else {
-    const digits = n.replace(/\D/g, "");
-    if (digits.startsWith("0")) n = `+${defaultCountry}${digits.slice(1)}`;
-    else if (digits.length >= 8) n = `+${digits}`;
-    else return null;
-  }
-  // E.164 : + suivi de 8 a 15 chiffres.
-  if (!/^\+\d{8,15}$/.test(n)) return null;
-  return `whatsapp:${n}`;
+  const e164 = normalizePhoneE164(raw, defaultCountry);
+  return e164 ? `whatsapp:${e164}` : null;
 }
 
 function ceremonyDateLabel(locale: Locale): string {
@@ -118,7 +105,7 @@ export async function sendConfirmationWhatsapp(
     console.warn("[whatsapp] Twilio non configuré — confirmation voyage non envoyée pour", b.id);
     return;
   }
-  const to = toWhatsappAddress(b.phone);
+  const to = toWhatsappAddress(b.phone, defaultCountryForLocale(locale));
   if (!to) {
     console.warn("[whatsapp] téléphone invalide pour", b.id, "-", b.phone);
     return;
@@ -159,7 +146,7 @@ export async function sendRsvpWhatsapp(
     console.warn("[whatsapp] Twilio non configuré — RSVP non notifié pour", r.id);
     return;
   }
-  const to = toWhatsappAddress(r.phone);
+  const to = toWhatsappAddress(r.phone, defaultCountryForLocale(locale));
   if (!to) {
     console.warn("[whatsapp] téléphone invalide pour RSVP", r.id, "-", r.phone);
     return;

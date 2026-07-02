@@ -10,6 +10,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
+import { defaultCountryForLocale, normalizePhoneE164 } from "@/lib/phone";
 import "./card3.css";
 
 /* ------------------------------------------------------------------ */
@@ -71,7 +72,7 @@ const CONTENT = {
       noIntro: "Indiquez votre nom afin que la famille soit informée de votre réponse.",
       countSummary: (n: number) => `${n} ${n > 1 ? "personnes" : "personne"}`,
       phoneLabel: "Téléphone (WhatsApp)",
-      phonePlaceholder: "+33 6 12 34 56 78",
+      phonePlaceholder: "06 12 34 56 78",
       phoneHint: "Vous recevrez votre confirmation par WhatsApp.",
       phoneOptionalHint: "Facultatif — pour recevoir un accusé par WhatsApp.",
       next: "Suivant",
@@ -82,7 +83,7 @@ const CONTENT = {
       errorSend: "Erreur d'envoi. Réessaie dans un instant.",
       errorChoice: "Choisis oui ou non pour continuer.",
       errorPerson: "Complète le nom et le prénom de cette personne.",
-      errorPhone: "Indique un numéro de téléphone valide (format international).",
+      errorPhone: "Indique un numéro de téléphone valide (ex. 06 12 34 56 78 ou +33 6 12 34 56 78).",
     },
   },
   he: {
@@ -134,7 +135,7 @@ const CONTENT = {
       noIntro: "אנא ציינו את שמכם כדי שהמשפחה תעודכן בתשובתכם.",
       countSummary: (n: number) => `${n} ${n > 1 ? "אנשים" : "איש"}`,
       phoneLabel: "טלפון (וואטסאפ)",
-      phonePlaceholder: "+972 5X XXX XXXX",
+      phonePlaceholder: "05X-XXX-XXXX",
       phoneHint: "האישור יישלח אליכם בוואטסאפ.",
       phoneOptionalHint: "לא חובה — לקבלת אישור בוואטסאפ.",
       next: "הבא",
@@ -145,7 +146,7 @@ const CONTENT = {
       errorSend: "שגיאת שליחה. נסו שוב בעוד רגע.",
       errorChoice: "בחרו כן או לא כדי להמשיך.",
       errorPerson: "השלימו שם פרטי ושם משפחה.",
-      errorPhone: "נא להזין מספר טלפון תקין (פורמט בינלאומי).",
+      errorPhone: "נא להזין מספר טלפון תקין (למשל 050-123-4567).",
     },
   },
 };
@@ -500,6 +501,13 @@ function ResponseForm({
     setPartySize((s) => Math.max(1, s + delta));
   }
 
+  // A la sortie du champ, on impose le format international (+33..., +972...)
+  // pour que l'invite voie exactement le numero qui sera utilise.
+  function handlePhoneBlur() {
+    const normalized = normalizePhoneE164(phone, defaultCountryForLocale(locale));
+    if (normalized) setPhone(normalized);
+  }
+
   function goNext() {
     setStatus(null);
     if (step === STEP_ATTENDANCE) {
@@ -564,9 +572,10 @@ function ResponseForm({
       return;
     }
 
-    const phoneDigits = phone.replace(/\D/g, "");
-    // Telephone obligatoire si present ; facultatif en cas d'absence.
-    if (attending ? phoneDigits.length < 8 : phoneDigits.length > 0 && phoneDigits.length < 8) {
+    // Telephone normalise en E.164 (FR par defaut sur les pages francaises,
+    // IL sur les pages hebreu) — obligatoire si present, facultatif en cas d'absence.
+    const normalizedPhone = normalizePhoneE164(phone, defaultCountryForLocale(locale));
+    if (attending ? !normalizedPhone : phone.trim().length > 0 && !normalizedPhone) {
       setStep(STEP_SUMMARY);
       setStatus({ msg: r.errorPhone, type: "error" });
       return;
@@ -585,7 +594,7 @@ function ResponseForm({
             nom: p.nom.trim(),
             prenom: p.prenom.trim(),
           })),
-          phone: phone.trim(),
+          phone: normalizedPhone ?? "",
           locale,
         }),
       });
@@ -763,9 +772,11 @@ function ResponseForm({
                     type="tel"
                     inputMode="tel"
                     autoComplete="tel"
+                    dir="ltr"
                     placeholder={r.phonePlaceholder}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    onBlur={handlePhoneBlur}
                     disabled={isComplete}
                   />
                   <p className="response-phone-hint">{r.phoneOptionalHint}</p>
@@ -789,9 +800,11 @@ function ResponseForm({
                     inputMode="tel"
                     autoComplete="tel"
                     required
+                    dir="ltr"
                     placeholder={r.phonePlaceholder}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    onBlur={handlePhoneBlur}
                     disabled={isComplete}
                   />
                   <p className="response-phone-hint">{r.phoneHint}</p>

@@ -4,6 +4,7 @@ import { createCeremonyRsvp } from "@/lib/data";
 import { appendRsvpToSheet } from "@/lib/sheets";
 import { sendRsvpAgencyEmail } from "@/lib/email";
 import { sendRsvpWhatsapp } from "@/lib/whatsapp";
+import { defaultCountryForLocale, normalizePhoneE164 } from "@/lib/phone";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +58,10 @@ export async function POST(req: Request) {
   if (!name) name = data.attending ? "Invité(e)" : "Réponse : absent(e)";
 
   const email = data.email ?? "";
-  const phone = data.phone ?? "";
+  // Normalisation E.164 selon la langue de la page (FR -> +33, HE -> +972) ;
+  // on conserve la saisie brute si elle n'est pas normalisable.
+  const rawPhone = data.phone ?? "";
+  const phone = normalizePhoneE164(rawPhone, defaultCountryForLocale(locale)) ?? rawPhone;
 
   try {
     const rsvp = await createCeremonyRsvp({
