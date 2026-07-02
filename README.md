@@ -67,7 +67,7 @@ Copier `.env.example` en `.env.local` et renseigner les variables.
 
 ### 5. Admin
 
-Définir `ADMIN_PASSWORD` et `ADMIN_SECRET`.
+Définir `ADMIN_SECRET` si besoin d'invalider les sessions. Le mot de passe admin est fixé à `2026` dans le code.
 
 ## Déploiement Vercel
 

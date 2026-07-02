@@ -3,11 +3,11 @@ import { cookies } from "next/headers";
 
 export const ADMIN_COOKIE = "bmsb_admin";
 
+/** Mot de passe fixe du back-office (ignorer ADMIN_PASSWORD pour éviter un ancien secret Vercel). */
+export const ADMIN_PASSWORD_VALUE = "2026";
+
 export function adminPassword(): string {
-  // .trim() : robustesse si la variable d'environnement contient un retour
-  // a la ligne final (cas frequent quand la valeur est ajoutee via un pipe).
-  const fromEnv = process.env.ADMIN_PASSWORD?.trim();
-  return fromEnv && fromEnv.length > 0 ? fromEnv : "2026";
+  return ADMIN_PASSWORD_VALUE;
 }
 
 /** Jeton stocke dans le cookie : empreinte du mot de passe + secret. */
