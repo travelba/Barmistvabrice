@@ -1,4 +1,4 @@
-/* Detail overlay revamp for card2 */
+ï»¿/* Detail overlay revamp for card2 */
 .hotel-overlay {
     background:
         linear-gradient(rgba(255, 250, 244, 0.9), rgba(247, 240, 232, 0.92)),
@@ -458,7 +458,7 @@
     }
 }
 
-/* Bouton « Réserver » : mène au tunnel de paiement (inscription voyage). */
+/* Bouton Â« RÃ©server Â» : mÃ¨ne au tunnel de paiement (inscription voyage). */
 .card2-page .hotel-reserve-button {
     display: inline-flex;
     align-items: center;
@@ -487,7 +487,7 @@
     box-shadow: 0 12px 30px rgba(168, 153, 104, 0.34);
 }
 
-/* Chambre épuisée : bouton neutralisé (dispo lue en direct sur /api/hotels). */
+/* Chambre Ã©puisÃ©e : bouton neutralisÃ© (dispo lue en direct sur /api/hotels). */
 .card2-page .hotel-reserve-button-disabled,
 .card2-page .hotel-reserve-button-disabled:hover {
     background: #cfc7bd;
@@ -498,7 +498,7 @@
     box-shadow: none;
 }
 
-/* Indicateur de disponibilité sous le prix de la chambre. */
+/* Indicateur de disponibilitÃ© sous le prix de la chambre. */
 .card2-page .room-availability {
     grid-column: 1 / -1;
     margin: 6px 0 0;
@@ -516,7 +516,7 @@
     color: #8a6d3b;
 }
 
-/* Pastille de chambre épuisée dans la liste des chambres. */
+/* Pastille de chambre Ã©puisÃ©e dans la liste des chambres. */
 .card2-page .room-buttons button.room-soldout {
     opacity: 0.55;
     text-decoration: line-through;
