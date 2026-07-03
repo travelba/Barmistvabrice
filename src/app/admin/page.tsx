@@ -6,6 +6,7 @@ import { isSupabaseConfigured } from "@/lib/config";
 import { adminT, adminDateLocale, resolveAdminLang } from "@/lib/admin-i18n";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 import { BookingActions } from "@/components/admin/BookingActions";
+import { RsvpActions } from "@/components/admin/RsvpActions";
 
 export const dynamic = "force-dynamic";
 
@@ -202,12 +203,13 @@ export default async function AdminPage({
                   <th className="px-4 py-3 text-start font-medium">{t("bookings.contact")}</th>
                   <th className="px-4 py-3 text-center font-medium">{t("rsvp.answer")}</th>
                   <th className="px-4 py-3 text-center font-medium">{t("rsvp.guests")}</th>
+                  <th className="px-4 py-3 text-end font-medium">{t("bookings.actions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {rsvps.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-muted">
+                    <td colSpan={6} className="px-4 py-8 text-center text-muted">
                       {t("rsvp.empty")}
                     </td>
                   </tr>
@@ -234,6 +236,9 @@ export default async function AdminPage({
                       </td>
                       <td className="px-4 py-3 text-center text-muted">
                         {r.attending ? r.guestCount : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-end">
+                        <RsvpActions rsvpId={r.id} lang={lang} />
                       </td>
                     </tr>
                   ))

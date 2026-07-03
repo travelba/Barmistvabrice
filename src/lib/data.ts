@@ -384,6 +384,46 @@ export async function cancelBooking(bookingId: string): Promise<Booking | null> 
 }
 
 /**
+ * Supprime definitivement une reservation (back-office). Les chambres et
+ * passagers lies sont supprimes en cascade, ce qui libere l'inventaire.
+ */
+export async function deleteBooking(bookingId: string): Promise<boolean> {
+  if (!isSupabaseConfigured) {
+    const s = store();
+    const i = s.bookings.findIndex((x) => x.id === bookingId);
+    if (i === -1) return false;
+    s.bookings.splice(i, 1);
+    s.holdExpiry.delete(bookingId);
+    return true;
+  }
+  const sb = getSupabaseAdmin()!;
+  const { error, count } = await sb
+    .from("bookings")
+    .delete({ count: "exact" })
+    .eq("id", bookingId);
+  if (error) throw new Error(error.message);
+  return (count ?? 0) > 0;
+}
+
+/** Supprime definitivement un RSVP ceremonie (back-office). */
+export async function deleteCeremonyRsvp(rsvpId: string): Promise<boolean> {
+  if (!isSupabaseConfigured) {
+    const s = store();
+    const i = s.rsvps.findIndex((x) => x.id === rsvpId);
+    if (i === -1) return false;
+    s.rsvps.splice(i, 1);
+    return true;
+  }
+  const sb = getSupabaseAdmin()!;
+  const { error, count } = await sb
+    .from("ceremony_rsvps")
+    .delete({ count: "exact" })
+    .eq("id", rsvpId);
+  if (error) throw new Error(error.message);
+  return (count ?? 0) > 0;
+}
+
+/**
  * Prolonge le hold d'une reservation pending (relance du lien de paiement).
  */
 export async function extendBookingHold(bookingId: string, minutes: number): Promise<void> {

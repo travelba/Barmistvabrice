@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { RefreshCw, Trash2, Copy, Check } from "lucide-react";
+import { RefreshCw, Trash2, Copy, Check, X } from "lucide-react";
 import { adminT, type AdminLang } from "@/lib/admin-i18n";
 
 export function BookingActions({
@@ -16,14 +16,10 @@ export function BookingActions({
 }) {
   const router = useRouter();
   const t = adminT(lang);
-  const [loading, setLoading] = useState<null | "relaunch" | "cancel">(null);
+  const [loading, setLoading] = useState<null | "relaunch" | "cancel" | "delete">(null);
   const [url, setUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (status !== "pending") {
-    return <span className="text-xs text-muted">—</span>;
-  }
 
   async function relaunch() {
     setLoading("relaunch");
@@ -63,6 +59,25 @@ export function BookingActions({
     }
   }
 
+  async function remove() {
+    if (!window.confirm(t("actions.confirmDeleteBooking"))) return;
+    setLoading("delete");
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/bookings/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? t("actions.error"));
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("actions.error"));
+      setLoading(null);
+    }
+  }
+
   async function copyUrl() {
     if (!url) return;
     try {
@@ -77,23 +92,36 @@ export function BookingActions({
   return (
     <div className="flex flex-col items-end gap-2">
       <div className="flex items-center justify-end gap-2">
+        {status === "pending" && (
+          <>
+            <button
+              type="button"
+              onClick={relaunch}
+              disabled={loading !== null}
+              className="inline-flex items-center gap-1 rounded-full border border-gold bg-gold/10 px-3 py-1.5 text-xs font-medium text-navy transition hover:bg-gold disabled:opacity-40"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading === "relaunch" ? "animate-spin" : ""}`} />
+              {t("actions.relaunch")}
+            </button>
+            <button
+              type="button"
+              onClick={cancel}
+              disabled={loading !== null}
+              className="inline-flex items-center gap-1 rounded-full border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 transition hover:bg-amber-50 disabled:opacity-40"
+            >
+              <X className="h-3.5 w-3.5" />
+              {t("actions.release")}
+            </button>
+          </>
+        )}
         <button
           type="button"
-          onClick={relaunch}
-          disabled={loading !== null}
-          className="inline-flex items-center gap-1 rounded-full border border-gold bg-gold/10 px-3 py-1.5 text-xs font-medium text-navy transition hover:bg-gold disabled:opacity-40"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${loading === "relaunch" ? "animate-spin" : ""}`} />
-          {t("actions.relaunch")}
-        </button>
-        <button
-          type="button"
-          onClick={cancel}
+          onClick={remove}
           disabled={loading !== null}
           className="inline-flex items-center gap-1 rounded-full border border-red-300 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-40"
         >
           <Trash2 className="h-3.5 w-3.5" />
-          {t("actions.release")}
+          {t("actions.delete")}
         </button>
       </div>
 

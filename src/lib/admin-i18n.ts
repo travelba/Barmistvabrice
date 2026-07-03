@@ -46,6 +46,11 @@ const FR = {
   "actions.relaunch": "Relancer",
   "actions.release": "Libérer",
   "actions.confirmRelease": "Libérer la place ? La réservation sera annulée.",
+  "actions.delete": "Supprimer",
+  "actions.confirmDeleteBooking":
+    "Supprimer définitivement cette réservation ? Les places seront libérées. Cette action est irréversible.",
+  "actions.confirmDeleteRsvp":
+    "Supprimer définitivement cette réponse ? Cette action est irréversible.",
   "actions.copy": "Copier le lien",
   "actions.error": "Erreur",
 
@@ -107,6 +112,10 @@ const HE: Record<AdminKey, string> = {
   "actions.relaunch": "שליחה מחדש",
   "actions.release": "שחרור",
   "actions.confirmRelease": "לשחרר את המקום? ההזמנה תבוטל.",
+  "actions.delete": "מחיקה",
+  "actions.confirmDeleteBooking":
+    "למחוק לצמיתות את ההזמנה? המקומות ישוחררו. פעולה זו אינה הפיכה.",
+  "actions.confirmDeleteRsvp": "למחוק לצמיתות את התשובה? פעולה זו אינה הפיכה.",
   "actions.copy": "העתקת הקישור",
   "actions.error": "שגיאה",
 
