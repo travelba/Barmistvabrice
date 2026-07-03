@@ -159,8 +159,13 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
   /* --------------------------- Overlay d'accueil ----------------- */
   const [revealed, setRevealed] = useState(false);
   useEffect(() => {
+    // Verrouiller aussi <html> : globals.css pose overflow-x sur html, ce qui
+    // empeche l'overflow du body de se propager au viewport — sans ce verrou,
+    // la molette fait defiler la page derriere la couverture (desktop).
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     return () => {
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
     };
   }, []);
@@ -179,7 +184,10 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
   }, []);
   const reveal = useCallback(() => {
     setRevealed(true);
+    document.documentElement.style.overflow = "";
     document.body.style.overflow = "auto";
+    // Toujours demarrer l'invitation en haut de page.
+    window.scrollTo(0, 0);
     window.setTimeout(() => setMusicVisible(true), 750);
     playAudio();
   }, [playAudio]);
