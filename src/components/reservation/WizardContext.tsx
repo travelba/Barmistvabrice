@@ -95,6 +95,15 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  /* Hôtel / chambre déjà choisis sur la page voyage : les étapes
+     correspondantes du tunnel sont sautées (pas de double choix). */
+  const [hotelPrefilled, setHotelPrefilled] = useState(false);
+  const [roomPrefilled, setRoomPrefilled] = useState(false);
+
+  /* Historique de navigation entre étapes : « Retour » revient toujours
+     à l'étape réellement visitée, même après un saut d'étapes. */
+  const historyRef = useRef<number[]>([]);
+
   /* Pré-sélection depuis la page voyage : ?hotel=<cle>&room=<nom>.
      Lue une seule fois (navigation par rechargement complet depuis /week-end). */
   const prefillRef = useRef<{ hotel: string | null; room: string | null }>(
@@ -158,9 +167,13 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     if (!target) return;
     prefillApplied.current = true;
     setHotelIdState(target.id);
+    setHotelPrefilled(true);
     if (roomName && target.remaining > 0) {
       const rt = resolveRoomByName(target, roomName);
-      if (rt && rt.available > 0) setRooms({ [rt.id]: 1 });
+      if (rt && rt.available > 0) {
+        setRooms({ [rt.id]: 1 });
+        setRoomPrefilled(true);
+      }
     }
   }, [hotels]);
 
@@ -263,9 +276,35 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     }
   }, [step, contact, emailValid, hotelId, roomsCount, selectedCapacity, passengers, locale]);
 
-  const goNext = useCallback(() => setStep((s) => Math.min(STEP_COUNT - 1, s + 1)), []);
-  const goBack = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
-  const goTo = useCallback((n: number) => setStep(Math.max(0, Math.min(STEP_COUNT - 1, n))), []);
+  /* Depuis les participants (étape 0), on saute les étapes déjà faites sur
+     la page voyage : hôtel + chambre choisis et capacité suffisante → direct
+     au récapitulatif ; hôtel choisi mais chambre à ajuster → étape chambres. */
+  const goNext = useCallback(() => {
+    setStep((s) => {
+      let next = Math.min(STEP_COUNT - 1, s + 1);
+      if (s === 0 && hotelPrefilled) {
+        next =
+          roomPrefilled && selectedCapacity >= passengers.length ? 3 : 2;
+      }
+      if (next !== s) historyRef.current.push(s);
+      return next;
+    });
+  }, [hotelPrefilled, roomPrefilled, selectedCapacity, passengers.length]);
+
+  const goBack = useCallback(() => {
+    setStep((s) => {
+      const prev = historyRef.current.pop();
+      return prev !== undefined ? prev : Math.max(0, s - 1);
+    });
+  }, []);
+
+  const goTo = useCallback((n: number) => {
+    setStep((s) => {
+      const target = Math.max(0, Math.min(STEP_COUNT - 1, n));
+      if (target !== s) historyRef.current.push(s);
+      return target;
+    });
+  }, []);
 
   const submit = useCallback(async () => {
     if (!hotelId) return;

@@ -293,6 +293,15 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
     html.style.scrollBehavior = prev;
   }, []);
 
+  /* Depuis la fiche avion, « Réserver » ramène au choix des hôtels juste
+     en dessous : le parcours continue sur la page (pas de tunnel ici). */
+  const reserveFlight = useCallback(() => {
+    closeHotel();
+    requestAnimationFrame(() => {
+      document.getElementById("choix-hotels")?.scrollIntoView({ behavior: "smooth" });
+    });
+  }, [closeHotel]);
+
   const currentHotel = openKey && hotels ? hotels[openKey] : null;
   const currentRoom = currentHotel?.rooms[roomIndex] ?? null;
   const isFlight = openKey === "avion";
@@ -475,9 +484,12 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
             </div>
           </div>
           <p className="flight-note">{c.flightNote}</p>
+          <a href="#choix-hotels" className="hotel-reserve-button flight-reserve-cta">
+            {c.reserve}
+          </a>
         </div>
 
-        <h2 className="hotels-title">{c.hotelsTitle}</h2>
+        <h2 className="hotels-title" id="choix-hotels">{c.hotelsTitle}</h2>
         <div className="hotels-grid">
           {HOTEL_CARDS.map((h) => (
             <div key={h.key} className="hotel-card" onClick={() => openHotel(h.key)}>
@@ -581,14 +593,16 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
             <span className="hotel-reserve-button hotel-reserve-button-disabled" aria-disabled="true">
               {c.soldout}
             </span>
+          ) : isFlight ? (
+            <button type="button" className="hotel-reserve-button" onClick={reserveFlight}>
+              {c.reserve}
+            </button>
           ) : (
             <a
               className="hotel-reserve-button"
               href={
                 `/reservation?hotel=${encodeURIComponent(openKey ?? "")}` +
-                (!isFlight && currentRoom
-                  ? `&room=${encodeURIComponent(currentRoom.name)}`
-                  : "") +
+                (currentRoom ? `&room=${encodeURIComponent(currentRoom.name)}` : "") +
                 `&lang=${locale}`
               }
             >

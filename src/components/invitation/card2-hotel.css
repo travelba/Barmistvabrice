@@ -120,6 +120,16 @@
     margin-bottom: 80px;
 }
 
+/* Ancre du choix des hôtels : compense la navbar fixe lors du défilement */
+#choix-hotels {
+    scroll-margin-top: 90px;
+}
+
+/* Bouton « Réserver » sous la photo de l'avion : mène au choix des hôtels */
+.card2-page .flight-reserve-cta {
+    margin-top: 18px;
+}
+
 /* Message sous la photo de l'avion (réservation aller-retour) */
 .flight-note {
     font-family: "Cormorant Garamond", serif;

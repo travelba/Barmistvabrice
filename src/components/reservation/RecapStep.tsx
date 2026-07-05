@@ -8,7 +8,7 @@ import { useWizard } from "./WizardContext";
 
 export function RecapStep() {
   const { t, locale } = useI18n();
-  const { selectedHotel, price, passengers, contact, ceremonyAttending } = useWizard();
+  const { selectedHotel, price, passengers, contact, ceremonyAttending, goTo } = useWizard();
   if (!price || !selectedHotel) return null;
 
   const ceremonyDate = new Date(EVENT.tephilinesDate).toLocaleDateString(
@@ -30,9 +30,18 @@ export function RecapStep() {
         </div>
 
         <div className="card rounded-2xl p-5">
-          <h3 className="flex items-center gap-2 font-serif text-xl text-navy">
-            <HotelIcon className="h-5 w-5 text-gold" /> {selectedHotel.name}
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="flex items-center gap-2 font-serif text-xl text-navy">
+              <HotelIcon className="h-5 w-5 text-gold" /> {selectedHotel.name}
+            </h3>
+            <button
+              type="button"
+              onClick={() => goTo(2)}
+              className="text-xs text-gold underline-offset-2 hover:underline"
+            >
+              {t("recap.edit")}
+            </button>
+          </div>
           <ul className="mt-3 space-y-2">
             {price.rooms.map((r) => (
               <li key={r.roomTypeId} className="flex justify-between text-sm">

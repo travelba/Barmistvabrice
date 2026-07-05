@@ -143,6 +143,7 @@ export const dictionaries: Record<Locale, Dict> = {
 
     "recap.title": "Récapitulatif",
     "recap.subtitle": "Vérifiez votre réservation avant le paiement.",
+    "recap.edit": "Modifier",
     "recap.rooms": "Chambres",
     "recap.flight": "Billets d'avion",
     "recap.passengers": "passagers",
@@ -350,6 +351,7 @@ export const dictionaries: Record<Locale, Dict> = {
 
     "recap.title": "סיכום",
     "recap.subtitle": "בדקו את ההזמנה לפני התשלום.",
+    "recap.edit": "עריכה",
     "recap.rooms": "חדרים",
     "recap.flight": "כרטיסי טיסה",
     "recap.passengers": "נוסעים",
