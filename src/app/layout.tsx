@@ -47,7 +47,9 @@ const davidLibre = David_Libre({
 // + calligraphie), générée en 1200x630 (preview-shin.jpg).
 const SITE_TITLE = "Bar Mitsvah Shon Bechet";
 const SITE_DESCRIPTION =
-  "La famille Bechet a la joie de vous convier à la Bar Mitsvah de Shon. Ouvrez l’invitation.";
+  "C’est avec une immense joie et beaucoup d’émotion que nous partageons avec vous ce moment si précieux de notre vie. " +
+  "Nous nous réjouissons de célébrer la Bar Mitsvah de notre fils, Shon David Moshe, et de vivre cette merveilleuse fête à vos côtés. " +
+  "Famille Bechet";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
