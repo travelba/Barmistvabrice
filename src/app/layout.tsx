@@ -46,10 +46,13 @@ const davidLibre = David_Libre({
 // Image de partage : couverture de l'invitation téphilines (lettre Shin
 // + calligraphie), générée en 1200x630 (preview-shin.jpg).
 const SITE_TITLE = "Bar Mitsvah Shon Bechet";
+const SITE_DESCRIPTION =
+  "La famille Bechet a la joie de vous convier à la Bar Mitsvah de Shon. Ouvrez l’invitation.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
   title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   applicationName: SITE_TITLE,
   icons: {
     icon: [{ url: "/img/logo_sans_fond.png", type: "image/png" }],
@@ -60,6 +63,7 @@ export const metadata: Metadata = {
     url: "/",
     siteName: SITE_TITLE,
     title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     images: [
       {
         url: "/img/preview-shin.jpg",
@@ -74,6 +78,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     images: ["/img/preview-shin.jpg"],
   },
 };
