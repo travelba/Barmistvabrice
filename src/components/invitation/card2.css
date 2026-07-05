@@ -31,7 +31,10 @@ body {
   top: 0;
   left: 0;
   width: 100vw;
+  /* 100dvh suit la barre du navigateur mobile : sans lui, une bande en bas
+     de l'ecran laisse apparaitre le texte de l'invitation derriere. */
   height: 100vh;
+  height: 100dvh;
   background:
     linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)),
     #ffffff url('/img/light_linen.webp') repeat;

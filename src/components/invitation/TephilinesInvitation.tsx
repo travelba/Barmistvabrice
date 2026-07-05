@@ -20,7 +20,7 @@ import "./card3.css";
 
 type Person = { nom: string; prenom: string };
 
-const TARGET = new Date("2026-10-08T09:00:00").getTime();
+const TARGET = new Date("2026-10-08T09:30:00").getTime();
 
 const CONTENT = {
   fr: {
@@ -51,8 +51,8 @@ const CONTENT = {
     synNameLatin: false,
     synAddress: ["28 rue Buffault,", "75009 Paris"],
     synAddressLatin: false,
-    synTime: "à 9h précises",
-    synDetails: "Un brunch suivra l’office",
+    synTime: "à 9h30 (Début de l’office)",
+    synDetails: "Un petit déjeuner suivra l’office",
     calendar: "Ajouter au calendrier",
     waze: "Voir l'itinéraire",
     responseTitle: "Réponse",
@@ -114,8 +114,8 @@ const CONTENT = {
     synNameLatin: true,
     synAddress: ["28 rue Buffault,", "75009 Paris"],
     synAddressLatin: true,
-    synTime: "בשעה 9:00 בדיוק",
-    synDetails: "לאחר התפילה יוגש בראנץ׳",
+    synTime: "בשעה 9:30 (תחילת התפילה)",
+    synDetails: "לאחר התפילה תוגש ארוחת בוקר",
     calendar: "הוסף ליומן",
     waze: "הצג מסלול",
     responseTitle: "אישור הגעה",

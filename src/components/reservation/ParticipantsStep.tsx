@@ -49,7 +49,6 @@ export function ParticipantsStep() {
               className="field"
               value={contact.groupName}
               onChange={(e) => setContact({ groupName: e.target.value })}
-              placeholder="Famille Bechet"
               autoComplete="name"
             />
           </div>
