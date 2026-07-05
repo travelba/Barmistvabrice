@@ -40,6 +40,8 @@ const CONTENT = {
     programTitle: "Programme",
     hotelsTitle: "Les Hôtels",
     flightTitle: "L'Avion",
+    flightNote:
+      "Pour célébrer ensemble la Bar Mitsvah de notre fils, nous vous remercions de bien vouloir réserver votre place sur l’avion prévu pour l’aller et le retour. Votre présence nous est précieuse et cette organisation nous permettra de partager ce moment dans les meilleures conditions.",
     detail: "Détails",
     back: "← Retour",
     reserve: "Réserver",
@@ -68,6 +70,8 @@ const CONTENT = {
     programTitle: "תוכנית",
     hotelsTitle: "המלונות",
     flightTitle: "המטוס",
+    flightNote:
+      "כדי לחגוג יחד את בר המצווה של בננו, נודה לכם שתזמינו את מקומכם בטיסה המתוכננת הלוך ושוב. נוכחותכם יקרה לנו, וההתארגנות הזו תאפשר לנו לחלוק את הרגע הזה בתנאים הטובים ביותר.",
     detail: "פרטים",
     back: "חזרה ←",
     reserve: "להזמין",
@@ -487,6 +491,7 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
               </button>
             </div>
           </div>
+          <p className="flight-note">{c.flightNote}</p>
         </div>
       </section>
 
