@@ -42,9 +42,8 @@ const davidLibre = David_Libre({
   weight: ["400", "500", "700"],
 });
 
-// Métadonnées : titre et favicon du site d'origine (bm-shon-bechet.fr).
-// Image de partage : couverture de l'invitation téphilines (lettre Shin
-// + calligraphie), générée en 1200x630 (preview-shin.jpg).
+// Métadonnées : titre, favicon et image de partage (preview.jpg) repris à
+// l'identique du site d'origine (bm-shon-bechet.fr).
 const SITE_TITLE = "Bar Mitsvah Shon Bechet";
 const SITE_DESCRIPTION =
   "C’est avec une immense joie et beaucoup d’émotion que nous partageons avec vous ce moment si précieux de notre vie. " +
@@ -68,8 +67,8 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: "/img/preview-shin.jpg",
-        secureUrl: new URL("/img/preview-shin.jpg", appUrl()).toString(),
+        url: "/img/preview.jpg",
+        secureUrl: new URL("/img/preview.jpg", appUrl()).toString(),
         width: 1200,
         height: 630,
         type: "image/jpeg",
@@ -81,7 +80,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ["/img/preview-shin.jpg"],
+    images: ["/img/preview.jpg"],
   },
 };
 
