@@ -453,25 +453,8 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
         </div>
       </section>
 
-      {/* Hôtels + Avion */}
+      {/* Avion puis Hôtels : le parcours commence par la réservation du vol */}
       <section id="hotels" className="hotels-section">
-        <h2 className="hotels-title">{c.hotelsTitle}</h2>
-        <div className="hotels-grid">
-          {HOTEL_CARDS.map((h) => (
-            <div key={h.key} className="hotel-card" onClick={() => openHotel(h.key)}>
-              <h3 className="hotel-name">{h.name}</h3>
-              <div className="hotel-media">
-                <Image src={h.img} width={h.w} height={h.h} className="hotel-img" alt={h.name} />
-                <button type="button" className="hotel-detail-button">
-                  <i className="fa-solid fa-circle-info" aria-hidden="true"></i>
-                  {" "}
-                  {c.detail}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
         <h2 className="hotels-title flight-section-title">{c.flightTitle}</h2>
         <div className="hotels-grid flight-grid">
           <div className="hotel-card" onClick={() => openHotel(FLIGHT_CARD.key)}>
@@ -492,6 +475,23 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
             </div>
           </div>
           <p className="flight-note">{c.flightNote}</p>
+        </div>
+
+        <h2 className="hotels-title">{c.hotelsTitle}</h2>
+        <div className="hotels-grid">
+          {HOTEL_CARDS.map((h) => (
+            <div key={h.key} className="hotel-card" onClick={() => openHotel(h.key)}>
+              <h3 className="hotel-name">{h.name}</h3>
+              <div className="hotel-media">
+                <Image src={h.img} width={h.w} height={h.h} className="hotel-img" alt={h.name} />
+                <button type="button" className="hotel-detail-button">
+                  <i className="fa-solid fa-circle-info" aria-hidden="true"></i>
+                  {" "}
+                  {c.detail}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
