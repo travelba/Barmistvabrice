@@ -20,8 +20,14 @@ export function proxy(request: NextRequest) {
   const ua = request.headers.get("user-agent") ?? "";
   if (!BOT_UA.test(ua)) return NextResponse.next();
 
-  const pageUrl = `${CANONICAL_URL}${request.nextUrl.pathname}`;
-  const imageUrl = `${CANONICAL_URL}/img/preview.jpg`;
+  // URLs sur le domaine par lequel le robot arrive (bm-shon-bechet.fr ou www) :
+  // le lien partagé et l'image restent sur le même hôte, sans redirection —
+  // condition du grand aperçu WhatsApp. Hors production : domaine canonique.
+  const origin = /bm-shon-bechet\.fr$/.test(request.nextUrl.hostname)
+    ? request.nextUrl.origin
+    : CANONICAL_URL;
+  const pageUrl = `${origin}${request.nextUrl.pathname}`;
+  const imageUrl = `${origin}/img/preview.jpg`;
 
   const html = `<!DOCTYPE html>
 <html lang="fr">
