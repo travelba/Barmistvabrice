@@ -86,9 +86,16 @@ export const isSupabaseConfigured = Boolean(
 
 export const isStripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY);
 
+/** Domaine de production canonique (URLs de retour Stripe, partage, e-mails). */
+export const CANONICAL_URL = "https://barmistvabrice.vercel.app";
+
 export function appUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
-  );
+  // 1. Variable explicite si definie.
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
+  // 2. En production Vercel : domaine propre (evite l'URL ...-travelba.vercel.app).
+  if (process.env.VERCEL_ENV === "production") return CANONICAL_URL;
+  // 3. Preview Vercel : URL du deploiement courant.
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  // 4. Local.
+  return "http://localhost:3000";
 }
