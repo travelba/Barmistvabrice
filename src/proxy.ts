@@ -60,6 +60,8 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
+    "/invitation",
+    "/invitation-weekend",
     "/tephilines",
     "/tephilines-hebrew",
     "/teph-he",
