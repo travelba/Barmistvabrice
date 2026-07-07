@@ -344,52 +344,5 @@ export const HOTELS_SEED: Hotel[] = [
         "held": 0
       }
     ]
-  },
-  {
-    "id": "once-mykonos",
-    "name": "Once in Mykonos",
-    "slug": "once-in-mykonos",
-    "description": "Boutique-hotel de luxe perche au-dessus de la mer Egee, design contemporain et vue panoramique sur Mykonos.",
-    "location": "Mykonos, Grèce",
-    "stars": 5,
-    "photos": [
-      "/hotels/once.webp"
-    ],
-    "capacityMax": 12,
-    "sortOrder": 2,
-    "roomTypes": [
-      {
-        "id": "once-mykonos-panoramic-double-sea-view-room",
-        "hotelId": "once-mykonos",
-        "name": "Panoramic Double Sea View Room",
-        "capacity": 2,
-        "priceCents": 32000,
-        "description": "2 Personnes — 320 € / nuit (séjour de 2 nuits).",
-        "photos": [
-          "/hotels/panoramic-double-sea-view-room-1.jpeg",
-          "/hotels/panoramic-double-sea-view-room-2.jpeg",
-          "/hotels/panoramic-double-sea-view-room-3.jpeg"
-        ],
-        "stockTotal": 6,
-        "booked": 0,
-        "held": 0
-      },
-      {
-        "id": "once-mykonos-premium-suite-sea-view",
-        "hotelId": "once-mykonos",
-        "name": "Premium Suite Sea View",
-        "capacity": 2,
-        "priceCents": 32000,
-        "description": "2 Personnes — 320 € / nuit (séjour de 2 nuits).",
-        "photos": [
-          "/hotels/premium-suite-sea-view-1.jpeg",
-          "/hotels/premium-suite-sea-view-2.jpeg",
-          "/hotels/premium-suite-sea-view-3.jpeg"
-        ],
-        "stockTotal": 6,
-        "booked": 0,
-        "held": 0
-      }
-    ]
   }
 ];

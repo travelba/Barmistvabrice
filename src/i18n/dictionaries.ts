@@ -24,7 +24,6 @@ export const dictionaries: Record<Locale, Dict> = {
     "ceremony.viewItinerary": "Voir l'itinéraire",
     "voyage.invite": "Vous convient au week-end organisé en l'honneur de leur petit-fils, fils et frère",
     "voyage.hotel.santamarina": "Santa Marina - Mykonos",
-    "voyage.hotel.once": "Once in Mykonos",
 
     "hero.kicker": "Bar Mitsvah",
     "hero.subtitle": "Une célébration d'exception à Mykonos",
@@ -232,7 +231,6 @@ export const dictionaries: Record<Locale, Dict> = {
     "ceremony.viewItinerary": "הצגת מסלול",
     "voyage.invite": "מזמינים אתכם לסוף השבוע שנערך לכבוד נכדם, בנם ואחיהם",
     "voyage.hotel.santamarina": "סנטה מרינה - מיקונוס",
-    "voyage.hotel.once": "Once in Mykonos",
 
     "hero.kicker": "בר מצווה",
     "hero.subtitle": "חגיגה יוצאת דופן במיקונוס",

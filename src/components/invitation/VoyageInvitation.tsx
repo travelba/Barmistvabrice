@@ -125,10 +125,9 @@ const PROGRAM: ProgDay[] = [
   },
 ];
 
-/* Cartes hôtels : ordre identique à l'original (Santa Marina, Once, Avion). */
+/* Cartes hôtels affichées dans la vitrine. */
 const HOTEL_CARDS: { key: string; name: string; img: string; w: number; h: number }[] = [
   { key: "hotelB", name: "Santa Marina - Mykonos", img: "/img/AerialandBeachSantaMarina.jpg", w: 1216, h: 560 },
-  { key: "hotelA", name: "Once in Mykonos", img: "/img/once.webp", w: 1920, h: 1280 },
 ];
 const FLIGHT_CARD = { key: "avion", name: "Boeing 737-800", img: "/img/avion.jpeg", w: 678, h: 443 };
 

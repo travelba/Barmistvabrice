@@ -9,13 +9,10 @@ import { formatEuro } from "./pricing";
 const HOTEL_DESCRIPTION_HE: Record<string, string> = {
   "santa-marina":
     "סנטה מרינה, מבית Luxury Collection: חצי-אי פרטי, חוף, וילות עם בריכה ושירות יוצא דופן.",
-  "once-mykonos":
-    "מלון בוטיק יוקרתי המשקיף על הים האגאי, עיצוב עכשווי ונוף פנורמי למיקונוס.",
 };
 
 const HOTEL_LOCATION_HE: Record<string, string> = {
   "santa-marina": "מפרץ אורנוס, מיקונוס",
-  "once-mykonos": "מיקונוס, יוון",
 };
 
 export function localizedHotelDescription(

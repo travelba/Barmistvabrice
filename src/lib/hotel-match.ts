@@ -7,7 +7,6 @@ import type { HotelAvailability, RoomTypeAvailability } from "./types";
  * recherche par id/nom normalisé si la clé n'est pas un id direct.
  */
 export const HOTEL_KEY_ALIASES: Record<string, string[]> = {
-  hotelA: ["once", "once in mykonos"],
   hotelB: ["santa-marina", "santa marina"],
 };
 

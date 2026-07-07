@@ -1,29 +1,4 @@
 ﻿{
-  "hotelA": {
-    "name": "Once in Mykonos",
-    "rooms": [
-      {
-        "name": "Panoramic Double Sea View Room",
-        "capacity": "2 אנשים",
-        "price": "320€ ללילה",
-        "images": [
-          "img/Panoramic Double Sea View Room_1.jpeg",
-          "img/Panoramic Double Sea View Room_2.jpeg",
-          "img/Panoramic Double Sea View Room_3.jpeg"
-        ]
-      },
-      {
-        "name": "Premium Suite Sea View",
-        "capacity": "2 אנשים",
-        "price": "320€ ללילה",
-        "images": [
-          "img/Premium Suite Sea View_1.jpeg",
-          "img/Premium Suite Sea View_2.jpeg",
-          "img/Premium Suite Sea View_3.jpeg"
-        ]
-      }
-    ]
-  },
   "hotelB": {
     "name": "Santa-Marina - Mykonos",
     "rooms": [
