@@ -75,6 +75,7 @@ export const config = {
   matcher: [
     "/",
     "/carte",
+    "/carte-weekend",
     "/invitation",
     "/invitation-weekend",
     "/tephilines",

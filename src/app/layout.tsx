@@ -42,13 +42,17 @@ const davidLibre = David_Libre({
   weight: ["400", "500", "700"],
 });
 
-// Métadonnées : titre, favicon et image de partage (preview.jpg) repris à
-// l'identique du site d'origine (bm-shon-bechet.fr).
+// Métadonnées : titre et favicon du site d'origine (bm-shon-bechet.fr).
+// La description est requise par WhatsApp pour l'aperçu GRAND format
+// (titre seul => petite vignette). Voir aussi src/proxy.ts (aperçu robots).
 const SITE_TITLE = "Bar Mitsvah Shon Bechet";
+const SITE_DESCRIPTION =
+  "C’est avec une immense joie et beaucoup d’émotion que nous partageons avec vous ce moment si précieux de notre vie. Famille Bechet";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
   title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   applicationName: SITE_TITLE,
   icons: {
     icon: [{ url: "/img/logo_sans_fond.png", type: "image/png" }],
@@ -59,6 +63,7 @@ export const metadata: Metadata = {
     url: "/",
     siteName: SITE_TITLE,
     title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     images: [
       {
         url: "/img/preview.jpg",
@@ -73,6 +78,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     images: ["/img/preview.jpg"],
   },
 };
