@@ -6,6 +6,7 @@ insert into hotels (id, name, slug, description, location, stars, photos, capaci
 on conflict (id) do nothing;
 
 insert into room_types (id, hotel_id, name, capacity, price_cents, description, photos, stock_total, sort_order) values
+('santa-marina-standard-room-limited', 'santa-marina', 'Standard Room Limited', 2, 42000, '2 Personnes — 420 € / nuit (séjour de 2 nuits).', '["/hotels/resort-room-1.jpeg","/hotels/resort-room-2.jpeg"]'::jsonb, 20, 0),
 ('santa-marina-resort-room', 'santa-marina', 'Resort Room', 2, 48200, '2 Personnes — 482 € / nuit (séjour de 2 nuits).', '["/hotels/resort-room-1.jpeg","/hotels/resort-room-2.jpeg"]'::jsonb, 6, 1),
 ('santa-marina-superior-sea-view-room', 'santa-marina', 'Superior Sea View Room', 2, 57300, '2 Personnes — 573 € / nuit (séjour de 2 nuits).', '["/hotels/superior-sea-view-room-1.jpeg","/hotels/superior-sea-view-room-2.jpeg"]'::jsonb, 6, 2),
 ('santa-marina-deluxe-sea-view-room', 'santa-marina', 'Deluxe Sea View Room', 3, 68700, '3 Personnes — 687 € / nuit (séjour de 2 nuits).', '["/hotels/deluxe-sea-view-room-1.jpeg","/hotels/deluxe-sea-view-room-2.jpeg","/hotels/deluxe-sea-view-room-3.jpeg"]'::jsonb, 6, 3),

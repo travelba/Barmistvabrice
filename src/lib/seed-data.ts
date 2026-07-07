@@ -21,6 +21,21 @@ export const HOTELS_SEED: Hotel[] = [
     "sortOrder": 1,
     "roomTypes": [
       {
+        "id": "santa-marina-standard-room-limited",
+        "hotelId": "santa-marina",
+        "name": "Standard Room Limited",
+        "capacity": 2,
+        "priceCents": 42000,
+        "description": "2 Personnes — 420 € / nuit (séjour de 2 nuits).",
+        "photos": [
+          "/hotels/resort-room-1.jpeg",
+          "/hotels/resort-room-2.jpeg"
+        ],
+        "stockTotal": 20,
+        "booked": 0,
+        "held": 0
+      },
+      {
         "id": "santa-marina-resort-room",
         "hotelId": "santa-marina",
         "name": "Resort Room",
