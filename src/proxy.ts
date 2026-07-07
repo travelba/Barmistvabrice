@@ -15,6 +15,10 @@ const BOT_UA =
   /whatsapp|facebookexternalhit|facebot|twitterbot|telegrambot|linkedinbot|slackbot|discordbot|pinterest|vkshare|snapchat/i;
 
 const SITE_TITLE = "Bar Mitsvah Shon Bechet";
+/* Description requise pour l'aperçu grand format WhatsApp (titre seul =>
+   vignette). Visible uniquement dans l'aperçu de partage, pas sur le site. */
+const SITE_DESCRIPTION =
+  "C’est avec une immense joie et beaucoup d’émotion que nous partageons avec vous ce moment si précieux de notre vie. Famille Bechet";
 
 export function proxy(request: NextRequest) {
   const ua = request.headers.get("user-agent") ?? "";
@@ -38,6 +42,9 @@ export function proxy(request: NextRequest) {
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${SITE_TITLE}">
 <meta property="og:title" content="${SITE_TITLE}">
+<meta property="og:description" content="${SITE_DESCRIPTION}">
+<meta name="description" content="${SITE_DESCRIPTION}">
+<meta property="og:locale" content="fr_FR">
 <meta property="og:url" content="${pageUrl}">
 <meta property="og:image" content="${imageUrl}">
 <meta property="og:image:secure_url" content="${imageUrl}">
@@ -47,6 +54,7 @@ export function proxy(request: NextRequest) {
 <meta property="og:image:alt" content="Invitation ${SITE_TITLE}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${SITE_TITLE}">
+<meta name="twitter:description" content="${SITE_DESCRIPTION}">
 <meta name="twitter:image" content="${imageUrl}">
 </head>
 <body>
@@ -66,6 +74,7 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
+    "/carte",
     "/invitation",
     "/invitation-weekend",
     "/tephilines",
