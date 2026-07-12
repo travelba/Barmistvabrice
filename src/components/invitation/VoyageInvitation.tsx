@@ -461,32 +461,37 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
         </div>
       </section>
 
-      {/* Avion puis Hôtels : le parcours commence par la réservation du vol */}
+      {/* Avion puis Hôtels : le parcours commence par la réservation du vol.
+          Parcours hébreu : pas de vol depuis Paris, la section avion est retirée. */}
       <section id="hotels" className="hotels-section">
-        <h2 className="hotels-title flight-section-title">{c.flightTitle}</h2>
-        <div className="hotels-grid flight-grid">
-          <div className="hotel-card" onClick={() => openHotel(FLIGHT_CARD.key)}>
-            <h3 className="hotel-name">{FLIGHT_CARD.name}</h3>
-            <div className="hotel-media">
-              <Image
-                src={FLIGHT_CARD.img}
-                width={FLIGHT_CARD.w}
-                height={FLIGHT_CARD.h}
-                className="hotel-img"
-                alt={FLIGHT_CARD.name}
-              />
-              <button type="button" className="hotel-detail-button">
-                <i className="fa-solid fa-circle-info" aria-hidden="true"></i>
-                {" "}
-                {c.detail}
-              </button>
+        {locale !== "he" && (
+          <>
+            <h2 className="hotels-title flight-section-title">{c.flightTitle}</h2>
+            <div className="hotels-grid flight-grid">
+              <div className="hotel-card" onClick={() => openHotel(FLIGHT_CARD.key)}>
+                <h3 className="hotel-name">{FLIGHT_CARD.name}</h3>
+                <div className="hotel-media">
+                  <Image
+                    src={FLIGHT_CARD.img}
+                    width={FLIGHT_CARD.w}
+                    height={FLIGHT_CARD.h}
+                    className="hotel-img"
+                    alt={FLIGHT_CARD.name}
+                  />
+                  <button type="button" className="hotel-detail-button">
+                    <i className="fa-solid fa-circle-info" aria-hidden="true"></i>
+                    {" "}
+                    {c.detail}
+                  </button>
+                </div>
+              </div>
+              <p className="flight-note">{c.flightNote}</p>
+              <a href="#choix-hotels" className="hotel-reserve-button flight-reserve-cta">
+                {c.reserve}
+              </a>
             </div>
-          </div>
-          <p className="flight-note">{c.flightNote}</p>
-          <a href="#choix-hotels" className="hotel-reserve-button flight-reserve-cta">
-            {c.reserve}
-          </a>
-        </div>
+          </>
+        )}
 
         <h2 className="hotels-title" id="choix-hotels">{c.hotelsTitle}</h2>
         <div className="hotels-grid">

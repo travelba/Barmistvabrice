@@ -33,6 +33,8 @@ interface WizardValue {
   error: string | null;
   hotels: HotelAvailability[];
   flight: FlightInfo | null;
+  /** false sur le parcours hebreu : vol prive ni affiche ni facture. */
+  includeFlight: boolean;
   nights: number;
 
   step: number;
@@ -220,6 +222,11 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     setPassengers((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)));
   }, []);
 
+  /* Parcours hebreu : les invites israeliens ne partent pas de Paris,
+     le vol prive n'est ni affiche ni facture (le serveur applique la
+     meme regle dans /api/checkout). */
+  const includeFlight = locale !== "he";
+
   const price = useMemo<PriceBreakdown | null>(() => {
     if (!selectedHotel || !flight) return null;
     const lines = Object.entries(rooms)
@@ -237,17 +244,18 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       .filter(Boolean) as PriceBreakdown["rooms"];
     const roomsTotalCents = lines.reduce((a, r) => a + r.lineCents, 0);
     const passengerCount = passengers.length;
-    const flightTotalCents = passengerCount * flight.pricePerPassengerCents;
+    const flightUnitCents = includeFlight ? flight.pricePerPassengerCents : 0;
+    const flightTotalCents = passengerCount * flightUnitCents;
     return {
       rooms: lines,
       nights,
       roomsTotalCents,
       passengerCount,
-      flightUnitCents: flight.pricePerPassengerCents,
+      flightUnitCents,
       flightTotalCents,
       totalCents: roomsTotalCents + flightTotalCents,
     };
-  }, [rooms, selectedHotel, flight, passengers.length, nights]);
+  }, [rooms, selectedHotel, flight, passengers.length, nights, includeFlight]);
 
   const emailValid = /.+@.+\..+/.test(contact.email);
 
@@ -350,6 +358,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     error,
     hotels,
     flight,
+    includeFlight,
     nights,
     step,
     goNext,

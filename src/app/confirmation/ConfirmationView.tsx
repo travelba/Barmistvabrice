@@ -68,13 +68,18 @@ export function ConfirmationView({ booking, paid, hotelMeta, docsUrl }: Props) {
                 ))}
               </ul>
 
-              <div className="my-4 h-px bg-cream/15" />
-              <div className="flex justify-between text-sm text-cream/80">
-                <span>
-                  {t("flight.private")} · {booking.passengerCount} {t("confirm.passengersShort")}
-                </span>
-                <span>{formatEuro(booking.flightTotalCents)}</span>
-              </div>
+              {booking.flightTotalCents > 0 && (
+                <>
+                  <div className="my-4 h-px bg-cream/15" />
+                  <div className="flex justify-between text-sm text-cream/80">
+                    <span>
+                      {t("flight.private")} · {booking.passengerCount}{" "}
+                      {t("confirm.passengersShort")}
+                    </span>
+                    <span>{formatEuro(booking.flightTotalCents)}</span>
+                  </div>
+                </>
+              )}
 
               <div className="mt-4 flex items-end justify-between border-t border-cream/20 pt-4">
                 <span className="text-sm">{t("confirm.totalPaid")}</span>
@@ -129,7 +134,8 @@ export function ConfirmationView({ booking, paid, hotelMeta, docsUrl }: Props) {
         </section>
       )}
 
-      {paid && booking && booking.passengers.length > 0 && (
+      {/* Billets d'embarquement : uniquement si le vol fait partie de la réservation. */}
+      {paid && booking && booking.passengers.length > 0 && booking.flightTotalCents > 0 && (
         <section className="mx-auto mt-16 w-full max-w-2xl">
           <p className="kicker text-center text-gold-light">{FLIGHT.airline}</p>
           <h2 className="mt-3 text-center font-serif text-3xl">{t("confirm.boardingTitle")}</h2>

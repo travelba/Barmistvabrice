@@ -190,6 +190,8 @@ function TravelDocs({
   codes: string[];
 }) {
   const ref = booking.id.slice(0, 8).toUpperCase();
+  /* Reservation sans vol (parcours hebreu) : ni billets, ni ligne « Vol prive ». */
+  const hasFlight = booking.flightTotalCents > 0;
   const flightUnitCents =
     booking.passengerCount > 0
       ? Math.round(booking.flightTotalCents / booking.passengerCount)
@@ -264,17 +266,21 @@ function TravelDocs({
             </View>
           </View>
 
-          <Text style={s.sectionLabel}>BILLETS D&apos;EMBARQUEMENT</Text>
-          {booking.passengers.map((p, i) => (
-            <BoardingPassPdf
-              key={i}
-              name={`${p.firstName} ${p.lastName}`.trim()}
-              dob={p.dateOfBirth}
-              bref={ref}
-              seq={i + 1}
-              qr={codes[i]}
-            />
-          ))}
+          {hasFlight && (
+            <>
+              <Text style={s.sectionLabel}>BILLETS D&apos;EMBARQUEMENT</Text>
+              {booking.passengers.map((p, i) => (
+                <BoardingPassPdf
+                  key={i}
+                  name={`${p.firstName} ${p.lastName}`.trim()}
+                  dob={p.dateOfBirth}
+                  bref={ref}
+                  seq={i + 1}
+                  qr={codes[i]}
+                />
+              ))}
+            </>
+          )}
 
           <Text style={s.sectionLabel}>RÉCAPITULATIF DU COÛT</Text>
           <View style={s.card} wrap={false}>
@@ -288,19 +294,21 @@ function TravelDocs({
                 </View>
                 <Text style={s.rowText}>{formatEuro(booking.roomsTotalCents)}</Text>
               </View>
-              <View style={s.row}>
-                <View>
-                  <Text style={s.rowText}>Vol privé</Text>
-                  <Text style={s.rowSub}>
-                    {booking.passengerCount} passager(s) × {formatEuro(flightUnitCents)}
-                  </Text>
+              {hasFlight && (
+                <View style={s.row}>
+                  <View>
+                    <Text style={s.rowText}>Vol privé</Text>
+                    <Text style={s.rowSub}>
+                      {booking.passengerCount} passager(s) × {formatEuro(flightUnitCents)}
+                    </Text>
+                  </View>
+                  <Text style={s.rowText}>{formatEuro(booking.flightTotalCents)}</Text>
                 </View>
-                <Text style={s.rowText}>{formatEuro(booking.flightTotalCents)}</Text>
-              </View>
+              )}
               <View style={s.totalRow}>
                 <View>
                   <Text style={s.totalLabel}>TOTAL DU SÉJOUR</Text>
-                  <Text style={s.rowSub}>Billets d&apos;avion inclus</Text>
+                  {hasFlight && <Text style={s.rowSub}>Billets d&apos;avion inclus</Text>}
                 </View>
                 <Text style={s.totalValue}>{formatEuro(booking.totalCents)}</Text>
               </View>

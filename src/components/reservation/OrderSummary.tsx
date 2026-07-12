@@ -6,7 +6,7 @@ import { useWizard } from "./WizardContext";
 
 export function OrderSummary() {
   const { t } = useI18n();
-  const { price, selectedHotel } = useWizard();
+  const { price, selectedHotel, includeFlight } = useWizard();
 
   return (
     <aside className="card sticky top-24 rounded-2xl p-6">
@@ -24,12 +24,14 @@ export function OrderSummary() {
           <dt className="text-muted">{t("recap.rooms")}</dt>
           <dd className="text-navy">{formatEuro(price?.roomsTotalCents ?? 0)}</dd>
         </div>
-        <div className="flex justify-between">
-          <dt className="text-muted">
-            {t("recap.flight")} ({price?.passengerCount ?? 0} {t("recap.passengers")})
-          </dt>
-          <dd className="text-navy">{formatEuro(price?.flightTotalCents ?? 0)}</dd>
-        </div>
+        {includeFlight && (
+          <div className="flex justify-between">
+            <dt className="text-muted">
+              {t("recap.flight")} ({price?.passengerCount ?? 0} {t("recap.passengers")})
+            </dt>
+            <dd className="text-navy">{formatEuro(price?.flightTotalCents ?? 0)}</dd>
+          </div>
+        )}
       </dl>
 
       <div className="mt-4 flex items-end justify-between border-t border-navy/10 pt-4">

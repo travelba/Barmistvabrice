@@ -8,7 +8,8 @@ import { useWizard } from "./WizardContext";
 
 export function RecapStep() {
   const { t, locale } = useI18n();
-  const { selectedHotel, price, passengers, contact, ceremonyAttending, goTo } = useWizard();
+  const { selectedHotel, price, passengers, contact, ceremonyAttending, goTo, includeFlight } =
+    useWizard();
   if (!price || !selectedHotel) return null;
 
   const ceremonyDate = new Date(EVENT.tephilinesDate).toLocaleDateString(
@@ -59,27 +60,29 @@ export function RecapStep() {
           </ul>
         </div>
 
-        <div className="card rounded-2xl p-5">
-          <h3 className="flex items-center gap-2 font-serif text-xl text-navy">
-            <Plane className="h-5 w-5 text-gold" /> {t("recap.flight")}
-          </h3>
-          <ul className="mt-3 space-y-1">
-            {passengers.map((p, i) => (
-              <li key={i} className="flex justify-between text-sm">
-                <span className="text-navy">
-                  {p.firstName} {p.lastName}
-                </span>
-                <span className="text-muted">{p.dateOfBirth}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 flex justify-between text-sm">
-            <span className="text-navy">
-              {price.passengerCount} × {formatEuro(price.flightUnitCents)}
-            </span>
-            <span className="text-muted">{formatEuro(price.flightTotalCents)}</span>
-          </p>
-        </div>
+        {includeFlight && (
+          <div className="card rounded-2xl p-5">
+            <h3 className="flex items-center gap-2 font-serif text-xl text-navy">
+              <Plane className="h-5 w-5 text-gold" /> {t("recap.flight")}
+            </h3>
+            <ul className="mt-3 space-y-1">
+              {passengers.map((p, i) => (
+                <li key={i} className="flex justify-between text-sm">
+                  <span className="text-navy">
+                    {p.firstName} {p.lastName}
+                  </span>
+                  <span className="text-muted">{p.dateOfBirth}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 flex justify-between text-sm">
+              <span className="text-navy">
+                {price.passengerCount} × {formatEuro(price.flightUnitCents)}
+              </span>
+              <span className="text-muted">{formatEuro(price.flightTotalCents)}</span>
+            </p>
+          </div>
+        )}
 
         <div className="card rounded-2xl p-5">
           <h3 className="flex items-center gap-2 font-serif text-xl text-navy">

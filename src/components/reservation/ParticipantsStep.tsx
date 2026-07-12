@@ -14,6 +14,7 @@ export function ParticipantsStep() {
     contact,
     setContact,
     flight,
+    includeFlight,
     passengers,
     addPassenger,
     updatePassenger,
@@ -116,7 +117,7 @@ export function ParticipantsStep() {
           </span>
         </div>
 
-        {flight && (
+        {flight && includeFlight && (
           <p className="mt-3 flex items-center gap-2 rounded-xl bg-aegean/5 px-4 py-3 text-sm text-navy">
             <Plane className="h-4 w-4 text-gold" />
             {t("participants.flightNote").replace(

@@ -4,8 +4,15 @@ import type { BookingDraft, HotelAvailability, PriceBreakdown } from "./types";
 /**
  * Recalcule le prix de maniere autoritaire a partir des donnees serveur.
  * Ne jamais faire confiance aux montants envoyes par le client.
+ *
+ * `includeFlight: false` : parcours hebreu — les invites israeliens ne partent
+ * pas de Paris, le vol prive n'est ni propose ni facture.
  */
-export function computePrice(draft: BookingDraft, hotels: HotelAvailability[]): PriceBreakdown {
+export function computePrice(
+  draft: BookingDraft,
+  hotels: HotelAvailability[],
+  { includeFlight = true }: { includeFlight?: boolean } = {},
+): PriceBreakdown {
   const hotel = hotels.find((h) => h.id === draft.hotelId);
   if (!hotel) throw new Error("Hôtel introuvable");
 
@@ -27,7 +34,7 @@ export function computePrice(draft: BookingDraft, hotels: HotelAvailability[]): 
 
   const roomsTotalCents = rooms.reduce((acc, r) => acc + r.lineCents, 0);
   const passengerCount = draft.passengers.length;
-  const flightUnitCents = FLIGHT.pricePerPassengerCents;
+  const flightUnitCents = includeFlight ? FLIGHT.pricePerPassengerCents : 0;
   const flightTotalCents = passengerCount * flightUnitCents;
 
   return {

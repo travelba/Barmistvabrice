@@ -71,8 +71,9 @@ export async function POST(req: Request) {
 
   try {
     // Prix recalcule cote serveur a partir des donnees autoritaires.
+    // Parcours hebreu : pas de vol depuis Paris => aucun billet facture.
     const hotels = await getHotels();
-    const price = computePrice(draft, hotels);
+    const price = computePrice(draft, hotels, { includeFlight: locale !== "he" });
     if (price.totalCents <= 0) {
       return NextResponse.json({ error: "Montant invalide" }, { status: 400 });
     }
@@ -105,17 +106,19 @@ export async function POST(req: Request) {
       },
       quantity: r.quantity,
     }));
-    lineItems.push({
-      price_data: {
-        currency: CURRENCY,
-        unit_amount: price.flightUnitCents,
-        product_data: {
-          name: `Vol privé ${EVENT.destination}`,
-          description: "Billet aller-retour par passager",
+    if (price.flightUnitCents > 0) {
+      lineItems.push({
+        price_data: {
+          currency: CURRENCY,
+          unit_amount: price.flightUnitCents,
+          product_data: {
+            name: `Vol privé ${EVENT.destination}`,
+            description: "Billet aller-retour par passager",
+          },
         },
-      },
-      quantity: price.passengerCount,
-    });
+        quantity: price.passengerCount,
+      });
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
