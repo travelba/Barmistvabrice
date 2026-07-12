@@ -18,7 +18,7 @@ export const dictionaries: Record<Locale, Dict> = {
     "overlay.cta": "Voir l'invitation",
 
     "saveTheDate": "Save The Date",
-    "hotels.title": "Les Hôtels",
+    "hotels.title": "L'Hôtel",
     "flight.sectionTitle": "L'Avion",
     "hotels.details": "Détails",
     "ceremony.viewItinerary": "Voir l'itinéraire",
@@ -225,7 +225,7 @@ export const dictionaries: Record<Locale, Dict> = {
     "overlay.cta": "לצפייה בהזמנה",
 
     "saveTheDate": "שמרו את התאריך",
-    "hotels.title": "המלונות",
+    "hotels.title": "המלון",
     "flight.sectionTitle": "המטוס",
     "hotels.details": "פרטים",
     "ceremony.viewItinerary": "הצגת מסלול",

@@ -38,7 +38,7 @@ const CONTENT = {
     saveDate: "Vendredi 9 Octobre 2026",
     cd: { days: "Jours", hours: "Heures", minutes: "Minutes", seconds: "Secondes" },
     programTitle: "Programme",
-    hotelsTitle: "Les Hôtels",
+    hotelsTitle: "L'Hôtel",
     flightTitle: "L'Avion",
     flightNote:
       "Pour célébrer ensemble la Bar Mitsvah de notre fils, nous vous remercions de bien vouloir réserver votre place sur l’avion prévu pour l’aller et le retour. Votre présence nous est précieuse et cette organisation nous permettra de partager ce moment dans les meilleures conditions.",
@@ -68,7 +68,7 @@ const CONTENT = {
     saveDate: "יום שישי 9 באוקטובר 2026",
     cd: { days: "ימים", hours: "שעות", minutes: "דקות", seconds: "שניות" },
     programTitle: "תוכנית",
-    hotelsTitle: "המלונות",
+    hotelsTitle: "המלון",
     flightTitle: "המטוס",
     flightNote:
       "כדי לחגוג יחד את בר המצווה של בננו, נודה לכם שתזמינו את מקומכם בטיסה המתוכננת הלוך ושוב. נוכחותכם יקרה לנו, וההתארגנות הזו תאפשר לנו לחלוק את הרגע הזה בתנאים הטובים ביותר.",
