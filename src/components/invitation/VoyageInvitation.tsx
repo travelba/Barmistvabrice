@@ -82,7 +82,9 @@ const CONTENT = {
   },
 };
 
-type ProgItem = { time: string; fr: string; he: string };
+/* `frOnly` : étapes liées au vol depuis Paris — masquées sur le parcours
+   hébreu (les invités israéliens rejoignent Mykonos par leurs propres moyens). */
+type ProgItem = { time: string; fr: string; he: string; frOnly?: boolean };
 type ProgDay = { fr: string; he: string; items: ProgItem[] };
 
 const PROGRAM: ProgDay[] = [
@@ -90,10 +92,10 @@ const PROGRAM: ProgDay[] = [
     fr: "Vendredi 9/10",
     he: "יום שישי 9/10",
     items: [
-      { time: "07h20", fr: "Rendez-vous à l’aéroport Roissy Charles de Gaulle", he: "מפגש בשדה התעופה רואסי שארל דה גול" },
-      { time: "09h15", fr: "Décollage à destination de Mykonos", he: "המראה למיקונוס" },
-      { time: "13h30", fr: "Arrivée à Mykonos", he: "נחיתה במיקונוס" },
-      { time: "", fr: "Transfert organisé vers l’hôtel Santa Marina", he: "העברה מאורגנת למלון Santa Marina" },
+      { time: "07h20", fr: "Rendez-vous à l’aéroport Roissy Charles de Gaulle", he: "מפגש בשדה התעופה רואסי שארל דה גול", frOnly: true },
+      { time: "09h15", fr: "Décollage à destination de Mykonos", he: "המראה למיקונוס", frOnly: true },
+      { time: "13h30", fr: "Arrivée à Mykonos", he: "נחיתה במיקונוס", frOnly: true },
+      { time: "", fr: "Transfert organisé vers l’hôtel Santa Marina", he: "העברה מאורגנת למלון Santa Marina", frOnly: true },
       { time: "", fr: "Après-midi détente", he: "אחר הצהריים של מנוחה" },
       { time: "18h30", fr: "Entrée de Shabbat, allumage des bougies et prière dans la Salle Blanche de l'hotel Santa Marina.", he: "כניסת שבת, הדלקת נרות ותפילה באולם הלבן של מלון Santa Marina." },
       { time: "20h00", fr: "Dîner de Shabbat au restaurant ELAIS de l'hôtel Santa Marina", he: "סעודת שבת במסעדת ELAIS במלון Santa Marina" },
@@ -118,9 +120,9 @@ const PROGRAM: ProgDay[] = [
     items: [
       { time: "08h00", fr: "Ouverture du petit déjeuner", he: "פתיחת ארוחת הבוקר" },
       { time: "12h00", fr: "Beach Party à la plage de l'hôtel Santa Marina", he: "מסיבת חוף בחוף המלון Santa Marina" },
-      { time: "17h30", fr: "Transfert organisé vers l’aéroport de Mykonos", he: "העברה מאורגנת לשדה התעופה של מיקונוס" },
-      { time: "19h30", fr: "Décollage à destination de Roissy Charles de Gaulle", he: "המראה לרואסי שארל דה גול" },
-      { time: "22h30", fr: "Arrivée Roissy Charles de Gaulle", he: "נחיתה ברואסי שארל דה גול" },
+      { time: "17h30", fr: "Transfert organisé vers l’aéroport de Mykonos", he: "העברה מאורגנת לשדה התעופה של מיקונוס", frOnly: true },
+      { time: "19h30", fr: "Décollage à destination de Roissy Charles de Gaulle", he: "המראה לרואסי שארל דה גול", frOnly: true },
+      { time: "22h30", fr: "Arrivée Roissy Charles de Gaulle", he: "נחיתה ברואסי שארל דה גול", frOnly: true },
     ],
   },
 ];
@@ -449,12 +451,14 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
                 {locale === "he" ? day.he : day.fr}
               </h3>
               <div className="timeline">
-                {day.items.map((it, i) => (
-                  <div className="timeline-item scroll-item scroll-visible" key={i}>
-                    <span className="time">{it.time || " "}</span>
-                    <p className="event">{locale === "he" ? it.he : it.fr}</p>
-                  </div>
-                ))}
+                {day.items
+                  .filter((it) => locale !== "he" || !it.frOnly)
+                  .map((it, i) => (
+                    <div className="timeline-item scroll-item scroll-visible" key={i}>
+                      <span className="time">{it.time || " "}</span>
+                      <p className="event">{locale === "he" ? it.he : it.fr}</p>
+                    </div>
+                  ))}
               </div>
             </div>
           ))}
