@@ -81,6 +81,9 @@ const CONTENT = {
       prev: "Retour",
       sending: "Envoi en cours...",
       success: "Réponse envoyée avec succès.",
+      nextTitle: "Et maintenant, le week-end à Mykonos !",
+      nextText: "Réservez votre vol et votre hôtel pour poursuivre la fête.",
+      nextCta: "Réserver mon week-end",
       errorSend: "Erreur d'envoi. Réessaie dans un instant.",
       errorChoice: "Choisis oui ou non pour continuer.",
       errorPerson: "Complète le nom et le prénom de cette personne.",
@@ -144,6 +147,9 @@ const CONTENT = {
       prev: "חזרה",
       sending: "שולח...",
       success: "התשובה נשלחה בהצלחה.",
+      nextTitle: "ועכשיו — סוף השבוע במיקונוס!",
+      nextText: "הזמינו את הטיסה והמלון כדי להמשיך בחגיגה.",
+      nextCta: "להזמנת סוף השבוע",
       errorSend: "שגיאת שליחה. נסו שוב בעוד רגע.",
       errorChoice: "בחרו כן או לא כדי להמשיך.",
       errorPerson: "השלימו שם פרטי ושם משפחה.",
@@ -458,7 +464,12 @@ export function TephilinesInvitation({
 
       {/* Réponse */}
       <section className="section response-section" id="reponse">
-        <ResponseForm content={c} locale={locale} />
+        <ResponseForm
+          content={c}
+          locale={locale}
+          showWeekend={showWeekend}
+          weekendHref={weekendHref}
+        />
       </section>
     </>
   );
@@ -472,9 +483,14 @@ export function TephilinesInvitation({
 function ResponseForm({
   content,
   locale,
+  showWeekend,
+  weekendHref,
 }: {
   content: (typeof CONTENT)["fr"] | (typeof CONTENT)["he"];
   locale: "fr" | "he";
+  /** Invitation « téphilines + week-end » : propose la réservation après la réponse. */
+  showWeekend: boolean;
+  weekendHref: string;
 }) {
   const r = content.rsvp;
 
@@ -625,6 +641,18 @@ function ResponseForm({
   const showPrev = step !== STEP_ATTENDANCE && !isComplete;
   const showNext = step !== STEP_SUMMARY && !isComplete;
   const showSubmit = step === STEP_SUMMARY && attendance !== null && !isComplete;
+
+  /* Suite du parcours : une fois la réponse envoyée (oui ou non), on guide
+     l'invité vers la réservation du week-end. */
+  const showWeekendCta = showWeekend && isComplete;
+  const nextRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!showWeekendCta) return;
+    const id = window.setTimeout(() => {
+      nextRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 250);
+    return () => window.clearTimeout(id);
+  }, [showWeekendCta]);
 
   return (
     <form id="teph-response-form" className="response-card" noValidate onSubmit={submit}>
@@ -835,6 +863,16 @@ function ResponseForm({
           aria-live="polite"
         >
           {status.msg}
+        </div>
+      )}
+
+      {showWeekendCta && (
+        <div ref={nextRef} className="response-next animate-in">
+          <p className="response-next-title">{r.nextTitle}</p>
+          <p className="response-next-text">{r.nextText}</p>
+          <a href={weekendHref} className="response-next-button">
+            {r.nextCta}
+          </a>
         </div>
       )}
 
