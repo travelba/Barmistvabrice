@@ -275,19 +275,18 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
   }, [step, contact, emailValid, hotelId, roomsCount, passengers, locale]);
 
   /* Depuis les participants (étape 0), on saute les étapes déjà faites sur
-     la page voyage : hôtel + chambre choisis et capacité suffisante → direct
-     au récapitulatif ; hôtel choisi mais chambre à ajuster → étape chambres. */
+     la page voyage : hôtel + chambre choisis → direct au récapitulatif ;
+     hôtel choisi seul → étape chambres. */
   const goNext = useCallback(() => {
     setStep((s) => {
       let next = Math.min(STEP_COUNT - 1, s + 1);
       if (s === 0 && hotelPrefilled) {
-        next =
-          roomPrefilled && selectedCapacity >= passengers.length ? 3 : 2;
+        next = roomPrefilled && roomsCount > 0 ? 3 : 2;
       }
       if (next !== s) historyRef.current.push(s);
       return next;
     });
-  }, [hotelPrefilled, roomPrefilled, selectedCapacity, passengers.length]);
+  }, [hotelPrefilled, roomPrefilled, roomsCount]);
 
   const goBack = useCallback(() => {
     setStep((s) => {

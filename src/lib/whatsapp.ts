@@ -4,6 +4,8 @@ import { defaultCountryForLocale, normalizePhoneE164 } from "./phone";
 import { formatEuro } from "./pricing";
 import type { Booking, CeremonyRsvp, Locale } from "./types";
 
+export type ReminderKind = "global_j7" | "ceremony_j1" | "trip_j1";
+
 /**
  * Envoi des confirmations par WhatsApp Business via Twilio (Content API).
  *
@@ -193,6 +195,51 @@ export async function sendPaymentRelaunchWhatsapp(
       "4": paymentUrl,
     },
   });
+  return true;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Rappels evenement J-7 / J-1 (cron)                                 */
+/* ------------------------------------------------------------------ */
+
+const REMINDER_TEMPLATE_ENV: Record<ReminderKind, Record<Locale, string>> = {
+  global_j7: {
+    fr: "TWILIO_WA_TEMPLATE_REMINDER_GLOBAL_J7_FR",
+    he: "TWILIO_WA_TEMPLATE_REMINDER_GLOBAL_J7_HE",
+  },
+  ceremony_j1: {
+    fr: "TWILIO_WA_TEMPLATE_REMINDER_CEREMONY_J1_FR",
+    he: "TWILIO_WA_TEMPLATE_REMINDER_CEREMONY_J1_HE",
+  },
+  trip_j1: {
+    fr: "TWILIO_WA_TEMPLATE_REMINDER_TRIP_J1_FR",
+    he: "TWILIO_WA_TEMPLATE_REMINDER_TRIP_J1_HE",
+  },
+};
+
+export async function sendReminderWhatsapp(opts: {
+  phone: string;
+  kind: ReminderKind;
+  locale: Locale;
+  variables: Record<string, string>;
+}): Promise<boolean> {
+  if (!isWhatsappConfigured()) {
+    console.warn("[whatsapp] Twilio non configuré — rappel non envoyé", opts.kind);
+    return false;
+  }
+  const defaultCountry = defaultCountryForLocale(opts.locale);
+  const to = toWhatsappAddress(opts.phone, defaultCountry);
+  if (!to) {
+    console.warn("[whatsapp] téléphone invalide pour rappel", opts.kind, opts.phone);
+    return false;
+  }
+  const envKey = REMINDER_TEMPLATE_ENV[opts.kind][opts.locale];
+  const contentSid = process.env[envKey];
+  if (!contentSid) {
+    console.warn("[whatsapp] template rappel manquant", opts.kind, opts.locale, envKey);
+    return false;
+  }
+  await sendTemplate({ to, contentSid, variables: opts.variables });
   return true;
 }
 
