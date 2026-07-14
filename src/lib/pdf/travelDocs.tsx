@@ -73,6 +73,14 @@ const s = StyleSheet.create({
   stubName: { color: C.cream, fontSize: 10, marginTop: 2 },
   qr: { width: 54, height: 54, marginTop: 8, backgroundColor: C.white, padding: 3, borderRadius: 4 },
   footer: { textAlign: "center", color: C.muted, fontSize: 8, marginTop: 8 },
+  footerSupport: {
+    textAlign: "center",
+    color: C.muted,
+    fontSize: 7,
+    marginTop: 6,
+    paddingHorizontal: 20,
+    lineHeight: 1.4,
+  },
 });
 
 function frDate(iso: string) {
@@ -316,6 +324,11 @@ function TravelDocs({
           </View>
 
           <Text style={s.footer}>{EVENT.agencyName}</Text>
+          <Text style={s.footerSupport}>
+            L&apos;équipe {EVENT.agencySupportLabel} se tient à votre disposition pour vous
+            accompagner dans les différentes étapes du voyage. Contactez-nous sur WhatsApp ou
+            joignez {EVENT.agencySupportContact} au {EVENT.agencySupportPhoneDisplay}.
+          </Text>
         </View>
       </Page>
     </Document>

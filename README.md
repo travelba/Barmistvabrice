@@ -78,7 +78,9 @@ l'invité reçoit ses confirmations par WhatsApp.
    `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`).
 2. Créer et faire approuver les 6 templates (BOOKING / RSVP_YES / RSVP_NO × FR/HE)
    dans le Content Template Builder, puis renseigner les `TWILIO_WA_TEMPLATE_*`
-   (détail des variables dans `.env.example`).
+   (détail des variables dans `.env.example`). Pour le template BOOKING, inclure
+   en fin de message le texte de contact conciergerie (WhatsApp + Raphael Zerdoun
+   au 06 26 07 76 61) — voir suggestion dans `.env.example`.
 
 ### 6. Admin
 

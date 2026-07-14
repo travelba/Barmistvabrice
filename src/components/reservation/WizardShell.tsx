@@ -12,6 +12,7 @@ import { HotelStep } from "./HotelStep";
 import { RoomsStep } from "./RoomsStep";
 import { RecapStep } from "./RecapStep";
 import { OrderSummary } from "./OrderSummary";
+import { AgencySupportBlock } from "@/components/support/AgencySupportBlock";
 
 /* L'URL ne change pas pendant la vie du composant : abonnement inerte,
    seule la lecture initiale (cote client) compte. */
@@ -68,19 +69,22 @@ export function WizardShell() {
 
       <div className="mx-auto max-w-6xl px-5 py-10">
         {showCanceled && (
-          <div className="mb-8 flex items-start justify-between gap-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            <div>
-              <p className="font-medium">{t("cancel.title")}</p>
-              <p className="mt-0.5">{t("cancel.subtitle")}</p>
+          <div className="mb-8 space-y-4">
+            <div className="flex items-start justify-between gap-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <div>
+                <p className="font-medium">{t("cancel.title")}</p>
+                <p className="mt-0.5">{t("cancel.subtitle")}</p>
+              </div>
+              <button
+                type="button"
+                onClick={dismissCanceled}
+                aria-label={t("common.back")}
+                className="shrink-0 rounded-full p-1 transition hover:bg-amber-100"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={dismissCanceled}
-              aria-label={t("common.back")}
-              className="shrink-0 rounded-full p-1 transition hover:bg-amber-100"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <AgencySupportBlock variant="light" />
           </div>
         )}
 

@@ -6,6 +6,7 @@ import { formatEuro } from "@/lib/pricing";
 import { EVENT } from "@/lib/config";
 import { suggestEmailCorrection } from "@/lib/email-typo";
 import { defaultCountryForLocale, isValidPhone, normalizePhoneE164, phonePlaceholder } from "@/lib/phone";
+import { AgencySupportBlock } from "@/components/support/AgencySupportBlock";
 import { useWizard } from "./WizardContext";
 
 export function ParticipantsStep() {
@@ -103,6 +104,7 @@ export function ParticipantsStep() {
                 !isValidPhone(contact.phone, defaultCountryForLocale(locale)) && (
                   <p className="mt-1.5 text-sm text-red-500">{t("contact.phoneInvalid")}</p>
                 )}
+              <AgencySupportBlock variant="compact" className="mt-1.5" />
             </div>
           </div>
         </div>

@@ -127,13 +127,14 @@ export default async function AdminPage({
             {t("bookings.title")} ({bookings.length})
           </h2>
           <div className="mt-4 overflow-x-auto card rounded-2xl">
-            <table className="w-full min-w-[760px] text-sm">
+            <table className="w-full min-w-[920px] text-sm">
               <thead className="bg-navy/5 text-muted">
                 <tr>
                   <th className="px-4 py-3 text-start font-medium">{t("bookings.date")}</th>
                   <th className="px-4 py-3 text-start font-medium">{t("bookings.group")}</th>
                   <th className="px-4 py-3 text-start font-medium">{t("bookings.contact")}</th>
                   <th className="px-4 py-3 text-start font-medium">{t("bookings.hotel")}</th>
+                  <th className="px-4 py-3 text-start font-medium">{t("bookings.rooms")}</th>
                   <th className="px-4 py-3 text-center font-medium">{t("bookings.pax")}</th>
                   <th className="px-4 py-3 text-end font-medium">{t("bookings.total")}</th>
                   <th className="px-4 py-3 text-center font-medium">{t("bookings.status")}</th>
@@ -143,7 +144,7 @@ export default async function AdminPage({
               <tbody>
                 {bookings.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-muted">
+                    <td colSpan={9} className="px-4 py-8 text-center text-muted">
                       {t("bookings.empty")}
                     </td>
                   </tr>
@@ -160,6 +161,19 @@ export default async function AdminPage({
                         {b.phone}
                       </td>
                       <td className="px-4 py-3 text-muted">{b.hotelName}</td>
+                      <td className="px-4 py-3 text-muted">
+                        {b.rooms.length > 0 ? (
+                          <ul className="space-y-0.5">
+                            {b.rooms.map((r) => (
+                              <li key={r.roomTypeId}>
+                                {r.quantity}× {r.roomName}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-center text-muted">{b.passengerCount}</td>
                       <td className="px-4 py-3 text-end font-medium text-navy">
                         {formatEuro(b.totalCents)}

@@ -17,6 +17,11 @@ export const EVENT = {
   tripEndDate: "2026-10-11",
   agencyName: "Travel BA — Conciergerie de Luxe",
   agencyEmail: "concierge@travelba.example",
+  /** Contact conciergerie affiché aux invités (WhatsApp / téléphone). */
+  agencySupportLabel: "Travel Booking Agency",
+  agencySupportContact: "Raphael Zerdoun",
+  agencySupportPhone: "+33626077661",
+  agencySupportPhoneDisplay: "06 26 07 76 61",
 } as const;
 
 /** Nombre de nuits du sejour (vendredi 9 -> dimanche 11 octobre = 2 nuits). */

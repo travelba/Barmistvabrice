@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { formatEuro } from "@/lib/pricing";
 import { EVENT } from "@/lib/config";
 import { useWizard } from "./WizardContext";
+import { AgencySupportBlock } from "@/components/support/AgencySupportBlock";
 
 export function RecapStep() {
   const { t, locale } = useI18n();
@@ -95,6 +96,8 @@ export function RecapStep() {
           </p>
         </div>
       </div>
+
+      <AgencySupportBlock variant="light" className="mt-8" />
 
       <p className="mt-6 flex items-center justify-center gap-2 text-xs text-muted">
         <Lock className="h-3.5 w-3.5" /> {t("recap.securedBy")}

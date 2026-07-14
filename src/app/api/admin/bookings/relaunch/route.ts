@@ -4,10 +4,14 @@ import { isAdminAuthed } from "@/lib/admin-auth";
 import { getBookingById, attachStripeSession, extendBookingHold } from "@/lib/data";
 import { createCheckoutSessionForBooking } from "@/lib/checkout";
 import { HOLD_DURATION_MINUTES, isStripeConfigured } from "@/lib/config";
+import { sendPaymentRelaunchWhatsapp } from "@/lib/whatsapp";
 
 export const dynamic = "force-dynamic";
 
-const schema = z.object({ bookingId: z.string().min(1) });
+const schema = z.object({
+  bookingId: z.string().min(1),
+  locale: z.enum(["fr", "he"]).optional(),
+});
 
 export async function POST(req: Request) {
   if (!(await isAdminAuthed())) {
@@ -48,7 +52,16 @@ export async function POST(req: Request) {
     await attachStripeSession(booking.id, sessionId);
     // Prolonge le hold pour laisser au client le temps de payer.
     await extendBookingHold(booking.id, HOLD_DURATION_MINUTES);
-    return NextResponse.json({ ok: true, url });
+
+    const locale = parsed.data.locale ?? "fr";
+    let whatsappSent = false;
+    try {
+      whatsappSent = await sendPaymentRelaunchWhatsapp(booking, url, locale);
+    } catch (e) {
+      console.error("[api/admin/bookings/relaunch] whatsapp", e);
+    }
+
+    return NextResponse.json({ ok: true, url, whatsappSent });
   } catch (e) {
     console.error("[api/admin/bookings/relaunch]", e);
     const message = e instanceof Error ? e.message : "Erreur lors de la relance";

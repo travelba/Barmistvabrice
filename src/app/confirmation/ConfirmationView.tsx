@@ -7,6 +7,7 @@ import { formatEuro } from "@/lib/pricing";
 import { EVENT, FLIGHT, TRIP_NIGHTS } from "@/lib/config";
 import { BoardingPasses } from "@/components/flight/BoardingPasses";
 import { HotelVoucherDownload } from "@/components/hotel/HotelVoucherDownload";
+import { AgencySupportBlock } from "@/components/support/AgencySupportBlock";
 import type { Booking } from "@/lib/types";
 
 interface Props {
@@ -92,9 +93,14 @@ export function ConfirmationView({ booking, paid, hotelMeta, docsUrl }: Props) {
             {paid && (
               <p className="mt-4 text-sm text-cream/70">{t("confirm.emailSent")}</p>
             )}
+
+            <AgencySupportBlock variant="dark" className="mt-6" />
           </>
         ) : (
-          <p className="text-cream/80">{t("confirm.notFound")}</p>
+          <>
+            <p className="text-cream/80">{t("confirm.notFound")}</p>
+            <AgencySupportBlock variant="dark" className="mt-8" />
+          </>
         )}
       </div>
 

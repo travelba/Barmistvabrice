@@ -32,6 +32,7 @@ const FR = {
   "bookings.group": "Groupe",
   "bookings.contact": "Contact",
   "bookings.hotel": "Hôtel",
+  "bookings.rooms": "Chambres",
   "bookings.pax": "Pax",
   "bookings.total": "Total",
   "bookings.status": "Statut",
@@ -52,6 +53,8 @@ const FR = {
   "actions.confirmDeleteRsvp":
     "Supprimer définitivement cette réponse ? Cette action est irréversible.",
   "actions.copy": "Copier le lien",
+  "actions.whatsappSent": "WhatsApp envoyé au client",
+  "actions.whatsappSkipped": "Lien créé — template relance WhatsApp non configuré",
   "actions.error": "Erreur",
 
   "rsvp.title": "Mise des Téphilines — RSVP",
@@ -98,6 +101,7 @@ const HE: Record<AdminKey, string> = {
   "bookings.group": "קבוצה",
   "bookings.contact": "איש קשר",
   "bookings.hotel": "מלון",
+  "bookings.rooms": "חדרים",
   "bookings.pax": "נוסעים",
   "bookings.total": "סה\"כ",
   "bookings.status": "סטטוס",
@@ -117,6 +121,8 @@ const HE: Record<AdminKey, string> = {
     "למחוק לצמיתות את ההזמנה? המקומות ישוחררו. פעולה זו אינה הפיכה.",
   "actions.confirmDeleteRsvp": "למחוק לצמיתות את התשובה? פעולה זו אינה הפיכה.",
   "actions.copy": "העתקת הקישור",
+  "actions.whatsappSent": "וואטסאפ נשלח ללקוח",
+  "actions.whatsappSkipped": "קישור נוצר — תבנית וואטסאפ לשליחה מחדש לא מוגדרת",
   "actions.error": "שגיאה",
 
   "rsvp.title": "הנחת תפילין — אישורי הגעה",

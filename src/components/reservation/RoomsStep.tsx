@@ -8,13 +8,11 @@ import { useWizard } from "./WizardContext";
 
 export function RoomsStep() {
   const { t, locale } = useI18n();
-  const { selectedHotel, rooms, setRoomQty, roomsCount, selectedCapacity, nights, passengers } =
-    useWizard();
+  const { selectedHotel, rooms, setRoomQty, roomsCount, nights, passengers } = useWizard();
 
   if (!selectedHotel) return null;
 
   const participantCount = passengers.length;
-  const capacityCovered = selectedCapacity >= participantCount;
   const maxRooms = participantCount;
   const maxRoomsReached = roomsCount >= maxRooms;
 
@@ -89,17 +87,6 @@ export function RoomsStep() {
         })}
       </div>
 
-      <div className="mt-6 flex items-center justify-between rounded-xl bg-navy px-5 py-4 text-cream">
-        <span className="text-sm">{t("rooms.totalCapacity")}</span>
-        <span className="font-serif text-xl">
-          {selectedCapacity} / {participantCount} {t("rooms.persons")}
-        </span>
-      </div>
-      {selectedCapacity > 0 && (
-        <p className={`mt-2 text-sm ${capacityCovered ? "text-emerald-600" : "text-red-500"}`}>
-          {capacityCovered ? t("rooms.capacityOk") : t("rooms.capacityShort")}
-        </p>
-      )}
       {maxRoomsReached && (
         <p className="mt-2 text-sm text-gold">
           {t("rooms.maxReached").replace("{n}", String(maxRooms))}

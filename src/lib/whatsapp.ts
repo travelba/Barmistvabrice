@@ -157,6 +157,46 @@ export async function sendConfirmationWhatsapp(
 }
 
 /* ------------------------------------------------------------------ */
+/*  Relance PAIEMENT (admin) — lien Stripe Checkout a l'invite         */
+/* ------------------------------------------------------------------ */
+
+export async function sendPaymentRelaunchWhatsapp(
+  b: Booking,
+  paymentUrl: string,
+  locale: Locale = "fr",
+): Promise<boolean> {
+  if (!isWhatsappConfigured()) {
+    console.warn("[whatsapp] Twilio non configuré — relance paiement non envoyée pour", b.id);
+    return false;
+  }
+  const to = toWhatsappAddress(b.phone, defaultCountryForLocale(locale));
+  if (!to) {
+    console.warn("[whatsapp] téléphone invalide pour relance", b.id, "-", b.phone);
+    return false;
+  }
+  const contentSid =
+    locale === "he"
+      ? process.env.TWILIO_WA_TEMPLATE_BOOKING_RELAUNCH_HE
+      : process.env.TWILIO_WA_TEMPLATE_BOOKING_RELAUNCH_FR;
+  if (!contentSid) {
+    console.warn("[whatsapp] template BOOKING_RELAUNCH manquant pour la langue", locale);
+    return false;
+  }
+  await sendTemplate({
+    to,
+    contentSid,
+    // {{1}} nom, {{2}} hôtel, {{3}} total, {{4}} lien paiement Stripe
+    variables: {
+      "1": b.groupName,
+      "2": b.hotelName,
+      "3": formatEuro(b.totalCents),
+      "4": paymentUrl,
+    },
+  });
+  return true;
+}
+
+/* ------------------------------------------------------------------ */
 /*  Confirmation RSVP TEPHILINES — envoyee a l'invite                  */
 /* ------------------------------------------------------------------ */
 

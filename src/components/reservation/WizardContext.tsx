@@ -52,7 +52,6 @@ interface WizardValue {
   rooms: Record<string, number>;
   setRoomQty: (roomTypeId: string, qty: number) => void;
   roomsCount: number;
-  selectedCapacity: number;
 
   passengers: Passenger[];
   addPassenger: () => void;
@@ -204,14 +203,6 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     [rooms],
   );
 
-  const selectedCapacity = useMemo(() => {
-    if (!selectedHotel) return 0;
-    return Object.entries(rooms).reduce((acc, [id, qty]) => {
-      const rt = selectedHotel.roomTypes.find((r) => r.id === id);
-      return acc + (rt ? rt.capacity * qty : 0);
-    }, 0);
-  }, [rooms, selectedHotel]);
-
   const addPassenger = useCallback(() => {
     setPassengers((prev) => [...prev, { firstName: "", lastName: "", dateOfBirth: "" }]);
   }, []);
@@ -275,14 +266,13 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
       case 1:
         return Boolean(hotelId);
       case 2:
-        // Au moins une chambre ET capacite suffisante pour loger tous les participants.
-        return roomsCount > 0 && selectedCapacity >= passengers.length;
+        return roomsCount > 0;
       case 3:
         return true;
       default:
         return false;
     }
-  }, [step, contact, emailValid, hotelId, roomsCount, selectedCapacity, passengers, locale]);
+  }, [step, contact, emailValid, hotelId, roomsCount, passengers, locale]);
 
   /* Depuis les participants (étape 0), on saute les étapes déjà faites sur
      la page voyage : hôtel + chambre choisis et capacité suffisante → direct
@@ -372,7 +362,6 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     rooms,
     setRoomQty,
     roomsCount,
-    selectedCapacity,
     passengers,
     addPassenger,
     updatePassenger,

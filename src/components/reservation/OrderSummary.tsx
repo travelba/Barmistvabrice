@@ -2,6 +2,7 @@
 
 import { useI18n } from "@/i18n/I18nProvider";
 import { formatEuro } from "@/lib/pricing";
+import { AgencySupportBlock } from "@/components/support/AgencySupportBlock";
 import { useWizard } from "./WizardContext";
 
 export function OrderSummary() {
@@ -38,6 +39,8 @@ export function OrderSummary() {
         <span className="text-sm font-medium text-navy">{t("recap.total")}</span>
         <span className="font-serif text-3xl text-gold">{formatEuro(price?.totalCents ?? 0)}</span>
       </div>
+
+      <AgencySupportBlock variant="light" className="mt-5" />
     </aside>
   );
 }

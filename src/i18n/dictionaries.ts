@@ -209,6 +209,13 @@ export const dictionaries: Record<Locale, Dict> = {
     "cancel.title": "Paiement annulé",
     "cancel.subtitle": "Votre paiement n'a pas été finalisé. Vous pouvez reprendre votre réservation ci-dessous.",
     "cancel.retry": "Reprendre ma réservation",
+
+    "support.title": "Besoin d'aide ?",
+    "support.body": "L'équipe Travel Booking Agency se tient à votre disposition pour vous accompagner dans les différentes étapes du voyage.",
+    "support.contact": "Vous pouvez nous contacter directement sur cette conversation WhatsApp ou joindre {name} au {phone}.",
+    "support.phoneHint": "Notre équipe reste disponible sur WhatsApp pour vous accompagner —",
+    "support.whatsapp": "Cette conversation WhatsApp",
+    "support.call": "Appeler {name}",
   },
   he: {
     "nav.reserve": "להזמין",
@@ -416,5 +423,12 @@ export const dictionaries: Record<Locale, Dict> = {
     "cancel.title": "התשלום בוטל",
     "cancel.subtitle": "התשלום לא הושלם. ניתן להמשיך את ההזמנה למטה.",
     "cancel.retry": "לחזור להזמנה",
+
+    "support.title": "צריכים עזרה?",
+    "support.body": "צוות Travel Booking Agency לרשותכם לליווי בכל שלבי הנסיעה.",
+    "support.contact": "ניתן ליצור איתנו קשר ישירות בשיחת הוואטסאפ הזו או לפנות ל{name} בטלפון {phone}.",
+    "support.phoneHint": "הצוות שלנו זמין בוואטסאפ לליווי לאורך כל הדרך —",
+    "support.whatsapp": "שיחת הוואטסאפ הזו",
+    "support.call": "התקשרו ל{name}",
   },
 };

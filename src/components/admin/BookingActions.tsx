@@ -19,20 +19,23 @@ export function BookingActions({
   const [loading, setLoading] = useState<null | "relaunch" | "cancel" | "delete">(null);
   const [url, setUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [whatsappSent, setWhatsappSent] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function relaunch() {
     setLoading("relaunch");
     setError(null);
+    setWhatsappSent(null);
     try {
       const res = await fetch("/api/admin/bookings/relaunch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId }),
+        body: JSON.stringify({ bookingId, locale: lang }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? t("actions.error"));
       setUrl(data.url as string);
+      setWhatsappSent(Boolean(data.whatsappSent));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("actions.error"));
     } finally {
@@ -126,21 +129,29 @@ export function BookingActions({
       </div>
 
       {url && (
-        <div className="flex w-full max-w-xs items-center gap-1 rounded-lg border border-navy/15 bg-white px-2 py-1">
-          <input
-            readOnly
-            value={url}
-            className="min-w-0 flex-1 bg-transparent text-[11px] text-navy outline-none"
-            onFocus={(e) => e.currentTarget.select()}
-          />
-          <button
-            type="button"
-            onClick={copyUrl}
-            className="shrink-0 rounded-md p-1 text-navy transition hover:bg-navy/10"
-            aria-label={t("actions.copy")}
-          >
-            {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
-          </button>
+        <div className="flex w-full max-w-xs flex-col gap-1">
+          <div className="flex items-center gap-1 rounded-lg border border-navy/15 bg-white px-2 py-1">
+            <input
+              readOnly
+              value={url}
+              className="min-w-0 flex-1 bg-transparent text-[11px] text-navy outline-none"
+              onFocus={(e) => e.currentTarget.select()}
+            />
+            <button
+              type="button"
+              onClick={copyUrl}
+              className="shrink-0 rounded-md p-1 text-navy transition hover:bg-navy/10"
+              aria-label={t("actions.copy")}
+            >
+              {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+          {whatsappSent === true && (
+            <p className="text-[11px] text-green-600">{t("actions.whatsappSent")}</p>
+          )}
+          {whatsappSent === false && (
+            <p className="text-[11px] text-amber-700">{t("actions.whatsappSkipped")}</p>
+          )}
         </div>
       )}
 
