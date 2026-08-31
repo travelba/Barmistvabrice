@@ -1,26 +1,23 @@
-import { appUrl, CURRENCY, EVENT, FLIGHT, TRIP_NIGHTS } from "./config";
+import { appUrl, CURRENCY, EVENT, TRIP_NIGHTS } from "./config";
 import { getStripe } from "./stripe";
 import type { Booking } from "./types";
 
-/**
- * (Re)cree une session Stripe Checkout pour une reservation existante.
- * Utilise pour "relancer" le lien de paiement d'une reservation pending
- * depuis le back-office. Renvoie l'URL de paiement et l'id de session.
- */
-export async function createCheckoutSessionForBooking(
-  booking: Booking,
-): Promise<{ url: string; sessionId: string }> {
-  const stripe = getStripe();
-  if (!stripe) throw new Error("Stripe non configuré");
+type CheckoutLineItem = {
+  price_data: {
+    currency: string;
+    unit_amount: number;
+    product_data: { name: string; description?: string };
+  };
+  quantity: number;
+};
 
-  const lineItems: Array<{
-    price_data: {
-      currency: string;
-      unit_amount: number;
-      product_data: { name: string; description?: string };
-    };
-    quantity: number;
-  }> = booking.rooms.map((r) => ({
+/**
+ * Construit les line items Stripe a partir d'une reservation existante.
+ * Exporte pour les tests : le parcours hebreu a flightTotalCents = 0 et
+ * ne doit JAMAIS reintroduire le vol (un `|| prixParDefaut` le faisait).
+ */
+export function buildCheckoutLineItemsForBooking(booking: Booking): CheckoutLineItem[] {
+  const lineItems: CheckoutLineItem[] = booking.rooms.map((r) => ({
     price_data: {
       currency: CURRENCY,
       unit_amount: r.priceCents * TRIP_NIGHTS,
@@ -32,10 +29,10 @@ export async function createCheckoutSessionForBooking(
     quantity: r.quantity,
   }));
 
-  if (booking.passengerCount > 0) {
-    const flightUnit =
-      Math.round(booking.flightTotalCents / booking.passengerCount) ||
-      FLIGHT.pricePerPassengerCents;
+  // Uniquement si la reservation d'origine incluait deja le vol.
+  // Ne pas retomber sur un prix par defaut quand flightTotalCents === 0 (HE).
+  if (booking.flightTotalCents > 0 && booking.passengerCount > 0) {
+    const flightUnit = Math.round(booking.flightTotalCents / booking.passengerCount);
     lineItems.push({
       price_data: {
         currency: CURRENCY,
@@ -48,6 +45,22 @@ export async function createCheckoutSessionForBooking(
       quantity: booking.passengerCount,
     });
   }
+
+  return lineItems;
+}
+
+/**
+ * (Re)cree une session Stripe Checkout pour une reservation existante.
+ * Utilise pour "relancer" le lien de paiement d'une reservation pending
+ * depuis le back-office. Renvoie l'URL de paiement et l'id de session.
+ */
+export async function createCheckoutSessionForBooking(
+  booking: Booking,
+): Promise<{ url: string; sessionId: string }> {
+  const stripe = getStripe();
+  if (!stripe) throw new Error("Stripe non configuré");
+
+  const lineItems = buildCheckoutLineItemsForBooking(booking);
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
