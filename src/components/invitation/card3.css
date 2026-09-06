@@ -554,7 +554,8 @@ body {
   text-align: center;
   width: 90vw;
   max-width: 700px;
-  padding: 60px 50px;
+  /* Plus de marge latérale : le border-radius 250px mangeait le nom long. */
+  padding: 60px 64px;
   background:
     linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
     #ffffff url('/img/paper_background.webp') repeat;
@@ -572,9 +573,9 @@ body {
 }
 
 .synagogue-name {
-  display: inline-block;
-  padding-right: 20px;
-  line-height: 1.2;
+  display: block;
+  line-height: 1.15;
+  padding-inline: 4px;
 }
 
 .synagogue-text-silver:hover {
@@ -720,19 +721,25 @@ body {
 
 .synagogue-text-silver .synagogue-name {
   font-family: "Luxurious Script", cursive;
-  font-size: clamp(20px, 14vw, 56px);
+  /* Nom long (« Grande Synagogue de la Victoire ») : autoriser 2 lignes,
+     taille un peu plus basse pour rester dans la bulle arrondie. */
+  font-size: clamp(26px, 8.5vw, 48px);
   font-weight: 400;
   color: #8a8a8a;
   display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   margin: 10px 0 0 0;
-  line-height: 1;
+  line-height: 1.15;
   word-spacing: normal;
-  white-space: nowrap;
-  max-width: 90vw;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
   overflow: visible;
   text-overflow: clip;
   position: relative;
-  padding-bottom: 12px;
+  padding: 0 8px 14px;
 }
 
 .synagogue-text-silver .synagogue-name::after {
@@ -1284,7 +1291,13 @@ body {
   }
 
   .synagogue-text-silver {
-    padding: 30px 20px;
+    padding: 48px 32px;
+  }
+
+  .synagogue-text-silver .synagogue-name {
+    font-size: clamp(22px, 6.8vw, 36px);
+    line-height: 1.2;
+    padding: 0 4px 16px;
   }
 
   .section-title {
@@ -1354,8 +1367,9 @@ body {
 .presentation-box,
 .synagogue-text-silver {
   position: relative;
-  overflow: hidden;
-  /* Pour que le logo ne dépasse pas des arrondis */
+  /* clip-path plutôt que overflow:hidden : le logo reste masqué dans
+     les arrondis, mais le texte du nom long n’est plus coupé. */
+  overflow: clip;
 }
 
 /* On s'assure que le texte reste au-dessus du logo */

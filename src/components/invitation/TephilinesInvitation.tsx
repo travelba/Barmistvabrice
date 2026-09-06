@@ -54,7 +54,8 @@ const CONTENT = {
     synIntro: ["La mise des Téphilines ", "aura lieu le"],
     synDate: "Jeudi 8 Octobre 2026",
     synLocationPre: "en la",
-    synName: EVENT.tephilinesPlace,
+    // Deux lignes pour éviter la troncature dans la bulle arrondie.
+    synName: ["Grande Synagogue", "de la Victoire"],
     synNameLatin: false,
     synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: false,
@@ -121,7 +122,7 @@ const CONTENT = {
     synDate: "יום חמישי 8 באוקטובר 2026",
     synLocationPre: "בבית הכנסת",
     // Nom latin court (comme sur l'invitation HE d'origine) — adresse depuis EVENT.
-    synName: "Victoire",
+    synName: ["Victoire"],
     synNameLatin: true,
     synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: true,
@@ -438,10 +439,22 @@ export function TephilinesInvitation({
             <br />
             {c.synNameLatin ? (
               <span className="synagogue-name latin-text" dir="ltr">
-                {c.synName}
+                {c.synName.map((line, i) => (
+                  <span key={line}>
+                    {i > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
               </span>
             ) : (
-              <span className="synagogue-name">{c.synName}</span>
+              <span className="synagogue-name">
+                {c.synName.map((line, i) => (
+                  <span key={line}>
+                    {i > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
+              </span>
             )}
           </p>
           {c.synAddressLatin ? (
