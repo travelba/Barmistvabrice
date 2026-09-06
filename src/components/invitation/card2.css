@@ -513,9 +513,11 @@ body {
 /* ----- SYNAGOGUE TEXT TAUPE ----- */
 .synagogue-text-taupe {
   text-align: center;
-  width: 90vw;
+  width: 94vw;
   max-width: 700px;
-  padding: 60px 64px;
+  padding: 60px 36px;
+  container-type: inline-size;
+  container-name: synagogue;
   background:
     linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
     url('/img/light_linen.webp') repeat;
@@ -528,7 +530,7 @@ body {
   align-items: center;
   gap: 15px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s ease;
 }
 
@@ -676,23 +678,21 @@ body {
 
 .synagogue-text-taupe .synagogue-name {
   font-family: "Luxurious Script", cursive;
-  font-size: clamp(26px, 8.5vw, 48px);
+  font-size: clamp(18px, 9cqi, 52px);
   font-weight: 400;
   color: #b5a08b;
   display: block;
-  width: 100%;
+  width: max-content;
   max-width: 100%;
   box-sizing: border-box;
-  margin: 10px 0 0 0;
-  line-height: 1.15;
+  margin: 10px auto 0;
+  line-height: 1.25;
   word-spacing: normal;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  text-wrap: balance;
+  white-space: nowrap;
   overflow: visible;
   text-overflow: clip;
   position: relative;
-  padding: 0 8px 14px;
+  padding: 4px 4px 14px;
 }
 
 .synagogue-text-taupe .synagogue-name::after {
@@ -820,7 +820,7 @@ body {
 
 .presentation-box, .synagogue-text-taupe {
   position: relative;
-  overflow: clip; /* logo masqué dans les arrondis, texte moins agressivement coupé */
+  overflow: visible;
 }
 
 /* On s'assure que le texte reste au-dessus du logo */

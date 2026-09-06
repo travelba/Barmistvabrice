@@ -552,10 +552,12 @@ body {
 /* ----- SYNAGOGUE TEXT SILVER ----- */
 .synagogue-text-silver {
   text-align: center;
-  width: 90vw;
+  width: 94vw;
   max-width: 700px;
-  /* Plus de marge latérale : le border-radius 250px mangeait le nom long. */
-  padding: 60px 64px;
+  /* Moins de padding latéral = plus de place pour le nom sur une ligne. */
+  padding: 60px 36px;
+  container-type: inline-size;
+  container-name: synagogue;
   background:
     linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
     #ffffff url('/img/paper_background.webp') repeat;
@@ -721,25 +723,23 @@ body {
 
 .synagogue-text-silver .synagogue-name {
   font-family: "Luxurious Script", cursive;
-  /* Nom long (« Grande Synagogue de la Victoire ») : autoriser 2 lignes,
-     taille un peu plus basse pour rester dans la bulle arrondie. */
-  font-size: clamp(26px, 8.5vw, 48px);
+  /* Une ligne, aussi grand que possible : JS [data-fit-one-line] affine ;
+     ce clamp sert de base / fallback avant le fit. */
+  font-size: clamp(18px, 9cqi, 52px);
   font-weight: 400;
   color: #8a8a8a;
   display: block;
-  width: 100%;
+  width: max-content;
   max-width: 100%;
   box-sizing: border-box;
-  margin: 10px 0 0 0;
-  line-height: 1.15;
+  margin: 10px auto 0;
+  line-height: 1.25;
   word-spacing: normal;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  text-wrap: balance;
+  white-space: nowrap;
   overflow: visible;
   text-overflow: clip;
   position: relative;
-  padding: 0 8px 14px;
+  padding: 4px 4px 14px;
 }
 
 .synagogue-text-silver .synagogue-name::after {
@@ -1291,13 +1291,14 @@ body {
   }
 
   .synagogue-text-silver {
-    padding: 48px 32px;
+    padding: 48px 18px;
+    width: 96vw;
   }
 
   .synagogue-text-silver .synagogue-name {
-    font-size: clamp(22px, 6.8vw, 36px);
-    line-height: 1.2;
-    padding: 0 4px 16px;
+    font-size: clamp(16px, 8.5cqi, 34px);
+    line-height: 1.25;
+    padding: 4px 2px 14px;
   }
 
   .section-title {
@@ -1344,6 +1345,9 @@ body {
 }
 
 .section-logo-bg {
+  /* reste dans la forme de la bulle même si le parent est overflow:visible */
+  border-radius: inherit;
+  overflow: hidden;
   /* Positionnement au centre exact du parent */
   position: absolute;
   top: 50%;
@@ -1367,9 +1371,8 @@ body {
 .presentation-box,
 .synagogue-text-silver {
   position: relative;
-  /* clip-path plutôt que overflow:hidden : le logo reste masqué dans
-     les arrondis, mais le texte du nom long n’est plus coupé. */
-  overflow: clip;
+  /* visible : le nom sur une ligne (script) ne doit pas être coupé par les arrondis */
+  overflow: visible;
 }
 
 /* On s'assure que le texte reste au-dessus du logo */
