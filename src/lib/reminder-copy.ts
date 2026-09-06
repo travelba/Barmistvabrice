@@ -2,6 +2,17 @@ import { appUrl, EVENT, FLIGHT } from "./config";
 import { bookingDocsPath } from "./doc-token";
 import type { Booking, Locale } from "./types";
 
+function ceremonyTime(locale: Locale): string {
+  const date = new Date(EVENT.tephilinesDate);
+  const lang = locale === "he" ? "he-IL" : "fr-FR";
+  const timeStr = date.toLocaleTimeString(lang, {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Paris",
+  });
+  return locale === "he" ? timeStr : timeStr.replace(":", "h");
+}
+
 function ceremonyWhen(locale: Locale): string {
   const date = new Date(EVENT.tephilinesDate);
   const lang = locale === "he" ? "he-IL" : "fr-FR";
@@ -11,15 +22,10 @@ function ceremonyWhen(locale: Locale): string {
     month: "long",
     timeZone: "Europe/Paris",
   });
-  const timeStr = date.toLocaleTimeString(lang, {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Paris",
-  });
   if (locale === "he") {
-    return `${dateStr}, ${timeStr}`;
+    return `${dateStr}, ${ceremonyTime("he")}`;
   }
-  return `${dateStr} à ${timeStr.replace(":", "h")}`;
+  return `${dateStr} à ${ceremonyTime("fr")}`;
 }
 
 function tripDates(locale: Locale): string {
@@ -50,11 +56,11 @@ export function globalJ7Details(profile: ReminderProfile): string {
   if (ceremonyAttending) {
     if (locale === "he") {
       parts.push(
-        `הנחת התפילין ב-${ceremonyWhen("he")} — ${EVENT.tephilinesPlace}, ${EVENT.tephilinesAddress}.`,
+        `הנחת התפילין: ${ceremonyWhen("he")}.\n${EVENT.tephilinesPlace}\n${EVENT.tephilinesAddress}`,
       );
     } else {
       parts.push(
-        `Mise des Téphilines le ${ceremonyWhen("fr")} — ${EVENT.tephilinesPlace}, ${EVENT.tephilinesAddress}.`,
+        `Mise des Téphilines : ${ceremonyWhen("fr")}.\n${EVENT.tephilinesPlace}\n${EVENT.tephilinesAddress}`,
       );
     }
   }
@@ -88,9 +94,9 @@ export function globalJ7Details(profile: ReminderProfile): string {
 /** Bloc {{3}} — rappel J-1 cérémonie. */
 export function ceremonyJ1Details(locale: Locale): string {
   if (locale === "he") {
-    return `מחר — ${ceremonyWhen("he")}.\n${EVENT.tephilinesPlace}\n${EVENT.tephilinesAddress}`;
+    return `מחר — ${ceremonyWhen("he")}.\n${EVENT.tephilinesPlace}\n${EVENT.tephilinesAddress}\nתחילת התפילה בשעה ${ceremonyTime("he")}.`;
   }
-  return `Demain — ${ceremonyWhen("fr")}.\n${EVENT.tephilinesPlace}\n${EVENT.tephilinesAddress}`;
+  return `Demain — ${ceremonyWhen("fr")}.\n${EVENT.tephilinesPlace}\n${EVENT.tephilinesAddress}\nDébut de l’office à ${ceremonyTime("fr")}.`;
 }
 
 /** Blocs {{3}} et {{4}} — rappel J-1 départ (voyageurs payés). */
