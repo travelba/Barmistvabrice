@@ -20,7 +20,7 @@ import "./card3.css";
 
 type Person = { nom: string; prenom: string };
 
-const TARGET = new Date("2026-10-08T09:30:00").getTime();
+const TARGET = new Date("2026-10-08T10:15:00").getTime();
 
 const CONTENT = {
   fr: {
@@ -47,11 +47,11 @@ const CONTENT = {
     synIntro: ["La mise des Téphilines ", "aura lieu le"],
     synDate: "Jeudi 8 Octobre 2026",
     synLocationPre: "en la",
-    synName: "Synagogue Buffault",
+    synName: "Grande Synagogue de la Victoire",
     synNameLatin: false,
-    synAddress: ["28 rue Buffault,", "75009 Paris"],
+    synAddress: ["44 rue de la Victoire,", "75009 Paris"],
     synAddressLatin: false,
-    synTime: "à 9h30 (Début de l’office)",
+    synTime: "à 10h15 (Début de l’office)",
     synDetails: "Un petit déjeuner suivra l’office",
     calendar: "Ajouter au calendrier",
     waze: "Voir l'itinéraire",
@@ -113,11 +113,11 @@ const CONTENT = {
     synIntro: ["הנחת התפילין", "תתקיים ביום"],
     synDate: "יום חמישי 8 באוקטובר 2026",
     synLocationPre: "בבית הכנסת",
-    synName: "Buffault",
+    synName: "Victoire",
     synNameLatin: true,
-    synAddress: ["28 rue Buffault,", "75009 Paris"],
+    synAddress: ["44 rue de la Victoire,", "75009 Paris"],
     synAddressLatin: true,
-    synTime: "בשעה 9:30 (תחילת התפילה)",
+    synTime: "בשעה 10:15 (תחילת התפילה)",
     synDetails: "לאחר התפילה תוגש ארוחת בוקר",
     calendar: "הוסף ליומן",
     waze: "הצג מסלול",
@@ -159,7 +159,7 @@ const CONTENT = {
 };
 
 const WAZE_URL =
-  "https://ul.waze.com/ul?venue_id=1507817.15340312.12082362&overview=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location";
+  "https://ul.waze.com/ul?ll=48.8758%2C2.3369&navigate=yes&zoom=17&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location";
 
 export interface TephilinesInvitationProps {
   /** Langue figée par la route (chaque URL a sa langue, comme le site d'origine). */
