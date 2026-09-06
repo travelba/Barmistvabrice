@@ -54,8 +54,8 @@ const CONTENT = {
     synIntro: ["La mise des Téphilines ", "aura lieu le"],
     synDate: "Jeudi 8 Octobre 2026",
     synLocationPre: "en la",
-    // Deux lignes pour éviter la troncature dans la bulle arrondie.
-    synName: ["Grande Synagogue", "de la Victoire"],
+    // Une seule ligne, taille max calculée en CSS/JS pour tenir sur mobile.
+    synName: "Grande Synagogue de la Victoire",
     synNameLatin: false,
     synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: false,
@@ -122,7 +122,7 @@ const CONTENT = {
     synDate: "יום חמישי 8 באוקטובר 2026",
     synLocationPre: "בבית הכנסת",
     // Nom latin court (comme sur l'invitation HE d'origine) — adresse depuis EVENT.
-    synName: ["Victoire"],
+    synName: "Victoire",
     synNameLatin: true,
     synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: true,
@@ -202,6 +202,42 @@ export function TephilinesInvitation({
 
   /* --------------------------- Overlay --------------------------- */
   const [revealed, setRevealed] = useState(false);
+
+  /* Nom de synagogue : une ligne, aussi grand que possible dans la bulle. */
+  useEffect(() => {
+    const el = document.querySelector<HTMLElement>("[data-fit-one-line]");
+    const parent = el?.closest<HTMLElement>(".synagogue-text-silver");
+    if (!el || !parent) return;
+
+    const fit = () => {
+      el.style.whiteSpace = "nowrap";
+      el.style.display = "block";
+      // Largeur utile = bulle moins une petite marge (coins arrondis).
+      const maxW = Math.max(0, parent.clientWidth - 24);
+      let lo = 14;
+      let hi = Math.min(64, Math.floor(maxW / 5.2)); // borne haute pour police script
+      el.style.fontSize = `${hi}px`;
+      if (el.scrollWidth <= maxW) {
+        el.style.fontSize = `${hi}px`;
+        return;
+      }
+      while (lo < hi) {
+        const mid = Math.ceil((lo + hi) / 2);
+        el.style.fontSize = `${mid}px`;
+        if (el.scrollWidth <= maxW) lo = mid;
+        else hi = mid - 1;
+      }
+      el.style.fontSize = `${lo}px`;
+    };
+
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(parent);
+    // Police script parfois chargée après coup → refit.
+    document.fonts?.ready?.then(fit).catch(() => {});
+    return () => ro.disconnect();
+  }, [locale, revealed]);
+
 
   useEffect(() => {
     // Verrouiller aussi <html> : globals.css pose overflow-x sur html, ce qui
@@ -439,21 +475,11 @@ export function TephilinesInvitation({
             <br />
             {c.synNameLatin ? (
               <span className="synagogue-name latin-text" dir="ltr">
-                {c.synName.map((line, i) => (
-                  <span key={line}>
-                    {i > 0 && <br />}
-                    {line}
-                  </span>
-                ))}
+                {c.synName}
               </span>
             ) : (
-              <span className="synagogue-name">
-                {c.synName.map((line, i) => (
-                  <span key={line}>
-                    {i > 0 && <br />}
-                    {line}
-                  </span>
-                ))}
+              <span className="synagogue-name" data-fit-one-line>
+                {c.synName}
               </span>
             )}
           </p>
