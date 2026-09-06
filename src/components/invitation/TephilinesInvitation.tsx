@@ -11,6 +11,7 @@ import {
 import { preload } from "react-dom";
 import Image from "next/image";
 import { useI18n } from "@/i18n/I18nProvider";
+import { EVENT } from "@/lib/config";
 import { defaultCountryForLocale, normalizePhoneE164 } from "@/lib/phone";
 import "./card3.css";
 
@@ -20,7 +21,13 @@ import "./card3.css";
 
 type Person = { nom: string; prenom: string };
 
-const TARGET = new Date("2026-10-08T10:15:00").getTime();
+/** Compte à rebours calé sur EVENT (source unique — plus de Buffault / horaires en dur). */
+const TARGET = new Date(EVENT.tephilinesDate).getTime();
+
+const SYN_ADDRESS_LINES = (() => {
+  const [street, city] = EVENT.tephilinesAddress.split(",").map((s) => s.trim());
+  return [`${street},`, city] as [string, string];
+})();
 
 const CONTENT = {
   fr: {
@@ -47,9 +54,9 @@ const CONTENT = {
     synIntro: ["La mise des Téphilines ", "aura lieu le"],
     synDate: "Jeudi 8 Octobre 2026",
     synLocationPre: "en la",
-    synName: "Grande Synagogue de la Victoire",
+    synName: EVENT.tephilinesPlace,
     synNameLatin: false,
-    synAddress: ["44 rue de la Victoire,", "75009 Paris"],
+    synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: false,
     synTime: "à 10h15 (Début de l’office)",
     synDetails: "Un petit déjeuner suivra l’office",
@@ -113,9 +120,10 @@ const CONTENT = {
     synIntro: ["הנחת התפילין", "תתקיים ביום"],
     synDate: "יום חמישי 8 באוקטובר 2026",
     synLocationPre: "בבית הכנסת",
+    // Nom latin court (comme sur l'invitation HE d'origine) — adresse depuis EVENT.
     synName: "Victoire",
     synNameLatin: true,
-    synAddress: ["44 rue de la Victoire,", "75009 Paris"],
+    synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: true,
     synTime: "בשעה 10:15 (תחילת התפילה)",
     synDetails: "לאחר התפילה תוגש ארוחת בוקר",

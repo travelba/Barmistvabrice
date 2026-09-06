@@ -1,3 +1,4 @@
+import { EVENT } from "@/lib/config";
 import type { Locale } from "@/lib/types";
 
 export type Dict = Record<string, string>;
@@ -79,7 +80,7 @@ export const dictionaries: Record<Locale, Dict> = {
     "ceremony.invite.oukchartam": "Téphilines — Oukchartam",
     "ceremony.invite.lead": "La mise des Téphilines aura lieu le",
     "ceremony.invite.placePrefix": "en la",
-    "ceremony.place": "Grande Synagogue de la Victoire",
+    "ceremony.place": EVENT.tephilinesPlace,
 
     "place.destination": "Mykonos",
     "place.greece": "Grèce",
