@@ -54,8 +54,8 @@ const CONTENT = {
     synIntro: ["La mise des Téphilines ", "aura lieu le"],
     synDate: "Jeudi 8 Octobre 2026",
     synLocationPre: "en la",
-    // Une seule ligne, taille max calculée en CSS/JS pour tenir sur mobile.
-    synName: "Grande Synagogue de la Victoire",
+    // Deux lignes, taille max calculée pour que la plus longue tienne sur mobile.
+    synName: ["Grande Synagogue", "de la Victoire"],
     synNameLatin: false,
     synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: false,
@@ -122,7 +122,7 @@ const CONTENT = {
     synDate: "יום חמישי 8 באוקטובר 2026",
     synLocationPre: "בבית הכנסת",
     // Nom latin court (comme sur l'invitation HE d'origine) — adresse depuis EVENT.
-    synName: "Victoire",
+    synName: ["Victoire"],
     synNameLatin: true,
     synAddress: SYN_ADDRESS_LINES,
     synAddressLatin: true,
@@ -203,28 +203,35 @@ export function TephilinesInvitation({
   /* --------------------------- Overlay --------------------------- */
   const [revealed, setRevealed] = useState(false);
 
-  /* Nom de synagogue : une ligne, aussi grand que possible dans la bulle. */
+  /* Nom de synagogue : 2 lignes, aussi grand que possible dans la bulle. */
   useEffect(() => {
-    const el = document.querySelector<HTMLElement>("[data-fit-one-line]");
+    const el = document.querySelector<HTMLElement>("[data-fit-two-line]");
     const parent = el?.closest<HTMLElement>(".synagogue-text-silver");
     if (!el || !parent) return;
 
+    const lines = () =>
+      Array.from(el.querySelectorAll<HTMLElement>(".synagogue-name-line"));
+
+    const fits = (maxW: number) =>
+      lines().every((line) => line.scrollWidth <= maxW);
+
     const fit = () => {
-      el.style.whiteSpace = "nowrap";
-      el.style.display = "block";
+      el.style.display = "flex";
       // Largeur utile = bulle moins une petite marge (coins arrondis).
-      const maxW = Math.max(0, parent.clientWidth - 24);
-      let lo = 14;
-      let hi = Math.min(64, Math.floor(maxW / 5.2)); // borne haute pour police script
+      const maxW = Math.max(0, parent.clientWidth - 20);
+      let lo = 22;
+      // 2 lignes : on pousse très haut ; la ligne longue (« Grande Synagogue »)
+      // borne la taille via binary search sur scrollWidth.
+      let hi = Math.min(96, Math.floor(maxW / 2.6));
       el.style.fontSize = `${hi}px`;
-      if (el.scrollWidth <= maxW) {
+      if (fits(maxW)) {
         el.style.fontSize = `${hi}px`;
         return;
       }
       while (lo < hi) {
         const mid = Math.ceil((lo + hi) / 2);
         el.style.fontSize = `${mid}px`;
-        if (el.scrollWidth <= maxW) lo = mid;
+        if (fits(maxW)) lo = mid;
         else hi = mid - 1;
       }
       el.style.fontSize = `${lo}px`;
@@ -475,11 +482,19 @@ export function TephilinesInvitation({
             <br />
             {c.synNameLatin ? (
               <span className="synagogue-name latin-text" dir="ltr">
-                {c.synName}
+                {c.synName.map((line) => (
+                  <span key={line} className="synagogue-name-line">
+                    {line}
+                  </span>
+                ))}
               </span>
             ) : (
-              <span className="synagogue-name" data-fit-one-line>
-                {c.synName}
+              <span className="synagogue-name" data-fit-two-line>
+                {c.synName.map((line) => (
+                  <span key={line} className="synagogue-name-line">
+                    {line}
+                  </span>
+                ))}
               </span>
             )}
           </p>
