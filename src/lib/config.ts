@@ -8,9 +8,9 @@ export const EVENT = {
   childName: "Shon Bechet",
   title: "Bar Mitsvah de Shon Bechet",
   /** Mise des Tephilines a Paris (date de l'evenement religieux). */
-  tephilinesDate: "2026-10-08T09:30:00+02:00",
-  tephilinesPlace: "Synagogue Buffault",
-  tephilinesAddress: "28 rue Buffault, 75009 Paris",
+  tephilinesDate: "2026-10-08T10:15:00+02:00",
+  tephilinesPlace: "Grande Synagogue de la Victoire",
+  tephilinesAddress: "44 rue de la Victoire, 75009 Paris",
   /** Sejour a Mykonos : depart vendredi 9 oct, retour dimanche 11 oct 2026 (2 nuits). */
   destination: "Mykonos",
   tripStartDate: "2026-10-09",
