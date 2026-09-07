@@ -723,23 +723,34 @@ body {
 
 .synagogue-text-silver .synagogue-name {
   font-family: "Luxurious Script", cursive;
-  /* Une ligne, aussi grand que possible : JS [data-fit-one-line] affine ;
+  /* Deux lignes, aussi grand que possible : JS [data-fit-two-line] affine ;
      ce clamp sert de base / fallback avant le fit. */
-  font-size: clamp(18px, 9cqi, 52px);
+  font-size: clamp(32px, 16cqi, 88px);
   font-weight: 400;
   color: #8a8a8a;
-  display: block;
-  width: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.02em;
+  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   margin: 10px auto 0;
-  line-height: 1.25;
+  line-height: 1.05;
   word-spacing: normal;
-  white-space: nowrap;
+  white-space: normal;
   overflow: visible;
   text-overflow: clip;
   position: relative;
-  padding: 4px 4px 14px;
+  padding: 6px 4px 16px;
+  text-align: center;
+}
+
+.synagogue-text-silver .synagogue-name-line {
+  display: block;
+  white-space: nowrap;
+  line-height: 1.05;
 }
 
 .synagogue-text-silver .synagogue-name::after {
@@ -1296,9 +1307,9 @@ body {
   }
 
   .synagogue-text-silver .synagogue-name {
-    font-size: clamp(16px, 8.5cqi, 34px);
-    line-height: 1.25;
-    padding: 4px 2px 14px;
+    font-size: clamp(30px, 15cqi, 72px);
+    line-height: 1.05;
+    padding: 6px 2px 16px;
   }
 
   .section-title {
