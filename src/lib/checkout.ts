@@ -1,4 +1,4 @@
-import { appUrl, CURRENCY, EVENT, FLIGHT, TRIP_NIGHTS } from "./config";
+import { appUrl, CURRENCY, EVENT, TRIP_NIGHTS } from "./config";
 import { getStripe } from "./stripe";
 import type { Booking } from "./types";
 
@@ -32,10 +32,10 @@ export async function createCheckoutSessionForBooking(
     quantity: r.quantity,
   }));
 
-  if (booking.passengerCount > 0) {
-    const flightUnit =
-      Math.round(booking.flightTotalCents / booking.passengerCount) ||
-      FLIGHT.pricePerPassengerCents;
+  // 0 € de vol = hôtel seul (inscription manuelle / parcours hébreu).
+  // Ne pas retomber sur le tarif A/R : `0 || prix` facturerait le vol par erreur.
+  if (booking.flightTotalCents > 0 && booking.passengerCount > 0) {
+    const flightUnit = Math.round(booking.flightTotalCents / booking.passengerCount);
     lineItems.push({
       price_data: {
         currency: CURRENCY,
