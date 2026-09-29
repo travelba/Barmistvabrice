@@ -27,7 +27,7 @@ const PUBLIC_COLUMNS =
 function mapRow(row: Record<string, unknown>): IdentityDocumentPublic {
   return {
     id: String(row.id),
-    bookingId: String(row.booking_id),
+    bookingId: row.booking_id == null ? "" : String(row.booking_id),
     passengerIndex: row.passenger_index == null ? null : Number(row.passenger_index),
     sex: row.sex === "F" ? "F" : "M",
     lastName: String(row.last_name ?? ""),
@@ -70,7 +70,7 @@ export async function listIdentityAdminDocs(): Promise<IdentityAdminDoc[]> {
   }
   return (data ?? []).map((row) => ({
     id: String(row.id),
-    bookingId: String(row.booking_id),
+    bookingId: row.booking_id == null ? "" : String(row.booking_id),
     firstName: String(row.first_name ?? ""),
     lastName: String(row.last_name ?? ""),
   }));
@@ -143,7 +143,7 @@ export function parseIdentityImport(body: unknown): {
 }
 
 export async function saveIdentityScan(input: {
-  bookingId: string;
+  bookingId: string | null;
   passengerIndex: number | null;
   mime: IdentityMime;
   bytes: Uint8Array;
@@ -163,7 +163,8 @@ export async function saveIdentityScan(input: {
     throw new IdentityError("storage");
   }
 
-  const path = `${input.bookingId}/${crypto.randomUUID()}.${extensionForMime(input.mime)}`;
+  const folder = input.bookingId ?? "agence";
+  const path = `${folder}/${crypto.randomUUID()}.${extensionForMime(input.mime)}`;
   const upload = await sb.storage.from(BUCKET).upload(path, Buffer.from(input.bytes), {
     contentType: input.mime,
     upsert: false,

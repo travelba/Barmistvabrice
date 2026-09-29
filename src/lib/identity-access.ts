@@ -22,8 +22,6 @@ export async function authorizeIdentityBooking(
 }
 
 export async function readIdentityForm(req: Request): Promise<{
-  bookingId: string;
-  token: string;
   bytes: Uint8Array;
   form: FormData;
 }> {
@@ -33,12 +31,10 @@ export async function readIdentityForm(req: Request): Promise<{
   } catch {
     throw new IdentityError("invalid");
   }
-  const bookingId = String(form.get("bookingId") ?? "");
-  const token = String(form.get("token") ?? "");
   const file = form.get("file");
   if (!(file instanceof File)) throw new IdentityError("file_type");
   const bytes = new Uint8Array(await file.arrayBuffer());
-  return { bookingId, token, bytes, form };
+  return { bytes, form };
 }
 
 export function identityJsonError(e: unknown): NextResponse {

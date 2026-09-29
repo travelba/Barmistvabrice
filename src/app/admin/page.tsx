@@ -1,9 +1,7 @@
 import { redirect } from "next/navigation";
 import { isAdminAuthed } from "@/lib/admin-auth";
-import { appUrl, isSupabaseConfigured } from "@/lib/config";
+import { isSupabaseConfigured } from "@/lib/config";
 import { getHotels, listBookings, listCeremonyRsvps } from "@/lib/data";
-import { identityPagePath } from "@/lib/doc-token";
-import { listIdentityAdminDocs } from "@/lib/identity-store";
 import { formatEuro } from "@/lib/pricing";
 import { adminT, adminDateLocale, resolveAdminLang } from "@/lib/admin-i18n";
 import { AdminLogout } from "@/components/admin/AdminLogout";
@@ -24,19 +22,11 @@ export default async function AdminPage({
   const dateLocale = adminDateLocale(lang);
   const otherLangHref = lang === "he" ? "/admin" : "/admin?lang=he";
 
-  const [hotels, bookings, rsvps, identityDocs] = await Promise.all([
+  const [hotels, bookings, rsvps] = await Promise.all([
     getHotels(),
     listBookings(),
     listCeremonyRsvps(),
-    listIdentityAdminDocs(),
   ]);
-  const identityByBooking = new Map<string, Array<{ id: string; label: string }>>();
-  for (const doc of identityDocs) {
-    const list = identityByBooking.get(doc.bookingId) ?? [];
-    const label = `${doc.firstName} ${doc.lastName}`.trim();
-    list.push({ id: doc.id, label: label || doc.id.slice(0, 8) });
-    identityByBooking.set(doc.bookingId, list);
-  }
   const paid = bookings.filter((b) => b.status === "paid");
   const revenue = paid.reduce((acc, b) => acc + b.totalCents, 0);
   const passengers = paid.reduce((acc, b) => acc + b.passengerCount, 0);
@@ -277,18 +267,7 @@ export default async function AdminPage({
                         </span>
                       </td>
                       <td className="px-4 py-3 text-end">
-                        <BookingActions
-                          bookingId={b.id}
-                          status={b.status}
-                          lang={lang}
-                          identityUrl={
-                            b.status === "paid" && b.flightTotalCents > 0
-                              ? `${appUrl()}${identityPagePath(b.id, lang)}`
-                              : null
-                          }
-                          identityDocs={identityByBooking.get(b.id) ?? []}
-                          identityTotal={b.passengerCount}
-                        />
+                        <BookingActions bookingId={b.id} status={b.status} lang={lang} />
                       </td>
                     </tr>
                   ))

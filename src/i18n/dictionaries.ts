@@ -188,6 +188,8 @@ export const dictionaries: Record<Locale, Dict> = {
 
     "id.title": "Passeport ou carte d'identité",
     "id.subtitle": "Famille {name} — une photo nette ou un fichier par personne. Vérifiez les informations, puis importez.",
+    "id.agenceSubtitle": "Une photo nette ou un fichier par personne. Vérifiez les informations, puis importez dans la liste du vol.",
+    "id.nextDocument": "Document suivant",
     "id.privacy": "La photo est enregistrée de façon privée. Seule l'agence peut l'ouvrir.",
     "id.passenger": "Personne",
     "id.extra": "Autre personne",
@@ -449,6 +451,8 @@ export const dictionaries: Record<Locale, Dict> = {
 
     "id.title": "דרכון או תעודת זהות",
     "id.subtitle": "משפחת {name} — תמונה ברורה או קובץ לכל אדם. בדקו את הפרטים ואז ייבאו.",
+    "id.agenceSubtitle": "תמונה ברורה או קובץ לכל אדם. בדקו את הפרטים, ואז ייבאו לרשימת הטיסה.",
+    "id.nextDocument": "מסמך הבא",
     "id.privacy": "התמונה נשמרת באופן פרטי. רק הסוכנות יכולה לפתוח אותה.",
     "id.passenger": "אדם",
     "id.extra": "אדם נוסף",

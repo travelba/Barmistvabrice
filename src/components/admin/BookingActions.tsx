@@ -9,23 +9,16 @@ export function BookingActions({
   bookingId,
   status,
   lang = "fr",
-  identityUrl = null,
-  identityDocs = [],
-  identityTotal = 0,
 }: {
   bookingId: string;
   status: string;
   lang?: AdminLang;
-  identityUrl?: string | null;
-  identityDocs?: Array<{ id: string; label: string }>;
-  identityTotal?: number;
 }) {
   const router = useRouter();
   const t = adminT(lang);
   const [loading, setLoading] = useState<null | "relaunch" | "cancel" | "delete">(null);
   const [url, setUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [identityCopied, setIdentityCopied] = useState(false);
   const [whatsappSent, setWhatsappSent] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,17 +78,6 @@ export function BookingActions({
     } catch (e) {
       setError(e instanceof Error ? e.message : t("actions.error"));
       setLoading(null);
-    }
-  }
-
-  async function copyIdentity() {
-    if (!identityUrl) return;
-    try {
-      await navigator.clipboard.writeText(identityUrl);
-      setIdentityCopied(true);
-      setTimeout(() => setIdentityCopied(false), 1500);
-    } catch {
-      window.prompt(t("actions.identityCopy"), identityUrl);
     }
   }
 
@@ -170,35 +152,6 @@ export function BookingActions({
           {whatsappSent === false && (
             <p className="text-[11px] text-amber-700">{t("actions.whatsappSkipped")}</p>
           )}
-        </div>
-      )}
-
-      {identityUrl && (
-        <div className="flex w-full max-w-xs flex-col items-end gap-1">
-          <button
-            type="button"
-            onClick={copyIdentity}
-            className="inline-flex items-center gap-1 rounded-full border border-navy/20 px-3 py-1.5 text-xs font-medium text-navy transition hover:bg-navy/5"
-          >
-            {identityCopied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
-            {identityCopied ? t("actions.identityCopied") : t("actions.identityCopy")}
-          </button>
-          <p className="text-[11px] text-muted">
-            {t("actions.identityCount")
-              .replace("{n}", String(identityDocs.length))
-              .replace("{total}", String(identityTotal))}
-          </p>
-          {identityDocs.map((doc) => (
-            <a
-              key={doc.id}
-              href={`/api/admin/identity/${doc.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] text-navy underline"
-            >
-              {t("actions.identityView").replace("{name}", doc.label)}
-            </a>
-          ))}
         </div>
       )}
 

@@ -1,5 +1,6 @@
+import { isAgenceAuthed } from "@/lib/agence-auth";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
-import { authorizeIdentityBooking, identityJsonError, readIdentityForm } from "@/lib/identity-access";
+import { identityJsonError, readIdentityForm } from "@/lib/identity-access";
 import { IdentityError } from "@/lib/identity-error";
 import { assertIdentityFile } from "@/lib/identity-file";
 import { takeIdentityRate } from "@/lib/identity-rate";
@@ -17,9 +18,9 @@ export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
-    const { bookingId, token, bytes, form } = await readIdentityForm(req);
-    const booking = await authorizeIdentityBooking(bookingId, token);
-    if (!takeIdentityRate(`import:${booking.id}`)) throw new IdentityError("rate");
+    if (!(await isAgenceAuthed())) throw new IdentityError("unauthorized");
+    const { bytes, form } = await readIdentityForm(req);
+    if (!takeIdentityRate("import:agence")) throw new IdentityError("rate");
     if (!getSupabaseAdmin()) throw new IdentityError("storage");
     if (!isManifestSheetConfigured()) throw new IdentityError("sheet");
 
@@ -31,14 +32,10 @@ export async function POST(req: Request) {
       throw new IdentityError("invalid");
     }
     const parsed = parseIdentityImport(payload);
-    const passengerIndex =
-      parsed.passengerIndex != null && parsed.passengerIndex < booking.passengers.length
-        ? parsed.passengerIndex
-        : null;
 
     const saved = await saveIdentityScan({
-      bookingId: booking.id,
-      passengerIndex,
+      bookingId: null,
+      passengerIndex: null,
       mime,
       bytes,
       passenger: parsed.passenger,
