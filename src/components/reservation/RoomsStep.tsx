@@ -29,7 +29,9 @@ export function RoomsStep() {
       </p>
 
       <div className="mt-8 space-y-4">
-        {selectedHotel.roomTypes.map((rt) => {
+        {selectedHotel.roomTypes
+          .filter((rt) => rt.available > 0)
+          .map((rt) => {
           const qty = rooms[rt.id] ?? 0;
           const canAdd = qty < rt.available && !maxRoomsReached;
           return (

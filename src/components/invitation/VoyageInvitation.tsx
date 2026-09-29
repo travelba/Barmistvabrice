@@ -304,7 +304,12 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
   }, [closeHotel]);
 
   const currentHotel = openKey && hotels ? hotels[openKey] : null;
-  const currentRoom = currentHotel?.rooms[roomIndex] ?? null;
+  const visibleRooms = (currentHotel?.rooms ?? []).filter(
+    (room) => roomAvailability(openKey, room.name) !== 0,
+  );
+  const safeRoomIndex =
+    visibleRooms.length === 0 ? 0 : Math.min(roomIndex, visibleRooms.length - 1);
+  const currentRoom = visibleRooms[safeRoomIndex] ?? null;
   const isFlight = openKey === "avion";
   const currentAvailability = roomAvailability(openKey, currentRoom?.name);
   const currentSoldOut = currentAvailability === 0;
@@ -563,33 +568,27 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
             ) : null}
           </div>
 
-          {!isFlight && currentHotel && currentHotel.rooms.length > 1 && (
+          {!isFlight && visibleRooms.length > 1 && (
             <>
-              {currentHotel.rooms.length > 5 && (
+              {visibleRooms.length > 5 && (
                 <p id="room-scroll-hint" className="room-scroll-hint">
                   {c.scrollHint}
                 </p>
               )}
-              <div className={"room-buttons" + (currentHotel.rooms.length > 5 ? " scrollable-rooms" : "")}>
-                {currentHotel.rooms.map((room, i) => {
-                  const soldOut = roomAvailability(openKey, room.name) === 0;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      className={
-                        (i === roomIndex ? "active" : "") + (soldOut ? " room-soldout" : "")
-                      }
-                      onClick={() => {
-                        setRoomIndex(i);
-                        setImageIndex(0);
-                      }}
-                    >
-                      {room.name}
-                      {soldOut ? ` — ${c.soldout}` : ""}
-                    </button>
-                  );
-                })}
+              <div className={"room-buttons" + (visibleRooms.length > 5 ? " scrollable-rooms" : "")}>
+                {visibleRooms.map((room, i) => (
+                  <button
+                    key={room.name}
+                    type="button"
+                    className={i === safeRoomIndex ? "active" : ""}
+                    onClick={() => {
+                      setRoomIndex(i);
+                      setImageIndex(0);
+                    }}
+                  >
+                    {room.name}
+                  </button>
+                ))}
               </div>
             </>
           )}

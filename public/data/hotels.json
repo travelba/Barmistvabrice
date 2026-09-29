@@ -1,16 +1,7 @@
-﻿{
+{
   "hotelB": {
     "name": "Santa-Marina - Mykonos",
     "rooms": [
-      {
-        "name": "Standard Room Limited",
-        "capacity": "2 Personnes",
-        "price": "420€ / nuit",
-        "images": [
-          "img/resort_room_1.jpeg",
-          "img/resort_room_2.jpeg"
-        ]
-      },
       {
         "name": "Resort Room",
         "capacity": "2 Personnes",
@@ -237,4 +228,3 @@
     ]
   }
 }
-

@@ -31,7 +31,7 @@ export const HOTELS_SEED: Hotel[] = [
           "/hotels/resort-room-1.jpeg",
           "/hotels/resort-room-2.jpeg"
         ],
-        "stockTotal": 20,
+        "stockTotal": 0,
         "booked": 0,
         "held": 0
       },
