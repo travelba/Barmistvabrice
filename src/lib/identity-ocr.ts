@@ -29,7 +29,7 @@ export async function readIdentityDocument(
 ): Promise<IdentityRead> {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new IdentityError("gemini");
-  const model = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
+  const model = geminiModel();
 
   let response: Response;
   try {
@@ -54,6 +54,7 @@ export async function readIdentityDocument(
           ],
           generationConfig: {
             temperature: 0,
+            thinkingConfig: { thinkingBudget: 0 },
             responseMimeType: "application/json",
             responseSchema: {
               type: "OBJECT",
@@ -93,7 +94,7 @@ export async function readIdentityDocument(
 
   if (!response.ok) {
     console.error("[identity/ocr] gemini", response.status);
-    throw new IdentityError("unreadable");
+    throw new IdentityError("gemini");
   }
 
   const payload = (await response.json()) as {
@@ -127,6 +128,19 @@ export async function readIdentityDocument(
   if (!applied.fields.placeOfBirth) warnings.push("place_missing");
   if (isExpiryPast(applied.fields.expiryDate)) warnings.push("expiry_past");
   return { fields: applied.fields, warnings };
+}
+
+const RETIRED_MODELS = new Set([
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+]);
+
+function geminiModel(): string {
+  const configured = process.env.GEMINI_MODEL?.trim().replace(/^"|"$/g, "");
+  if (!configured || RETIRED_MODELS.has(configured)) return "gemini-3.8-flash";
+  return configured;
 }
 
 function stringField(value: unknown): string {
