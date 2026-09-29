@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import { CANONICAL_URL } from "@/lib/config";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { publicRequestUrl, verifyTwilioSignature } from "@/lib/twilio-signature";
 import { planWhatsappInbound, twimlEmpty } from "@/lib/whatsapp-inbound";
@@ -22,7 +23,8 @@ export async function POST(req: Request) {
   }
 
   const signature = req.headers.get("x-twilio-signature");
-  if (!verifyTwilioSignature(authToken, signature, publicRequestUrl(req), params)) {
+  const urls = [publicRequestUrl(req), `${CANONICAL_URL}/api/whatsapp/inbound`];
+  if (!urls.some((url) => verifyTwilioSignature(authToken, signature, url, params))) {
     return new Response("Signature invalide", { status: 403 });
   }
   if (!getSupabaseAdmin()) return twiml(twimlEmpty(), 503);
