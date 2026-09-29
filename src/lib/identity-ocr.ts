@@ -74,13 +74,13 @@ const RETIRED_MODELS = new Set([
 
 function geminiModel(): string {
   const configured = process.env.GEMINI_MODEL?.trim().replace(/^"|"$/g, "");
-  if (!configured || RETIRED_MODELS.has(configured)) return "gemini-3.8-flash";
+  if (!configured || RETIRED_MODELS.has(configured)) return "gemini-3.5-flash-lite";
   return configured;
 }
 
 function geminiModels(): string[] {
-  const models = [geminiModel(), "gemini-3.1-flash-lite"];
-  return [...new Set(models)];
+  // 3.8-flash et 3.1-flash-lite répondent souvent 503. On tente d'abord un modèle qui accepte la photo.
+  return [...new Set(["gemini-3.5-flash-lite", geminiModel()])];
 }
 
 async function requestGemini(apiKey: string, buf: Uint8Array, mime: IdentityMime): Promise<Response> {
@@ -96,7 +96,6 @@ async function requestGemini(apiKey: string, buf: Uint8Array, mime: IdentityMime
     ],
     generationConfig: {
       temperature: 0,
-      thinkingConfig: { thinkingBudget: 0 },
       responseMimeType: "application/json",
       responseSchema: {
         type: "OBJECT",
@@ -139,13 +138,13 @@ async function requestGemini(apiKey: string, buf: Uint8Array, mime: IdentityMime
             "Content-Type": "application/json",
             "x-goog-api-key": apiKey,
           },
-          signal: AbortSignal.timeout(25_000),
+          signal: AbortSignal.timeout(40_000),
           body,
         },
       );
-      if (response.ok || (response.status !== 429 && response.status !== 503)) return response;
+      if (response.ok) return response;
       lastStatus = response.status;
-      console.error("[identity/ocr] gemini", response.status);
+      console.error("[identity/ocr] gemini", response.status, model);
     } catch (e) {
       console.error("[identity/ocr] network", e instanceof Error ? e.name : "error");
     }

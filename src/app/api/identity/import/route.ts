@@ -3,7 +3,6 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { identityJsonError, readIdentityForm } from "@/lib/identity-access";
 import { IdentityError } from "@/lib/identity-error";
 import { assertIdentityFile } from "@/lib/identity-file";
-import { takeIdentityRate } from "@/lib/identity-rate";
 import {
   parseIdentityImport,
   removeIdentityFile,
@@ -20,7 +19,6 @@ export async function POST(req: Request) {
   try {
     if (!(await isAgenceAuthed())) throw new IdentityError("unauthorized");
     const { bytes, form } = await readIdentityForm(req);
-    if (!takeIdentityRate("import:agence")) throw new IdentityError("rate");
     if (!getSupabaseAdmin()) throw new IdentityError("storage");
     if (!isManifestSheetConfigured()) throw new IdentityError("sheet");
 
