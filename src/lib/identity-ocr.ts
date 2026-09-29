@@ -29,73 +29,8 @@ export async function readIdentityDocument(
 ): Promise<IdentityRead> {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new IdentityError("gemini");
-  const model = geminiModel();
 
-  let response: Response;
-  try {
-    response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
-        },
-        signal: AbortSignal.timeout(50_000),
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [
-                { text: PROMPT },
-                { inlineData: { mimeType: mime, data: Buffer.from(buf).toString("base64") } },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0,
-            thinkingConfig: { thinkingBudget: 0 },
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: "OBJECT",
-              properties: {
-                sex: { type: "STRING" },
-                lastName: { type: "STRING" },
-                firstName: { type: "STRING" },
-                dateOfBirth: { type: "STRING" },
-                placeOfBirth: { type: "STRING" },
-                docType: { type: "STRING" },
-                docNumber: { type: "STRING" },
-                nationality: { type: "STRING" },
-                expiryDate: { type: "STRING" },
-                mrzLines: { type: "ARRAY", items: { type: "STRING" } },
-              },
-              required: [
-                "sex",
-                "lastName",
-                "firstName",
-                "dateOfBirth",
-                "placeOfBirth",
-                "docType",
-                "docNumber",
-                "nationality",
-                "expiryDate",
-                "mrzLines",
-              ],
-            },
-          },
-        }),
-      },
-    );
-  } catch (e) {
-    console.error("[identity/ocr] network", e instanceof Error ? e.name : "error");
-    throw new IdentityError("unreadable");
-  }
-
-  if (!response.ok) {
-    console.error("[identity/ocr] gemini", response.status);
-    throw new IdentityError("gemini");
-  }
+  const response = await requestGemini(apiKey, buf, mime);
 
   const payload = (await response.json()) as {
     candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
@@ -141,6 +76,82 @@ function geminiModel(): string {
   const configured = process.env.GEMINI_MODEL?.trim().replace(/^"|"$/g, "");
   if (!configured || RETIRED_MODELS.has(configured)) return "gemini-3.8-flash";
   return configured;
+}
+
+function geminiModels(): string[] {
+  const models = [geminiModel(), "gemini-3.1-flash-lite"];
+  return [...new Set(models)];
+}
+
+async function requestGemini(apiKey: string, buf: Uint8Array, mime: IdentityMime): Promise<Response> {
+  const body = JSON.stringify({
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: PROMPT },
+          { inlineData: { mimeType: mime, data: Buffer.from(buf).toString("base64") } },
+        ],
+      },
+    ],
+    generationConfig: {
+      temperature: 0,
+      thinkingConfig: { thinkingBudget: 0 },
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          sex: { type: "STRING" },
+          lastName: { type: "STRING" },
+          firstName: { type: "STRING" },
+          dateOfBirth: { type: "STRING" },
+          placeOfBirth: { type: "STRING" },
+          docType: { type: "STRING" },
+          docNumber: { type: "STRING" },
+          nationality: { type: "STRING" },
+          expiryDate: { type: "STRING" },
+          mrzLines: { type: "ARRAY", items: { type: "STRING" } },
+        },
+        required: [
+          "sex",
+          "lastName",
+          "firstName",
+          "dateOfBirth",
+          "placeOfBirth",
+          "docType",
+          "docNumber",
+          "nationality",
+          "expiryDate",
+          "mrzLines",
+        ],
+      },
+    },
+  });
+
+  let lastStatus = 0;
+  for (const model of geminiModels()) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey,
+          },
+          signal: AbortSignal.timeout(25_000),
+          body,
+        },
+      );
+      if (response.ok || (response.status !== 429 && response.status !== 503)) return response;
+      lastStatus = response.status;
+      console.error("[identity/ocr] gemini", response.status);
+    } catch (e) {
+      console.error("[identity/ocr] network", e instanceof Error ? e.name : "error");
+    }
+  }
+  console.error("[identity/ocr] gemini", lastStatus || "timeout");
+  throw new IdentityError("gemini");
 }
 
 function stringField(value: unknown): string {

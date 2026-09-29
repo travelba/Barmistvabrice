@@ -61,6 +61,13 @@ function nationalityFromMrz(parsed: ParseResult, lines: string[]): string {
   return toNationality(raw.replace(/</g, ""));
 }
 
+function cleanPersonName(value: unknown): string {
+  return String(value ?? "")
+    .replace(/[,;/]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function fitLength(line: string, size: number): string {
   if (line.length === size) return line;
   if (line.length > size) return line.slice(0, size);
@@ -136,8 +143,8 @@ export function normalizeVisualFields(input: {
 }): IdentityFields {
   return {
     sex: toSex(String(input.sex ?? "")),
-    lastName: String(input.lastName ?? "").replace(/\s+/g, " ").trim(),
-    firstName: String(input.firstName ?? "").replace(/\s+/g, " ").trim(),
+    lastName: cleanPersonName(input.lastName),
+    firstName: cleanPersonName(input.firstName),
     dateOfBirth: toIsoDate(String(input.dateOfBirth ?? "")),
     placeOfBirth: String(input.placeOfBirth ?? "").replace(/\s+/g, " ").trim(),
     docType: toDocType(String(input.docType ?? "")),
