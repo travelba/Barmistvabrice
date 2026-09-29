@@ -7,6 +7,40 @@ export type WebhookConnectResult = {
   services: Array<{ id: string; http: number }>;
 };
 
+export async function readWhatsappInbound(): Promise<{
+  senders: Array<{ id: string; number: string; status: string; callback: string }>;
+  services: Array<{ id: string; callback: string }>;
+  from: string;
+}> {
+  const sid = process.env.TWILIO_ACCOUNT_SID?.trim() ?? "";
+  const token = process.env.TWILIO_AUTH_TOKEN?.trim() ?? "";
+  if (!sid || !token) throw new Error("twilio");
+  const auth = { sid, token };
+  const listed = await twilio(auth, "https://messaging.twilio.com/v2/Channels/Senders?Channel=whatsapp&PageSize=50");
+  const body = listed.ok
+    ? ((await listed.json().catch(() => null)) as { senders?: Array<Record<string, unknown>> } | null)
+    : null;
+  const senders = (body?.senders ?? []).map((row) => {
+    const webhook = (row.webhook ?? {}) as Record<string, unknown>;
+    return {
+      id: String(row.sid ?? ""),
+      number: String(row.sender_id ?? ""),
+      status: String(row.status ?? ""),
+      callback: String(webhook.callback_url ?? ""),
+    };
+  });
+  const servicesList = await twilio(auth, "https://messaging.twilio.com/v1/Services?PageSize=50");
+  const servicesBody = servicesList.ok
+    ? ((await servicesList.json().catch(() => null)) as { services?: Array<Record<string, unknown>> } | null)
+    : null;
+  const services = (servicesBody?.services ?? []).map((row) => ({
+    id: String(row.sid ?? ""),
+    callback: String(row.inbound_request_url ?? ""),
+  }));
+  const from = process.env.TWILIO_WHATSAPP_FROM?.trim() ?? "";
+  return { senders, services, from };
+}
+
 export async function connectWhatsappInbound(): Promise<WebhookConnectResult> {
   const sid = process.env.TWILIO_ACCOUNT_SID?.trim() ?? "";
   const token = process.env.TWILIO_AUTH_TOKEN?.trim() ?? "";
