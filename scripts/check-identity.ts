@@ -30,9 +30,9 @@ assert.equal(mismatch.fields.lastName, "Erikson");
 assert.ok(mismatch.warnings.includes("name_mismatch"));
 
 const rows = [
-  { rowNumber: 7, numberCell: "1", lastName: "A", docNumber: "AAA" },
-  { rowNumber: 8, numberCell: "2", lastName: "", docNumber: "" },
-  { rowNumber: 9, numberCell: "3", lastName: "B", docNumber: "BBB" },
+  { rowNumber: 7, numberCell: "1", lastName: "A", firstName: "A", dateOfBirth: "01/01/1990", docNumber: "AAA" },
+  { rowNumber: 8, numberCell: "2", lastName: "", firstName: "", dateOfBirth: "", docNumber: "" },
+  { rowNumber: 9, numberCell: "3", lastName: "B", firstName: "B", dateOfBirth: "02/02/1991", docNumber: "BBB" },
 ];
 assert.deepEqual(pickManifestTarget(rows, "bbb"), { rowNumber: 9, numberToWrite: null });
 assert.deepEqual(pickManifestTarget(rows, "NEW"), { rowNumber: 8, numberToWrite: null });
@@ -40,5 +40,9 @@ assert.deepEqual(pickManifestTarget([rows[0], rows[2]], "NEW"), {
   rowNumber: 10,
   numberToWrite: "4",
 });
+assert.deepEqual(
+  pickManifestTarget(rows, "AUTRE", { lastName: "b", firstName: "B", dateOfBirth: "1991-02-02" }),
+  { rowNumber: 9, numberToWrite: null },
+);
 
 console.log("identity checks ok");

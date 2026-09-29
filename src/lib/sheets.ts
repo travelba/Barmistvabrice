@@ -211,6 +211,7 @@ export async function upsertManifestPassenger(passenger: ManifestPassenger): Pro
   const target = pickManifestTarget(
     scanRowsFromSheet((existing.data.values as string[][] | undefined) ?? []),
     passenger.docNumber,
+    passenger,
   );
 
   const values = [

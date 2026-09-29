@@ -52,6 +52,8 @@ export type ManifestScanRow = {
   rowNumber: number;
   numberCell: string;
   lastName: string;
+  firstName: string;
+  dateOfBirth: string;
   docNumber: string;
 };
 
@@ -170,15 +172,22 @@ export function isExpiryPast(iso: string, today = new Date()): boolean {
 }
 
 /**
- * Première ligne dont le nom (C) et le numéro (I) sont vides.
- * Même numéro déjà présent : on réécrit cette ligne.
- * Modèle plein : on ajoute après la dernière ligne et on numérote la colonne A.
+ * Même numéro de document, ou même personne (nom, prénom, date de naissance) :
+ * on réécrit cette ligne. Sinon la première ligne vide. Jamais une deuxième ligne.
  */
-export function pickManifestTarget(rows: ManifestScanRow[], docNumber: string): ManifestTarget {
+export function pickManifestTarget(
+  rows: ManifestScanRow[],
+  docNumber: string,
+  person?: { lastName: string; firstName: string; dateOfBirth: string },
+): ManifestTarget {
   const wanted = normalizeDocNumber(docNumber);
   if (wanted) {
     const existing = rows.find((r) => normalizeDocNumber(r.docNumber) === wanted);
     if (existing) return { rowNumber: existing.rowNumber, numberToWrite: null };
+  }
+  if (person?.lastName && person.firstName && person.dateOfBirth) {
+    const same = rows.find((r) => sameManifestPerson(r, person));
+    if (same) return { rowNumber: same.rowNumber, numberToWrite: null };
   }
 
   const empty = rows.find((r) => !r.lastName.trim() && !normalizeDocNumber(r.docNumber));
@@ -201,6 +210,19 @@ export function scanRowsFromSheet(values: string[][]): ManifestScanRow[] {
     rowNumber: MANIFEST_DATA_START_ROW + i,
     numberCell: String(cells?.[0] ?? "").trim(),
     lastName: String(cells?.[2] ?? "").trim(),
+    firstName: String(cells?.[3] ?? "").trim(),
+    dateOfBirth: String(cells?.[5] ?? "").trim(),
     docNumber: String(cells?.[8] ?? "").trim(),
   }));
+}
+
+function sameManifestPerson(
+  row: ManifestScanRow,
+  person: { lastName: string; firstName: string; dateOfBirth: string },
+): boolean {
+  if (!row.lastName.trim() || !row.firstName.trim() || !row.dateOfBirth.trim()) return false;
+  const rowDate = toIsoDate(row.dateOfBirth);
+  const personDate = toIsoDate(person.dateOfBirth);
+  if (!rowDate || rowDate !== personDate) return false;
+  return foldName(row.lastName) === foldName(person.lastName) && foldName(row.firstName) === foldName(person.firstName);
 }
