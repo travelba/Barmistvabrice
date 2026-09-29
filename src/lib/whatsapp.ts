@@ -96,11 +96,11 @@ async function sendTemplate(opts: {
 }
 
 /** Réponse libre dans la fenêtre de 24 h ouverte par le message de l'agence. */
-export async function sendWhatsappText(to: string, body: string): Promise<void> {
+export async function sendWhatsappText(to: string, body: string, fromNumber?: string): Promise<void> {
   if (!isWhatsappConfigured()) throw new Error("twilio");
   const accountSid = process.env.TWILIO_ACCOUNT_SID!;
   const authToken = process.env.TWILIO_AUTH_TOKEN!;
-  const from = process.env.TWILIO_WHATSAPP_FROM!;
+  const from = (fromNumber?.trim() || process.env.TWILIO_WHATSAPP_FROM || "").trim();
   const form = new URLSearchParams();
   form.set("To", to);
   form.set("From", from.startsWith("whatsapp:") ? from : `whatsapp:${from}`);

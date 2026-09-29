@@ -130,15 +130,18 @@ function startWhatsappRead(
   if (!mediaUrl.startsWith("https://")) {
     return { xml: twimlMessage("Cette photo n'a pas pu être reçue. Renvoie-la.") };
   }
+  const businessNumber = params.To ?? "";
   return {
     xml: twimlMessage("Photo reçue. Lecture du document…"),
     job: async () => {
       try {
         await beginWhatsappRead(phone, messageSid);
-        await readAndReply(phone, messageSid, mediaUrl, extra);
+        await readAndReply(phone, messageSid, mediaUrl, extra, businessNumber);
       } catch (e) {
         console.error("[whatsapp] read", e instanceof Error ? e.name : "error");
-        await sendWhatsappText(phone, "La lecture n'a pas abouti. Renvoie la photo.").catch(() => undefined);
+        await sendWhatsappText(phone, "La lecture n'a pas abouti. Renvoie la photo.", businessNumber).catch(
+          () => undefined,
+        );
       }
     },
   };
@@ -149,6 +152,7 @@ async function readAndReply(
   messageSid: string,
   mediaUrl: string,
   extra: boolean,
+  businessNumber: string,
 ): Promise<void> {
   try {
     const downloaded = await downloadTwilioMedia(mediaUrl);
@@ -156,7 +160,11 @@ async function readAndReply(
     const read = await readIdentityDocument(downloaded, mime);
     const passenger = passengerFromFields(read.fields);
     if (!passenger) {
-      await sendWhatsappText(phone, "Impossible de lire ce document. Essaie une photo plus nette, à plat, sans reflet.");
+      await sendWhatsappText(
+        phone,
+        "Impossible de lire ce document. Essaie une photo plus nette, à plat, sans reflet.",
+        businessNumber,
+      );
       return;
     }
     const path = await storePendingFile(downloaded, mime);
@@ -172,7 +180,7 @@ async function readAndReply(
       return;
     }
     const tail = extra ? "\n\nJ'ai lu le premier fichier. Envoie le suivant après ta réponse." : "";
-    await sendWhatsappText(phone, `${previewText(passenger, read.warnings)}${tail}`);
+    await sendWhatsappText(phone, `${previewText(passenger, read.warnings)}${tail}`, businessNumber);
   } catch (e) {
     const code = e instanceof IdentityError ? e.code : "generic";
     console.error("[whatsapp] read", code);
@@ -182,7 +190,7 @@ async function readAndReply(
         : code === "file_size"
           ? "Fichier trop lourd (8 Mo maximum)."
           : "La lecture n'a pas abouti. Renvoie la photo.";
-    await sendWhatsappText(phone, text).catch(() => undefined);
+    await sendWhatsappText(phone, text, businessNumber).catch(() => undefined);
   }
 }
 
