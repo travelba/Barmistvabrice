@@ -91,6 +91,9 @@ export interface CeremonyRsvp {
 
 export type BookingStatus = "pending" | "paid" | "cancelled" | "expired";
 
+/** Mode de reglement une fois la reservation payee. */
+export type PaymentMethod = "stripe" | "bank_transfer";
+
 export interface Booking {
   id: string;
   groupName: string;
@@ -110,6 +113,8 @@ export interface Booking {
   /** Invites supplementaires a la ceremonie (hors voyageurs). */
   ceremonyGuestCount: number;
   stripeSessionId: string | null;
+  /** null tant que non paye, ou si le mode n'a pas ete renseigne. */
+  paymentMethod: PaymentMethod | null;
   createdAt: string;
   paidAt: string | null;
 }

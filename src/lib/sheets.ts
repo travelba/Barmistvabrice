@@ -1,11 +1,17 @@
 import { google } from "googleapis";
+import {
+  isoToSheetDate,
+  normalizeDocNumber,
+  pickManifestTarget,
+  scanRowsFromSheet,
+  type ManifestPassenger,
+} from "./identity-manifest";
 import { formatEuro } from "./pricing";
 import type { Booking, CeremonyRsvp } from "./types";
 
-function sheetsClient() {
+function sheetsAuth(sheetId: string | undefined) {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawKey = process.env.GOOGLE_PRIVATE_KEY;
-  const sheetId = process.env.GOOGLE_SHEET_ID;
   if (!email || !rawKey || !sheetId) return null;
   const auth = new google.auth.JWT({
     email,
@@ -15,6 +21,18 @@ function sheetsClient() {
   return { sheets: google.sheets({ version: "v4", auth }), sheetId };
 }
 
+function sheetsClient() {
+  return sheetsAuth(process.env.GOOGLE_SHEET_ID);
+}
+
+function manifestClient() {
+  return sheetsAuth(process.env.GOOGLE_MANIFEST_SHEET_ID);
+}
+
+export function isManifestSheetConfigured(): boolean {
+  return manifestClient() !== null;
+}
+
 /** Libelle francais du statut de paiement affiche dans le Sheet / export CSV. */
 export const SHEET_STATUS_LABEL: Record<Booking["status"], string> = {
   pending: "En attente (non payé)",
@@ -22,6 +40,14 @@ export const SHEET_STATUS_LABEL: Record<Booking["status"], string> = {
   cancelled: "Annulée (place libérée)",
   expired: "Échec / expiré",
 };
+
+/** Statut affiche, avec precision du mode de reglement si virement. */
+export function bookingSheetStatusLabel(booking: Booking): string {
+  if (booking.status === "paid" && booking.paymentMethod === "bank_transfer") {
+    return "Payé (virement)";
+  }
+  return SHEET_STATUS_LABEL[booking.status] ?? booking.status;
+}
 
 /**
  * Cree (ou met a jour) la ligne d'une reservation dans le Google Sheet.
@@ -61,7 +87,7 @@ export async function upsertBookingToSheet(booking: Booking): Promise<void> {
   const row = [
     new Date(booking.paidAt ?? booking.createdAt).toLocaleString("fr-FR"),
     booking.id,
-    SHEET_STATUS_LABEL[booking.status] ?? booking.status,
+    bookingSheetStatusLabel(booking),
     booking.groupName,
     booking.email,
     booking.phone,
@@ -141,4 +167,80 @@ export async function appendRsvpToSheet(rsvp: CeremonyRsvp): Promise<void> {
     insertDataOption: "INSERT_ROWS",
     requestBody: { values: [row] },
   });
+}
+
+let manifestTitleCache: { id: string; title: string } | null = null;
+
+function quotedRange(title: string, a1: string): string {
+  return `'${title.replace(/'/g, "''")}'!${a1}`;
+}
+
+async function manifestSheetTitle(
+  sheets: ReturnType<typeof google.sheets>,
+  sheetId: string,
+): Promise<string> {
+  const fromEnv = process.env.GOOGLE_MANIFEST_SHEET_TAB?.trim();
+  if (fromEnv) return fromEnv;
+  if (manifestTitleCache?.id === sheetId) return manifestTitleCache.title;
+  const meta = await sheets.spreadsheets.get({
+    spreadsheetId: sheetId,
+    fields: "sheets.properties.title",
+  });
+  const title = meta.data.sheets?.[0]?.properties?.title;
+  if (!title) throw new Error("manifest-sheet");
+  manifestTitleCache = { id: sheetId, title };
+  return title;
+}
+
+/**
+ * Écrit un passager dans le manifeste de vol (colonnes B–K).
+ * Réutilise la ligne du même numéro de document, sinon la première ligne vide
+ * à partir de la ligne 7. La colonne A n'est remplie que si on dépasse le modèle.
+ * Retourne le numéro de ligne 1-based.
+ */
+export async function upsertManifestPassenger(passenger: ManifestPassenger): Promise<number> {
+  const client = manifestClient();
+  if (!client) throw new Error("manifest-sheet");
+  const { sheets, sheetId } = client;
+  const title = await manifestSheetTitle(sheets, sheetId);
+
+  const existing = await sheets.spreadsheets.values.get({
+    spreadsheetId: sheetId,
+    range: quotedRange(title, "A7:K400"),
+  });
+  const target = pickManifestTarget(
+    scanRowsFromSheet((existing.data.values as string[][] | undefined) ?? []),
+    passenger.docNumber,
+  );
+
+  const values = [
+    passenger.sex,
+    passenger.lastName,
+    passenger.firstName,
+    passenger.specifications,
+    isoToSheetDate(passenger.dateOfBirth),
+    passenger.placeOfBirth,
+    passenger.docType,
+    normalizeDocNumber(passenger.docNumber),
+    passenger.nationality,
+    isoToSheetDate(passenger.expiryDate),
+  ];
+
+  if (target.numberToWrite != null) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: quotedRange(title, `A${target.rowNumber}:K${target.rowNumber}`),
+      valueInputOption: "RAW",
+      requestBody: { values: [[target.numberToWrite, ...values]] },
+    });
+  } else {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: sheetId,
+      range: quotedRange(title, `B${target.rowNumber}:K${target.rowNumber}`),
+      valueInputOption: "RAW",
+      requestBody: { values: [values] },
+    });
+  }
+
+  return target.rowNumber;
 }

@@ -94,6 +94,7 @@ function createPendingDemo(draft: BookingDraft, price: PriceBreakdown): { bookin
     ceremonyAttending: draft.ceremonyAttending ?? true,
     ceremonyGuestCount: draft.ceremonyGuestCount ?? 0,
     stripeSessionId: null,
+    paymentMethod: null,
     createdAt: new Date().toISOString(),
     paidAt: null,
   };
@@ -185,6 +186,10 @@ function mapBookingRow(row: Record<string, unknown>): Booking {
     ceremonyAttending: row.ceremony_attending == null ? true : Boolean(row.ceremony_attending),
     ceremonyGuestCount: Number(row.ceremony_guest_count ?? 0),
     stripeSessionId: (row.stripe_session_id as string) ?? null,
+    paymentMethod:
+      row.payment_method === "stripe" || row.payment_method === "bank_transfer"
+        ? row.payment_method
+        : null,
     createdAt: String(row.created_at),
     paidAt: (row.paid_at as string) ?? null,
   };
@@ -318,6 +323,7 @@ export async function confirmBooking(
     if (b.status !== "paid") {
       b.status = "paid";
       b.paidAt = new Date().toISOString();
+      b.paymentMethod = b.paymentMethod ?? "stripe";
       store().holdExpiry.delete(bookingId);
       return { booking: b, firstConfirmation: true };
     }
@@ -332,8 +338,16 @@ export async function confirmBooking(
   if (!data) {
     return { booking: existing, firstConfirmation: false };
   }
-  const row = Array.isArray(data) ? data[0] : data;
-  const booking = row ? mapBookingRow(row as Record<string, unknown>) : await getBookingById(bookingId);
+  // Paiements Stripe : renseigner le mode si encore vide (les virements
+  // manuels sont poses explicitement cote back-office).
+  if (!alreadyPaid) {
+    await sb
+      .from("bookings")
+      .update({ payment_method: "stripe" })
+      .eq("id", bookingId)
+      .is("payment_method", null);
+  }
+  const booking = await getBookingById(bookingId);
   return { booking, firstConfirmation: !alreadyPaid };
 }
 

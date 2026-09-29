@@ -1,4 +1,4 @@
-import { bookingDocsPath } from "@/lib/doc-token";
+import { bookingDocsPath, identityPagePath } from "@/lib/doc-token";
 import { ConfirmationView } from "./ConfirmationView";
 import { loadConfirmation } from "./data";
 
@@ -12,10 +12,18 @@ export default async function ConfirmationPage({
   const params = await searchParams;
   const { booking, paid, hotelMeta } = await loadConfirmation(params);
   const docsUrl = booking && paid ? bookingDocsPath(booking.id) : null;
+  const identityPath =
+    booking && paid && booking.flightTotalCents > 0 ? identityPagePath(booking.id) : null;
 
   return (
     <div className="theme-taupe">
-      <ConfirmationView booking={booking} paid={paid} hotelMeta={hotelMeta} docsUrl={docsUrl} />
+      <ConfirmationView
+        booking={booking}
+        paid={paid}
+        hotelMeta={hotelMeta}
+        docsUrl={docsUrl}
+        identityPath={identityPath}
+      />
     </div>
   );
 }

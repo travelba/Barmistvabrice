@@ -40,6 +40,7 @@ const SAMPLE_BOOKING: Booking = {
   ceremonyAttending: true,
   ceremonyGuestCount: 0,
   stripeSessionId: null,
+  paymentMethod: "stripe",
   createdAt: new Date().toISOString(),
   paidAt: new Date().toISOString(),
 };

@@ -22,10 +22,13 @@ const FR = {
   "stock.title": "Places restantes",
   "stock.remaining": "restantes",
   "stock.room": "Chambre",
+  "stock.price": "Prix / nuit",
   "stock.capacity": "Cap.",
   "stock.stock": "Stock",
   "stock.booked": "Réservées",
   "stock.available": "Dispo",
+  "stock.free": "Libre",
+  "stock.qty": "×{n}",
 
   "bookings.title": "Inscriptions",
   "bookings.date": "Date",
@@ -40,6 +43,7 @@ const FR = {
   "bookings.empty": "Aucune inscription pour le moment.",
 
   "status.paid": "Payé",
+  "status.paid_transfer": "Payé (virement)",
   "status.pending": "En attente",
   "status.cancelled": "Annulé",
   "status.expired": "Expiré",
@@ -56,6 +60,10 @@ const FR = {
   "actions.whatsappSent": "WhatsApp envoyé au client",
   "actions.whatsappSkipped": "Lien créé — template relance WhatsApp non configuré",
   "actions.error": "Erreur",
+  "actions.identityCopy": "Copier le lien pièces",
+  "actions.identityCopied": "Lien copié",
+  "actions.identityView": "Voir {name}",
+  "actions.identityCount": "Pièces {n}/{total}",
 
   "rsvp.title": "Mise des Téphilines — RSVP",
   "rsvp.subtitle":
@@ -91,10 +99,13 @@ const HE: Record<AdminKey, string> = {
   "stock.title": "מקומות פנויים",
   "stock.remaining": "נותרו",
   "stock.room": "חדר",
+  "stock.price": "מחיר / לילה",
   "stock.capacity": "קיבולת",
   "stock.stock": "מלאי",
   "stock.booked": "הוזמנו",
   "stock.available": "פנוי",
+  "stock.free": "פנוי",
+  "stock.qty": "×{n}",
 
   "bookings.title": "הרשמות",
   "bookings.date": "תאריך",
@@ -109,6 +120,7 @@ const HE: Record<AdminKey, string> = {
   "bookings.empty": "אין הרשמות כרגע.",
 
   "status.paid": "שולם",
+  "status.paid_transfer": "שולם (העברה בנקאית)",
   "status.pending": "ממתין",
   "status.cancelled": "בוטל",
   "status.expired": "פג תוקף",
@@ -124,6 +136,10 @@ const HE: Record<AdminKey, string> = {
   "actions.whatsappSent": "וואטסאפ נשלח ללקוח",
   "actions.whatsappSkipped": "קישור נוצר — תבנית וואטסאפ לשליחה מחדש לא מוגדרת",
   "actions.error": "שגיאה",
+  "actions.identityCopy": "העתקת קישור המסמכים",
+  "actions.identityCopied": "הקישור הועתק",
+  "actions.identityView": "צפייה ב-{name}",
+  "actions.identityCount": "מסמכים {n}/{total}",
 
   "rsvp.title": "הנחת תפילין — אישורי הגעה",
   "rsvp.subtitle": "תשובות שהתקבלו דרך קישור הטקס (לא כולל נוסעים, הנספרים בהרשמות).",

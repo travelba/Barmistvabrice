@@ -45,3 +45,28 @@ export function parseBookingDocsFileName(
 export function bookingDocsPath(bookingId: string): string {
   return `/api/documents/${bookingDocsFileName(bookingId)}`;
 }
+
+/**
+ * Jeton distinct du carnet PDF : le lien /pieces ne doit pas être forgeable
+ * à partir du lien de téléchargement, ni l'inverse.
+ */
+export function signIdentityToken(bookingId: string): string {
+  return createHmac("sha256", secret()).update(`identity:${bookingId}`).digest("hex").slice(0, 32);
+}
+
+export function verifyIdentityToken(bookingId: string, token: string | null): boolean {
+  if (!token || !/^[0-9a-f]{32}$/.test(token)) return false;
+  const expected = Buffer.from(signIdentityToken(bookingId));
+  const provided = Buffer.from(token);
+  return expected.length === provided.length && timingSafeEqual(expected, provided);
+}
+
+/** Chemin relatif signé vers la page d'envoi des pièces d'identité. */
+export function identityPagePath(bookingId: string, lang?: "fr" | "he"): string {
+  const q = new URLSearchParams({
+    booking_id: bookingId,
+    token: signIdentityToken(bookingId),
+  });
+  if (lang) q.set("lang", lang);
+  return `/pieces?${q.toString()}`;
+}

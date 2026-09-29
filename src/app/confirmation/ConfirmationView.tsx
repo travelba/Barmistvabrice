@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2, Clock, FileDown } from "lucide-react";
+import { CheckCircle2, Clock, FileDown, FileUp } from "lucide-react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { formatEuro } from "@/lib/pricing";
 import { EVENT, FLIGHT, TRIP_NIGHTS } from "@/lib/config";
@@ -16,10 +16,13 @@ interface Props {
   hotelMeta: { location?: string; stars?: number; photo?: string };
   /** Lien signé vers le PDF carnet de voyage (calculé côté serveur). */
   docsUrl: string | null;
+  /** Lien signé vers l'envoi des passeports / CNI, si le vol est inclus. */
+  identityPath: string | null;
 }
 
-export function ConfirmationView({ booking, paid, hotelMeta, docsUrl }: Props) {
+export function ConfirmationView({ booking, paid, hotelMeta, docsUrl, identityPath }: Props) {
   const { t, locale } = useI18n();
+  const identityHref = identityPath ? `${identityPath}&lang=${locale}` : null;
   // Retour vers la page voyage dans la langue du parcours.
   const homeHref = locale === "he" ? "/weekend-hebrew" : "/week-end";
 
@@ -152,6 +155,20 @@ export function ConfirmationView({ booking, paid, hotelMeta, docsUrl }: Props) {
           <div className="mt-10">
             <BoardingPasses passengers={booking.passengers} bookingRef={booking.id} />
           </div>
+        </section>
+      )}
+
+      {paid && booking && identityHref && (
+        <section className="mx-auto mt-16 w-full max-w-2xl text-center">
+          <h2 className="font-serif text-3xl">{t("confirm.identityTitle")}</h2>
+          <div className="mx-auto my-5 gold-rule" />
+          <p className="mx-auto max-w-md text-sm text-cream/70">{t("confirm.identitySub")}</p>
+          <Link
+            href={identityHref}
+            className="btn-gold mt-8 inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm"
+          >
+            <FileUp className="h-4 w-4" /> {t("confirm.identityCta")}
+          </Link>
         </section>
       )}
 

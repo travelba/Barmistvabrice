@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { isAdminAuthed } from "@/lib/admin-auth";
+import { appUrl, isSupabaseConfigured } from "@/lib/config";
 import { getHotels, listBookings, listCeremonyRsvps } from "@/lib/data";
+import { identityPagePath } from "@/lib/doc-token";
+import { listIdentityAdminDocs } from "@/lib/identity-store";
 import { formatEuro } from "@/lib/pricing";
-import { isSupabaseConfigured } from "@/lib/config";
 import { adminT, adminDateLocale, resolveAdminLang } from "@/lib/admin-i18n";
 import { AdminLogout } from "@/components/admin/AdminLogout";
 import { BookingActions } from "@/components/admin/BookingActions";
@@ -22,11 +24,19 @@ export default async function AdminPage({
   const dateLocale = adminDateLocale(lang);
   const otherLangHref = lang === "he" ? "/admin" : "/admin?lang=he";
 
-  const [hotels, bookings, rsvps] = await Promise.all([
+  const [hotels, bookings, rsvps, identityDocs] = await Promise.all([
     getHotels(),
     listBookings(),
     listCeremonyRsvps(),
+    listIdentityAdminDocs(),
   ]);
+  const identityByBooking = new Map<string, Array<{ id: string; label: string }>>();
+  for (const doc of identityDocs) {
+    const list = identityByBooking.get(doc.bookingId) ?? [];
+    const label = `${doc.firstName} ${doc.lastName}`.trim();
+    list.push({ id: doc.id, label: label || doc.id.slice(0, 8) });
+    identityByBooking.set(doc.bookingId, list);
+  }
   const paid = bookings.filter((b) => b.status === "paid");
   const revenue = paid.reduce((acc, b) => acc + b.totalCents, 0);
   const passengers = paid.reduce((acc, b) => acc + b.passengerCount, 0);
@@ -41,10 +51,44 @@ export default async function AdminPage({
 
   const statusLabel: Record<string, string> = {
     paid: t("status.paid"),
+    paid_transfer: t("status.paid_transfer"),
     pending: t("status.pending"),
     cancelled: t("status.cancelled"),
     expired: t("status.expired"),
   };
+
+  // Occupants actifs par type de chambre (paid + pending bloquent le stock).
+  const occupantsByRoom = new Map<
+    string,
+    Array<{
+      bookingId: string;
+      groupName: string;
+      quantity: number;
+      status: string;
+      paymentMethod: string | null;
+    }>
+  >();
+  for (const b of bookings) {
+    if (b.status !== "paid" && b.status !== "pending") continue;
+    for (const r of b.rooms) {
+      const list = occupantsByRoom.get(r.roomTypeId) ?? [];
+      list.push({
+        bookingId: b.id,
+        groupName: b.groupName,
+        quantity: r.quantity,
+        status: b.status,
+        paymentMethod: b.paymentMethod,
+      });
+      occupantsByRoom.set(r.roomTypeId, list);
+    }
+  }
+
+  function bookingStatusText(status: string, paymentMethod: string | null): string {
+    if (status === "paid" && paymentMethod === "bank_transfer") {
+      return statusLabel.paid_transfer;
+    }
+    return statusLabel[status] ?? status;
+  }
 
   return (
     <main className="min-h-screen bg-cream" dir={lang === "he" ? "rtl" : "ltr"}>
@@ -85,37 +129,78 @@ export default async function AdminPage({
         {/* Disponibilites */}
         <section>
           <h2 className="font-serif text-2xl text-navy">{t("stock.title")}</h2>
-          <div className="mt-4 grid gap-6 md:grid-cols-2">
+          <div className="mt-4 grid gap-6">
             {hotels.map((h) => (
               <div key={h.id} className="card rounded-2xl p-5">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <h3 className="font-serif text-xl text-navy">{h.name}</h3>
-                  <span className="rounded-full bg-navy px-3 py-1 text-xs text-cream">
+                  <span className="shrink-0 rounded-full bg-navy px-3 py-1 text-xs text-cream">
                     {h.remaining} {t("stock.remaining")}
                   </span>
                 </div>
-                <table className="mt-4 w-full text-sm">
-                  <thead>
-                    <tr className="text-start text-muted">
-                      <th className="pb-2 text-start font-medium">{t("stock.room")}</th>
-                      <th className="pb-2 text-center font-medium">{t("stock.capacity")}</th>
-                      <th className="pb-2 text-center font-medium">{t("stock.stock")}</th>
-                      <th className="pb-2 text-center font-medium">{t("stock.booked")}</th>
-                      <th className="pb-2 text-center font-medium">{t("stock.available")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {h.roomTypes.map((rt) => (
-                      <tr key={rt.id} className="border-t border-navy/5">
-                        <td className="py-2 text-navy">{rt.name}</td>
-                        <td className="py-2 text-center text-muted">{rt.capacity}</td>
-                        <td className="py-2 text-center text-muted">{rt.stockTotal}</td>
-                        <td className="py-2 text-center text-muted">{rt.booked + rt.held}</td>
-                        <td className="py-2 text-center font-semibold text-navy">{rt.available}</td>
+                <div className="mt-4 overflow-x-auto">
+                  <table className="w-full min-w-[640px] text-sm">
+                    <thead>
+                      <tr className="text-start text-muted">
+                        <th className="pb-2 text-start font-medium">{t("stock.room")}</th>
+                        <th className="pb-2 text-end font-medium">{t("stock.price")}</th>
+                        <th className="pb-2 text-center font-medium">{t("stock.capacity")}</th>
+                        <th className="pb-2 text-center font-medium">{t("stock.stock")}</th>
+                        <th className="pb-2 text-center font-medium">{t("stock.booked")}</th>
+                        <th className="pb-2 text-center font-medium">{t("stock.available")}</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {h.roomTypes.map((rt) => {
+                        const occupants = occupantsByRoom.get(rt.id) ?? [];
+                        return (
+                          <tr key={rt.id} className="border-t border-navy/5 align-top">
+                            <td className="py-3 text-navy">
+                              <p className="font-medium">{rt.name}</p>
+                              {occupants.length > 0 ? (
+                                <ul className="mt-2 space-y-1.5">
+                                  {occupants.map((o) => (
+                                    <li
+                                      key={`${o.bookingId}-${rt.id}`}
+                                      className="flex flex-wrap items-center gap-2 text-xs"
+                                    >
+                                      <span className="font-medium text-navy/80">
+                                        {o.groupName}
+                                        {o.quantity > 1
+                                          ? ` ${t("stock.qty").replace("{n}", String(o.quantity))}`
+                                          : ""}
+                                      </span>
+                                      <span
+                                        className={`rounded-full px-2 py-0.5 ${
+                                          o.status === "paid"
+                                            ? "bg-green-100 text-green-700"
+                                            : "bg-amber-100 text-amber-700"
+                                        }`}
+                                      >
+                                        {bookingStatusText(o.status, o.paymentMethod)}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="mt-1.5 text-xs text-muted">{t("stock.free")}</p>
+                              )}
+                            </td>
+                            <td className="py-3 text-end font-medium tabular-nums text-navy">
+                              {formatEuro(rt.priceCents)}
+                            </td>
+                            <td className="py-3 text-center text-muted">{rt.capacity}</td>
+                            <td className="py-3 text-center text-muted">{rt.stockTotal}</td>
+                            <td className="py-3 text-center text-muted">{rt.booked + rt.held}</td>
+                            <td className="py-3 text-center font-semibold text-navy">
+                              {rt.available}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ))}
           </div>
@@ -188,11 +273,22 @@ export default async function AdminPage({
                                 : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {statusLabel[b.status] ?? b.status}
+                          {bookingStatusText(b.status, b.paymentMethod)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-end">
-                        <BookingActions bookingId={b.id} status={b.status} lang={lang} />
+                        <BookingActions
+                          bookingId={b.id}
+                          status={b.status}
+                          lang={lang}
+                          identityUrl={
+                            b.status === "paid" && b.flightTotalCents > 0
+                              ? `${appUrl()}${identityPagePath(b.id, lang)}`
+                              : null
+                          }
+                          identityDocs={identityByBooking.get(b.id) ?? []}
+                          identityTotal={b.passengerCount}
+                        />
                       </td>
                     </tr>
                   ))
