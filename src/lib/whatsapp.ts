@@ -95,6 +95,30 @@ async function sendTemplate(opts: {
   console.log("[whatsapp] envoye", { to: opts.to, sid: data?.sid });
 }
 
+/** Réponse libre dans la fenêtre de 24 h ouverte par le message de l'agence. */
+export async function sendWhatsappText(to: string, body: string): Promise<void> {
+  if (!isWhatsappConfigured()) throw new Error("twilio");
+  const accountSid = process.env.TWILIO_ACCOUNT_SID!;
+  const authToken = process.env.TWILIO_AUTH_TOKEN!;
+  const from = process.env.TWILIO_WHATSAPP_FROM!;
+  const form = new URLSearchParams();
+  form.set("To", to);
+  form.set("From", from.startsWith("whatsapp:") ? from : `whatsapp:${from}`);
+  form.set("Body", body.slice(0, 1500));
+  const res = await fetch(`${API_BASE}/Accounts/${accountSid}/Messages.json`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: form,
+  });
+  if (!res.ok) {
+    console.error("[whatsapp] echec reponse", res.status);
+    throw new Error("twilio");
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Confirmation VOYAGE (apres paiement) — envoyee a l'invite          */
 /* ------------------------------------------------------------------ */
