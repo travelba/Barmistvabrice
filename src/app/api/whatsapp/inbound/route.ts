@@ -7,7 +7,7 @@ import { claimInboundMessage } from "@/lib/whatsapp-pending";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   const authToken = process.env.TWILIO_AUTH_TOKEN?.trim() ?? "";

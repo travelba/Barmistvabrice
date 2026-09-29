@@ -1,16 +1,16 @@
-import { getSupabaseAdmin } from "./supabase/admin";
-import type { ManifestPassenger } from "./identity-manifest";
+import { foldName, normalizeDocNumber, toIsoDate, type ManifestPassenger } from "./identity-manifest";
 import { removeIdentityFile } from "./identity-store";
+import { getSupabaseAdmin } from "./supabase/admin";
 
 const PENDING_MS = 2 * 60 * 60 * 1000;
 
-export type WhatsappPending = {
-  phone: string;
+export type WhatsappBatchItem = {
   messageSid: string;
-  storagePath: string | null;
-  mimeType: string | null;
-  passenger: ManifestPassenger | null;
-  expiresAt: string;
+  storagePath: string;
+  mimeType: string;
+  passenger: ManifestPassenger;
+  docKey: string;
+  personKey: string;
 };
 
 export async function claimInboundMessage(
@@ -29,90 +29,114 @@ export async function claimInboundMessage(
   return "unavailable";
 }
 
-export async function beginWhatsappRead(phone: string, messageSid: string): Promise<void> {
-  const sb = getSupabaseAdmin();
-  if (!sb) throw new Error("storage");
-  const existing = await getWhatsappPending(phone);
-  if (existing?.storagePath) await removeIdentityFile(existing.storagePath);
-  const { error } = await sb.from("whatsapp_identity_pending").upsert(
-    {
-      phone,
-      message_sid: messageSid,
-      storage_path: null,
-      mime_type: null,
-      passenger: null,
-      expires_at: new Date(Date.now() + PENDING_MS).toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "phone" },
-  );
-  if (error) {
-    console.error("[whatsapp] pending-begin", error.code);
-    throw new Error("storage");
-  }
-}
-
-export async function getWhatsappPending(phone: string): Promise<WhatsappPending | null> {
-  const sb = getSupabaseAdmin();
-  if (!sb) return null;
-  const { data, error } = await sb
-    .from("whatsapp_identity_pending")
-    .select("phone, message_sid, storage_path, mime_type, passenger, expires_at")
-    .eq("phone", phone)
-    .maybeSingle();
-  if (error || !data) return null;
+export function batchItemFromPassenger(
+  passenger: ManifestPassenger,
+  extra: { messageSid: string; storagePath: string; mimeType: string },
+): WhatsappBatchItem {
   return {
-    phone: String(data.phone),
-    messageSid: String(data.message_sid),
-    storagePath: data.storage_path ? String(data.storage_path) : null,
-    mimeType: data.mime_type ? String(data.mime_type) : null,
-    passenger: isPassenger(data.passenger) ? data.passenger : null,
-    expiresAt: String(data.expires_at),
+    ...extra,
+    passenger,
+    docKey: normalizeDocNumber(passenger.docNumber),
+    personKey: `${foldName(passenger.lastName)}|${foldName(passenger.firstName)}|${toIsoDate(passenger.dateOfBirth)}`,
   };
 }
 
-export function pendingIsReady(row: WhatsappPending | null): row is WhatsappPending & {
-  passenger: ManifestPassenger;
-} {
-  if (!row?.passenger) return false;
-  return new Date(row.expiresAt).getTime() > Date.now();
+export async function appendWhatsappBatchItem(phone: string, item: WhatsappBatchItem): Promise<WhatsappBatchItem[]> {
+  const sb = getSupabaseAdmin();
+  if (!sb) throw new Error("storage");
+  const { data, error } = await sb.rpc("append_whatsapp_identity_item", {
+    p_phone: phone,
+    p_item: item,
+  });
+  if (error) {
+    console.error("[whatsapp] append", error.code);
+    throw new Error("storage");
+  }
+  const payload = (data ?? {}) as { items?: unknown; removed?: unknown };
+  const removed = Array.isArray(payload.removed) ? payload.removed : [];
+  for (const path of removed) {
+    if (typeof path === "string") await removeIdentityFile(path);
+  }
+  return parseItems(payload.items);
 }
 
-/** N'écrit le résultat que si aucune photo plus récente n'a pris la place. */
-export async function saveWhatsappRead(input: {
-  phone: string;
-  messageSid: string;
-  storagePath: string;
-  mimeType: string;
-  passenger: ManifestPassenger;
-}): Promise<boolean> {
+export async function whatsappBatchSettled(phone: string): Promise<boolean> {
   const sb = getSupabaseAdmin();
-  if (!sb) return false;
+  if (!sb) return true;
+  const { data } = await sb
+    .from("whatsapp_identity_pending")
+    .select("updated_at")
+    .eq("phone", phone)
+    .maybeSingle();
+  if (!data?.updated_at) return true;
+  return Date.now() - new Date(String(data.updated_at)).getTime() >= 10_000;
+}
+
+export async function listWhatsappBatch(phone: string): Promise<WhatsappBatchItem[]> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return [];
   const { data, error } = await sb
     .from("whatsapp_identity_pending")
+    .select("items, passenger, storage_path, mime_type, message_sid, expires_at")
+    .eq("phone", phone)
+    .maybeSingle();
+  if (error || !data) return [];
+  if (new Date(String(data.expires_at)).getTime() <= Date.now()) return [];
+  const items = parseItems(data.items);
+  if (items.length > 0) return items;
+  if (isPassenger(data.passenger) && data.storage_path) {
+    return [
+      batchItemFromPassenger(data.passenger, {
+        messageSid: String(data.message_sid ?? ""),
+        storagePath: String(data.storage_path),
+        mimeType: String(data.mime_type ?? ""),
+      }),
+    ];
+  }
+  return [];
+}
+
+export async function clearWhatsappBatch(phone: string): Promise<WhatsappBatchItem[]> {
+  const items = await listWhatsappBatch(phone);
+  const sb = getSupabaseAdmin();
+  if (!sb) return items;
+  await sb.from("whatsapp_identity_pending").delete().eq("phone", phone);
+  return items;
+}
+
+export async function keepWhatsappBatch(phone: string, items: WhatsappBatchItem[]): Promise<void> {
+  const sb = getSupabaseAdmin();
+  if (!sb) return;
+  await sb
+    .from("whatsapp_identity_pending")
     .update({
-      storage_path: input.storagePath,
-      mime_type: input.mimeType,
-      passenger: input.passenger,
+      items,
+      passenger: null,
+      storage_path: null,
+      mime_type: null,
       expires_at: new Date(Date.now() + PENDING_MS).toISOString(),
       updated_at: new Date().toISOString(),
     })
-    .eq("phone", input.phone)
-    .eq("message_sid", input.messageSid)
-    .select("phone");
-  if (error) {
-    console.error("[whatsapp] pending-save", error.code);
-    return false;
-  }
-  return (data ?? []).length > 0;
+    .eq("phone", phone);
 }
 
-export async function clearWhatsappPending(phone: string): Promise<WhatsappPending | null> {
-  const row = await getWhatsappPending(phone);
-  const sb = getSupabaseAdmin();
-  if (!sb) return row;
-  await sb.from("whatsapp_identity_pending").delete().eq("phone", phone);
-  return row;
+function parseItems(value: unknown): WhatsappBatchItem[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((entry) => {
+    if (!entry || typeof entry !== "object") return [];
+    const row = entry as Record<string, unknown>;
+    if (!isPassenger(row.passenger) || typeof row.storagePath !== "string") return [];
+    return [
+      {
+        messageSid: String(row.messageSid ?? ""),
+        storagePath: row.storagePath,
+        mimeType: String(row.mimeType ?? ""),
+        passenger: row.passenger,
+        docKey: String(row.docKey ?? normalizeDocNumber(row.passenger.docNumber)),
+        personKey: String(row.personKey ?? ""),
+      },
+    ];
+  });
 }
 
 function isPassenger(value: unknown): value is ManifestPassenger {
