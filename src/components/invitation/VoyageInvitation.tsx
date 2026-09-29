@@ -267,7 +267,8 @@ export function VoyageInvitation({ locale, flagHref, tephilinesHref }: VoyageInv
       const hotel = resolveHotelByKey(hotelKey, liveHotels);
       if (!hotel) return null;
       const rt = resolveRoomByName(hotel, roomName);
-      return rt ? rt.available : null;
+      // L'API publique omet les chambres à stock nul : absente = plus en vente.
+      return rt ? rt.available : 0;
     },
     [liveHotels],
   );
