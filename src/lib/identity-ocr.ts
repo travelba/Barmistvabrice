@@ -12,9 +12,10 @@ Return only the JSON object described by the schema.
 Rules:
 - Copy names and place of birth exactly as printed, including accents and hyphens. Do not invent characters.
 - sex is M or F. If unreadable, use an empty string.
-- docType is PP for a passport and CNI for a national identity card. Empty string if unsure.
-- nationality is the 3-letter ICAO code printed on the document (example FRA). Empty string if unsure.
-- dateOfBirth and expiryDate are YYYY-MM-DD. Empty string if unreadable.
+- docType is PP for a passport and CNI for a national identity card, including a French "carte nationale d'identité". Empty string if unsure.
+- nationality is the 3-letter ICAO code. "Française" or "France" is FRA. Empty string if unsure.
+- dateOfBirth and expiryDate are YYYY-MM-DD. A date printed "13 07 1990" is 1990-07-13. On an old French identity card the expiry date is printed on the card and is not in the MRZ: still return it.
+- The MRZ of a French identity card is on the back: 3 lines of 30 characters, or 2 lines of 36 characters. Copy each line in full.
 - docNumber is the document number without spaces.
 - mrzLines is the machine-readable zone, one string per line, exactly as printed (A-Z, 0-9 and <). Empty array if the MRZ is not visible.
 - Leave a field empty rather than guessing.`;

@@ -27,6 +27,9 @@ export function splitMrzLines(raw: string[]): string[] {
     if (line.length === 90) {
       return [line.slice(0, 30), line.slice(30, 60), line.slice(60, 90)];
     }
+    if (line.length === 72) {
+      return [line.slice(0, 36), line.slice(36, 72)];
+    }
     if (line.length >= 86 && line.length <= 89) {
       return [fitLength(line.slice(0, 44), 44), fitLength(line.slice(44), 44)];
     }
@@ -40,14 +43,10 @@ export function splitMrzLines(raw: string[]): string[] {
   });
 }
 
-function checksumsOk(details: Details[]): boolean {
-  const present = (field: string) => details.some((d) => d.field === field);
-  const ok = (field: string) => details.some((d) => d.field === field && d.valid);
-  if (!ok("documentNumberCheckDigit")) return false;
-  if (present("birthDateCheckDigit") && !ok("birthDateCheckDigit")) return false;
-  if (present("expirationDateCheckDigit") && !ok("expirationDateCheckDigit")) return false;
-  if (present("compositeCheckDigit") && !ok("compositeCheckDigit")) return false;
-  return true;
+function detailOk(details: Details[], field: string): boolean | null {
+  const row = details.find((d) => d.field === field);
+  if (!row) return null;
+  return row.valid;
 }
 
 /** La librairie vide la nationalité si le code n'est pas dans sa liste, même si les checksums passent. */
@@ -95,26 +94,31 @@ export function applyMrz(
     return { fields, warnings: ["mrz_unreadable"] };
   }
 
-  if (!parsed.documentNumber || !checksumsOk(parsed.details)) {
-    return { fields, warnings: ["mrz_invalid"] };
+  const warnings: string[] = [];
+  const numberOk = Boolean(parsed.documentNumber) && detailOk(parsed.details, "documentNumberCheckDigit") === true;
+  if (!numberOk) warnings.push("mrz_invalid");
+  if (numberOk && detailOk(parsed.details, "compositeCheckDigit") === false) warnings.push("mrz_invalid");
+  if (numberOk && parsed.documentNumber) fields.docNumber = normalizeDocNumber(parsed.documentNumber);
+
+  if (detailOk(parsed.details, "birthDateCheckDigit") === true) {
+    const birth = mrzDateToIso(String(parsed.fields.birthDate ?? ""), "birth");
+    if (birth) fields.dateOfBirth = birth;
+  }
+  if (detailOk(parsed.details, "expirationDateCheckDigit") === true) {
+    const expiry = mrzDateToIso(String(parsed.fields.expirationDate ?? ""), "expiry");
+    if (expiry) fields.expiryDate = expiry;
   }
 
-  const warnings: string[] = [];
-  fields.docNumber = normalizeDocNumber(parsed.documentNumber);
+  if (numberOk) {
+    const sex = toSex(String(parsed.fields.sex ?? ""));
+    if (sex) fields.sex = sex;
 
-  const birth = mrzDateToIso(String(parsed.fields.birthDate ?? ""), "birth");
-  if (birth) fields.dateOfBirth = birth;
-  const expiry = mrzDateToIso(String(parsed.fields.expirationDate ?? ""), "expiry");
-  if (expiry) fields.expiryDate = expiry;
+    const nationality = nationalityFromMrz(parsed, lines);
+    if (nationality) fields.nationality = nationality;
 
-  const sex = toSex(String(parsed.fields.sex ?? ""));
-  if (sex) fields.sex = sex;
-
-  const nationality = nationalityFromMrz(parsed, lines);
-  if (nationality) fields.nationality = nationality;
-
-  const docType = docTypeFromMrzCode(String(parsed.fields.documentCode ?? ""));
-  if (docType) fields.docType = docType;
+    const docType = docTypeFromMrzCode(String(parsed.fields.documentCode ?? ""));
+    if (docType) fields.docType = docType;
+  }
 
   const mrzLast = String(parsed.fields.lastName ?? "").trim();
   const mrzFirst = String(parsed.fields.firstName ?? "").trim();

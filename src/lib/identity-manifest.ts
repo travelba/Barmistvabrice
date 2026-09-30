@@ -97,6 +97,8 @@ export function toIsoDate(value: string): string {
   let day = "";
   const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
   const dmy = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/.exec(v);
+  const spaced = /^(\d{1,2})\s+(\d{1,2})\s+(\d{4})$/.exec(v);
+  const compact = /^(\d{2})(\d{2})(\d{4})$/.exec(v);
   if (iso) {
     year = iso[1];
     month = iso[2];
@@ -105,6 +107,14 @@ export function toIsoDate(value: string): string {
     year = dmy[3];
     month = dmy[2].padStart(2, "0");
     day = dmy[1].padStart(2, "0");
+  } else if (spaced) {
+    year = spaced[3];
+    month = spaced[2].padStart(2, "0");
+    day = spaced[1].padStart(2, "0");
+  } else if (compact) {
+    year = compact[3];
+    month = compact[2];
+    day = compact[1];
   } else {
     return "";
   }
@@ -136,24 +146,106 @@ export function isoToSheetDate(iso: string): string {
   return `${m[3]}/${m[2]}/${m[1]}`;
 }
 
+const NATIONALITY_NAMES: Record<string, string> = {
+  FR: "FRA",
+  FRANCE: "FRA",
+  FRANCAISE: "FRA",
+  FRANCAIS: "FRA",
+  FRENCH: "FRA",
+  ISRAEL: "ISR",
+  ISRAELI: "ISR",
+  ISRAELIEN: "ISR",
+  ISRAELIENNE: "ISR",
+  ITALIE: "ITA",
+  ITALIEN: "ITA",
+  ITALIENNE: "ITA",
+  ITALIAN: "ITA",
+  ITALY: "ITA",
+  BELGIQUE: "BEL",
+  BELGE: "BEL",
+  BELGIUM: "BEL",
+  SUISSE: "CHE",
+  SWISS: "CHE",
+  SWITZERLAND: "CHE",
+  ESPAGNE: "ESP",
+  ESPAGNOL: "ESP",
+  ESPAGNOLE: "ESP",
+  SPAIN: "ESP",
+  SPANISH: "ESP",
+  ALLEMAGNE: "DEU",
+  ALLEMAND: "DEU",
+  ALLEMANDE: "DEU",
+  GERMANY: "DEU",
+  GERMAN: "DEU",
+  PORTUGAL: "PRT",
+  PORTUGAIS: "PRT",
+  PORTUGAISE: "PRT",
+  MAROC: "MAR",
+  MAROCAIN: "MAR",
+  MAROCAINE: "MAR",
+  MOROCCO: "MAR",
+  TUNISIE: "TUN",
+  TUNISIEN: "TUN",
+  TUNISIENNE: "TUN",
+  ALGERIE: "DZA",
+  ALGERIEN: "DZA",
+  ALGERIENNE: "DZA",
+  CANADA: "CAN",
+  CANADIEN: "CAN",
+  CANADIENNE: "CAN",
+  ETATSUNIS: "USA",
+  AMERICAIN: "USA",
+  AMERICAINE: "USA",
+  AMERICAN: "USA",
+  USA: "USA",
+  ROYAUMEUNI: "GBR",
+  BRITANNIQUE: "GBR",
+  BRITISH: "GBR",
+  UK: "GBR",
+};
+
 export function toNationality(value: string): string {
-  const v = value.trim().toUpperCase();
-  if (/^[A-Z]{3}$/.test(v)) return v;
-  const token = v.match(/\b[A-Z]{3}\b/);
+  const folded = value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "");
+  if (NATIONALITY_NAMES[folded]) return NATIONALITY_NAMES[folded];
+  if (/^[A-Z]{3}$/.test(folded)) return folded;
+  const token = value.toUpperCase().match(/\b[A-Z]{3}\b/);
   return token ? token[0] : "";
 }
 
 export function toSex(value: string): IdentitySex | "" {
-  const v = value.trim().toUpperCase();
-  if (v === "M" || v === "MALE" || v === "H") return "M";
-  if (v === "F" || v === "FEMALE") return "F";
+  const folded = value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "");
+  if (folded === "M" || folded === "MALE" || folded === "H" || folded === "HOMME" || folded.startsWith("MASCUL")) {
+    return "M";
+  }
+  if (folded === "F" || folded === "FEMALE" || folded === "FEMME" || folded.startsWith("FEMIN")) return "F";
   return "";
 }
 
 export function toDocType(value: string): IdentityDocType | "" {
-  const v = value.trim().toUpperCase();
-  if (v === "PP" || v === "P" || v === "PASSPORT" || v === "PASSEPORT") return "PP";
-  if (v === "CNI" || v === "ID" || v === "I" || v === "CARTE" || v === "IDENTITY") return "CNI";
+  const folded = value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "");
+  if (folded === "P" || folded === "PP" || folded.includes("PASSEPORT") || folded.includes("PASSPORT")) return "PP";
+  if (
+    folded === "I" ||
+    folded === "ID" ||
+    folded === "CNI" ||
+    folded.includes("CARTE") ||
+    folded.includes("IDENTIT") ||
+    folded.includes("IDENTITY")
+  ) {
+    return "CNI";
+  }
   return "";
 }
 
