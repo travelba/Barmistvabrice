@@ -88,7 +88,7 @@ export async function POST(req: Request) {
     } else {
       console.log("[whatsapp] aperçu envoyé", sent.sid);
     }
-    return NextResponse.json({ ok: sent.ok, to: "+33772158257", ...sent });
+    return NextResponse.json({ ...sent, to: "+33772158257" });
   } catch (e) {
     console.error("[whatsapp] aperçu", e instanceof Error ? e.name : "error");
     return NextResponse.json({ error: "Envoi impossible" }, { status: 502 });
