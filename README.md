@@ -82,15 +82,10 @@ l'invité reçoit ses confirmations par WhatsApp.
    en fin de message le texte de contact conciergerie (WhatsApp + Raphael Zerdoun
    au 06 26 07 76 61) — voir suggestion dans `.env.example`.
 
-### 6. Rappels événement (cron J-7 / J-1)
+### 6. Rappels événement
 
-1. Appliquer la migration `supabase/migrations/0004_reminders.sql`.
-2. Définir `CRON_SECRET` sur Vercel (chaîne aléatoire longue).
-3. Créer et approuver 6 templates WhatsApp REMINDER_* (FR/HE × 3 types) — variables dans `.env.example`.
-   Le bloc `{{3}}` est rempli dynamiquement depuis `EVENT` (lieu Victoire, adresse, 10h15).
-4. Les crons Vercel (`vercel.json`) appellent `/api/cron/reminders` à 10h et 18h (Paris).
-
-Test à blanc : `GET /api/cron/reminders?slot=morning&dryRun=1` avec header `Authorization: Bearer <CRON_SECRET>`.
+Les rappels automatiques J-7 / J-1 sont annulés : plus de cron Vercel, et
+`/api/cron/reminders` répond sans rien envoyer.
 
 ### 7. Admin
 
