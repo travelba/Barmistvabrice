@@ -2,6 +2,11 @@ import { appUrl, EVENT } from "./config";
 import { bookingDocsFileName, bookingDocsPath } from "./doc-token";
 import { defaultCountryForLocale, normalizePhoneE164 } from "./phone";
 import { formatEuro } from "./pricing";
+import {
+  maskWhatsappRecipient,
+  postTwilioMessage,
+  whatsappTemplateFields,
+} from "./twilio-send";
 import type { Booking, CeremonyRsvp, Locale } from "./types";
 
 export type ReminderKind = "global_j7" | "ceremony_j1" | "trip_j1";
@@ -17,8 +22,6 @@ export type ReminderKind = "global_j7" | "ceremony_j1" | "trip_j1";
  * Si Twilio n'est pas configure, les envois sont ignores (log) — l'inscription
  * reste valide, exactement comme le comportement "Resend non configure".
  */
-
-const API_BASE = "https://api.twilio.com/2010-04-01";
 
 export function isWhatsappConfigured(): boolean {
   return Boolean(
@@ -68,31 +71,17 @@ async function sendTemplate(opts: {
   const accountSid = process.env.TWILIO_ACCOUNT_SID!;
   const authToken = process.env.TWILIO_AUTH_TOKEN!;
   const from = process.env.TWILIO_WHATSAPP_FROM!; // ex: "whatsapp:+14155238886"
-
-  const body = new URLSearchParams();
-  body.set("To", opts.to);
-  body.set("From", from.startsWith("whatsapp:") ? from : `whatsapp:${from}`);
-  body.set("ContentSid", opts.contentSid);
-  if (opts.variables && Object.keys(opts.variables).length > 0) {
-    body.set("ContentVariables", JSON.stringify(opts.variables));
-  }
-
-  const res = await fetch(`${API_BASE}/Accounts/${accountSid}/Messages.json`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body,
+  const fields = whatsappTemplateFields({
+    to: opts.to,
+    from,
+    contentSid: opts.contentSid,
+    variables: opts.variables,
   });
-
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    console.error("[whatsapp] echec envoi Twilio", { to: opts.to, status: res.status, detail });
-    throw new Error(`Twilio WhatsApp ${res.status}: ${detail.slice(0, 200)}`);
+  const result = await postTwilioMessage({ accountSid, authToken }, fields);
+  if (!result.ok) {
+    throw new Error(`Twilio WhatsApp ${result.code ?? result.http}`);
   }
-  const data = (await res.json().catch(() => null)) as { sid?: string } | null;
-  console.log("[whatsapp] envoye", { to: opts.to, sid: data?.sid });
+  console.log("[whatsapp] envoye", { to: maskWhatsappRecipient(opts.to), sid: result.sid });
 }
 
 /** Réponse libre dans la fenêtre de 24 h ouverte par le message de l'agence. */
@@ -105,18 +94,8 @@ export async function sendWhatsappText(to: string, body: string, fromNumber?: st
   form.set("To", to);
   form.set("From", from.startsWith("whatsapp:") ? from : `whatsapp:${from}`);
   form.set("Body", body.slice(0, 1500));
-  const res = await fetch(`${API_BASE}/Accounts/${accountSid}/Messages.json`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: form,
-  });
-  if (!res.ok) {
-    console.error("[whatsapp] echec reponse", res.status);
-    throw new Error("twilio");
-  }
+  const result = await postTwilioMessage({ accountSid, authToken }, form);
+  if (!result.ok) throw new Error("twilio");
 }
 
 /* ------------------------------------------------------------------ */
@@ -254,7 +233,7 @@ export async function sendReminderWhatsapp(opts: {
   const defaultCountry = defaultCountryForLocale(opts.locale);
   const to = toWhatsappAddress(opts.phone, defaultCountry);
   if (!to) {
-    console.warn("[whatsapp] téléphone invalide pour rappel", opts.kind, opts.phone);
+    console.warn("[whatsapp] téléphone invalide pour rappel", opts.kind, maskWhatsappRecipient(opts.phone));
     return false;
   }
   const envKey = REMINDER_TEMPLATE_ENV[opts.kind][opts.locale];
