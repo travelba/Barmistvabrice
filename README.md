@@ -92,6 +92,18 @@ l'invité reçoit ses confirmations par WhatsApp.
 
 Test à blanc : `GET /api/cron/reminders?slot=morning&dryRun=1` avec header `Authorization: Bearer <CRON_SECRET>`.
 
+Le rappel cérémonie déjà tenté en texte libre (07 72 15 82 57) se renvoie avec le template
+approuvé `reminder_ceremony_j1_fr` (`TWILIO_WA_TEMPLATE_REMINDER_CEREMONY_J1_FR`) :
+
+```bash
+curl -sS -X POST "https://www.bm-shon-bechet.fr/api/whatsapp/preview" \
+  -H "Authorization: Bearer $WHATSAPP_PREVIEW_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"to":"+33772158257","name":"LES AMIS"}'
+```
+
+`"dryRun": true` renvoie les variables sans appeler Twilio. Le corps n'est jamais un `Body` libre.
+
 ### 7. Admin
 
 Définir `ADMIN_SECRET` si besoin d'invalider les sessions. Le mot de passe admin est fixé à `2026` dans le code.

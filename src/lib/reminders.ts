@@ -2,12 +2,13 @@ import { EVENT } from "./config";
 import { listBookings, listCeremonyRsvps } from "./data";
 import { wasReminderSent, markReminderSent } from "./data-reminders";
 import {
-  ceremonyJ1Details,
+  ceremonyJ1Variables,
   globalJ7Details,
   tripJ1Details,
   type ReminderProfile,
 } from "./reminder-copy";
 import { normalizePhoneE164 } from "./phone";
+import { maskWhatsappRecipient } from "./twilio-send";
 import { sendReminderWhatsapp, type ReminderKind } from "./whatsapp";
 import type { Booking, CeremonyRsvp, Locale } from "./types";
 
@@ -145,11 +146,7 @@ async function sendOne(
         phone: profile.phone,
         kind,
         locale: profile.locale,
-        variables: {
-          "1": profile.name,
-          "2": EVENT.childName,
-          "3": ceremonyJ1Details(profile.locale),
-        },
+        variables: ceremonyJ1Variables(profile.name, profile.locale),
       });
     } else if (kind === "trip_j1" && profile.booking) {
       const { details, docsUrl } = tripJ1Details(profile.booking, profile.locale);
@@ -172,7 +169,12 @@ async function sendOne(
     }
     return "failed";
   } catch (e) {
-    console.error("[reminders] send", kind, profile.phone, e);
+    console.error(
+      "[reminders] send",
+      kind,
+      maskWhatsappRecipient(profile.phone),
+      e instanceof Error ? e.message : "error",
+    );
     return "failed";
   }
 }

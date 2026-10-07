@@ -91,6 +91,17 @@ export function globalJ7Details(profile: ReminderProfile): string {
   return parts.join("\n\n");
 }
 
+/**
+ * Variables du template cérémonie J-1 : {{1}} nom, {{2}} enfant, {{3}} lieu et heure.
+ */
+export function ceremonyJ1Variables(name: string, locale: Locale): Record<string, string> {
+  return {
+    "1": name,
+    "2": EVENT.childName,
+    "3": ceremonyJ1Details(locale),
+  };
+}
+
 /** Bloc {{3}} — rappel J-1 cérémonie. */
 export function ceremonyJ1Details(locale: Locale): string {
   if (locale === "he") {
