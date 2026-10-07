@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test tests/ceremony-preview.test.ts",
+    "test": "tsx --test tests/*.test.ts",
     "reset:production": "node --env-file=.env.local scripts/reset-production.mjs"
   },
   "dependencies": {

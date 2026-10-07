@@ -48,6 +48,7 @@ const FR = {
   "status.cancelled": "Annulé",
   "status.expired": "Expiré",
 
+  "actions.voucher": "Voucher",
   "actions.relaunch": "Relancer",
   "actions.release": "Libérer",
   "actions.confirmRelease": "Libérer la place ? La réservation sera annulée.",
@@ -125,6 +126,7 @@ const HE: Record<AdminKey, string> = {
   "status.cancelled": "בוטל",
   "status.expired": "פג תוקף",
 
+  "actions.voucher": "שובר",
   "actions.relaunch": "שליחה מחדש",
   "actions.release": "שחרור",
   "actions.confirmRelease": "לשחרר את המקום? ההזמנה תבוטל.",
