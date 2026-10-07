@@ -132,6 +132,47 @@ async function findTemplate(auth: Auth): Promise<{ contentSid: string | null; ap
   return { contentSid, approval, rejection };
 }
 
+async function sendFreeform(auth: Auth) {
+  const form = new URLSearchParams();
+  form.set("To", PREVIEW_TO);
+  form.set("From", auth.from);
+  form.set("Body", PREVIEW_BODY);
+  const res = await fetch(`${API_BASE}/Accounts/${auth.sid}/Messages.json`, {
+    method: "POST",
+    headers: {
+      Authorization: basic(auth),
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: form,
+  });
+  const data = (await res.json().catch(() => null)) as {
+    sid?: string;
+    code?: number;
+    message?: string;
+    status?: string;
+  } | null;
+  return {
+    ok: res.ok,
+    http: res.status,
+    sid: data?.sid ?? null,
+    code: data?.code ?? null,
+    message: data?.message?.slice(0, 300) ?? null,
+    delivery: data?.status ?? null,
+  };
+}
+
+async function waitForOutcome(auth: Auth, sid: string) {
+  let last = await messageStatus(auth, sid);
+  for (let i = 0; i < 6; i++) {
+    if (last.status === "delivered" || last.status === "read" || last.status === "failed" || last.status === "undelivered") {
+      return last;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    last = await messageStatus(auth, sid);
+  }
+  return last;
+}
+
 async function sendTemplate(auth: Auth, contentSid: string) {
   const form = new URLSearchParams();
   form.set("To", PREVIEW_TO);
@@ -175,9 +216,8 @@ export async function GET(req: Request) {
 }
 
 /**
- * Renvoie l'aperçu au 07 72 15 82 57.
- * Un texte libre hors fenêtre de 24 h est refusé par WhatsApp : on passe
- * alors par le modèle bm_shon_rappel_jeudi dès qu'il est approuvé.
+ * Renvoie l'aperçu au 07 72 15 82 57 et attend le statut Twilio.
+ * Si WhatsApp refuse le texte libre (fenêtre de 24 h), on tente le modèle approuvé.
  */
 export async function POST(req: Request) {
   if (!process.env.WHATSAPP_PREVIEW_SECRET?.trim()) {
@@ -189,17 +229,43 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Twilio non configuré" }, { status: 503 });
   }
 
-  const previous = await messageStatus(auth, LAST_SID);
+  const sent = await sendFreeform(auth);
+  if (!sent.ok || !sent.sid) {
+    return NextResponse.json({ ...sent, to: "+33772158257", channel: "freeform" });
+  }
+
+  const outcome = await waitForOutcome(auth, sent.sid);
+  const code = Number(outcome.errorCode);
+  if (code !== 63016) {
+    const arrived = outcome.status === "delivered" || outcome.status === "read" || outcome.status === "sent";
+    return NextResponse.json({
+      ...outcome,
+      ok: arrived,
+      to: "+33772158257",
+      channel: "freeform",
+    });
+  }
+
   const template = await findTemplate(auth);
   if (template.approval !== "approved" || !template.contentSid) {
     return NextResponse.json({
       ok: false,
-      previous,
+      to: "+33772158257",
+      channel: "template",
+      outcome,
       template,
-      reason: "Le modèle WhatsApp n'est pas encore approuvé, donc le texte ne peut pas partir.",
+      reason: "WhatsApp refuse le texte libre. Le modèle n'est pas encore approuvé.",
     });
   }
 
-  const sent = await sendTemplate(auth, template.contentSid);
-  return NextResponse.json({ ...sent, to: "+33772158257", previous, template });
+  const templated = await sendTemplate(auth, template.contentSid);
+  const templatedOutcome = templated.sid ? await waitForOutcome(auth, templated.sid) : null;
+  return NextResponse.json({
+    ok: templatedOutcome?.status === "delivered" || templatedOutcome?.status === "read" || templatedOutcome?.status === "sent",
+    to: "+33772158257",
+    channel: "template",
+    sent: templated,
+    outcome: templatedOutcome,
+    template,
+  });
 }
