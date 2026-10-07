@@ -103,6 +103,8 @@ curl -sS -X POST "https://www.bm-shon-bechet.fr/api/whatsapp/preview" \
 
 Définir `ADMIN_SECRET` si besoin d'invalider les sessions. Le mot de passe admin est fixé à `2026` dans le code.
 
+Chaque inscription a un bouton **Voucher** : `GET /api/admin/bookings/voucher?bookingId=<uuid>` (session admin). Le PDF est une confirmation hôtel + vol Travel BA, sans envoi WhatsApp ni e-mail.
+
 ## Déploiement Vercel
 
 ```bash
