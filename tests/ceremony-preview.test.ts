@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { afterEach, describe, it } from "node:test";
+import { GET as cronReminders } from "../src/app/api/cron/reminders/route";
 import {
   CEREMONY_J1_FR_CONTENT_SID,
   CEREMONY_PREVIEW_NAME,
@@ -196,5 +198,19 @@ describe("rappel cérémonie via template", () => {
     assert.equal(denied.status, 401);
     assert.equal(unconfigured.status, 503);
     assert.equal(called, false);
+  });
+});
+
+describe("rappels automatiques", () => {
+  it("laisse les crons coupés et ne répond qu'en no-op", async () => {
+    const vercel = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8")) as {
+      crons?: unknown;
+    };
+    assert.equal(vercel.crons, undefined);
+    const res = await cronReminders();
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { ok: boolean; disabled: boolean };
+    assert.equal(body.ok, true);
+    assert.equal(body.disabled, true);
   });
 });
